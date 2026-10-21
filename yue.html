@@ -1,0 +1,2647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MediAI 智能医疗助手的本地演示页面，提供健康知识、BMI 计算和健康记录功能。">
+    <title>MediAI — 智能医疗助手</title>
+    <link rel="stylesheet" href="register.css">
+</head>
+
+<body>
+
+    <!-- 动态开场页 -->
+    <div class="splash" id="splash">
+        <div class="sp-blob b1"></div>
+        <div class="sp-blob b2"></div>
+        <div class="sp-blob b3"></div>
+        <div class="sp-floats" aria-hidden="true">
+            <span class="sp-float f1">❤️</span>
+            <span class="sp-float f2">💊</span>
+            <span class="sp-float f3">🩺</span>
+            <span class="sp-float f4">🌿</span>
+            <span class="sp-float f5">☕</span>
+        </div>
+        <div class="sp-hero">
+            <div class="sp-logo">⚕️</div>
+            <div class="sp-title">你的私人<br><span class="sp-title-line2">健康守护伙伴</span></div>
+            <div class="sp-tagline">MediAI 不是冷冰冰的问诊机器——它会记住你的指标变化、读懂你的症状描述、陪你一步步养成更健康的习惯。每天打开，都有新的健康知识在等你。今天也要照顾好自己呀 ❤️
+            </div>
+            <div class="sp-typing"><span id="spTypewriter">正在准备你的健康空间</span><span class="cur"></span></div>
+            <div class="sp-cta">
+                <button class="sp-btn" onclick="enterApp()">🚪 进入 MediAI 医疗空间 →</button>
+                <span class="sp-btn-sub">无需安装 · 注册一个账号即可使用全部功能 · 全程本地保存</span>
+            </div>
+        </div>
+        <div class="sp-stats">
+            <div class="sp-stat">
+                <div class="sp-stat-v" id="spStatKb">0</div>
+                <div class="sp-stat-l">条医疗知识</div>
+            </div>
+            <div class="sp-divider"></div>
+            <div class="sp-stat">
+                <div class="sp-stat-v" id="spStatNews">0</div>
+                <div class="sp-stat-l">篇科普资讯</div>
+            </div>
+            <div class="sp-divider"></div>
+            <div class="sp-stat">
+                <div class="sp-stat-v" id="spStatCats">0</div>
+                <div class="sp-stat-l">大疾病分类</div>
+            </div>
+            <div class="sp-divider"></div>
+            <div class="sp-stat">
+                <div class="sp-stat-v" id="spStatMeasures">0</div>
+                <div class="sp-stat-l">条居家处理措施</div>
+            </div>
+            <div class="sp-divider"></div>
+            <div class="sp-stat">
+                <div class="sp-stat-v">12</div>
+                <div class="sp-stat-l">项健康管理工具</div>
+            </div>
+            <div class="sp-divider"></div>
+            <div class="sp-stat">
+                <div class="sp-stat-v">24</div>
+                <div class="sp-stat-l">小时在线陪伴</div>
+            </div>
+            <div class="sp-divider"></div>
+            <div class="sp-stat">
+                <div class="sp-stat-v">0</div>
+                <div class="sp-stat-l">上传到服务器</div>
+            </div>
+            <div class="sp-divider"></div>
+            <div class="sp-stat">
+                <div class="sp-stat-v">100%</div>
+                <div class="sp-stat-l">数据本地保存</div>
+            </div>
+        </div>
+    </div>
+    <div class="sp-dots" id="spDots"></div>
+
+    <!-- 登录 / 注册弹窗 -->
+    <div class="modal-mask" id="authMask" role="dialog" aria-modal="true" aria-label="账户登录、注册和密码重置">
+        <div class="modal">
+            <button class="modal-close" type="button" onclick="closeAuth()" aria-label="关闭账户弹窗">✕</button>
+
+            <!-- 登录 -->
+            <div id="loginView">
+                <div class="modal-title">👋 欢迎回来</div>
+                <div class="modal-sub">登录后使用完整功能</div>
+                <div class="field">
+                    <label class="field-label" for="loginUser">用户名</label>
+                    <div class="field-box">
+                        <span class="fi">👤</span>
+                        <input id="loginUser" type="text" placeholder="请输入用户名" autocomplete="username">
+                    </div>
+                    <div class="field-err" id="loginUserErr">请输入用户名</div>
+                </div>
+                <div class="field">
+                    <label class="field-label" for="loginPwd">密码</label>
+                    <div class="field-box">
+                        <span class="fi">🔒</span>
+                        <input class="with-eye" id="loginPwd" type="password" placeholder="请输入密码"
+                            autocomplete="current-password">
+                        <button class="fi fi-eye" type="button" onclick="togglePwd(this,'loginPwd')" title="显示密码"
+                            aria-label="显示密码" aria-pressed="false">👁️</button>
+                    </div>
+                    <div class="field-err" id="loginPwdErr">请输入密码</div>
+                </div>
+                <div class="field-forgot"><button class="text-link" type="button" onclick="showForgot()">忘记密码？</button>
+                </div>
+                <button class="btn btn-p btn-block" onclick="doLogin()">登 录</button>
+                <div class="modal-foot">还没有账号？<button class="text-link" type="button"
+                        onclick="switchView('register')">立即注册</button></div>
+            </div>
+
+            <!-- 注册 -->
+            <div id="registerView" style="display:none">
+                <div class="modal-title">📝 创建账号</div>
+                <div class="modal-sub">免费注册，即刻开始使用</div>
+                <div class="field">
+                    <label class="field-label" for="regUser">用户名</label>
+                    <div class="field-box">
+                        <span class="fi">👤</span>
+                        <input id="regUser" type="text" placeholder="3-20 个字符" autocomplete="username">
+                    </div>
+                    <div class="field-err" id="regUserErr"></div>
+                </div>
+                <div class="field">
+                    <label class="field-label" for="regPwd">密码</label>
+                    <div class="field-box">
+                        <span class="fi">🔒</span>
+                        <input class="with-eye" id="regPwd" type="password" placeholder="至少 6 位"
+                            autocomplete="new-password">
+                        <button class="fi fi-eye" type="button" onclick="togglePwd(this,'regPwd')" title="显示密码"
+                            aria-label="显示密码" aria-pressed="false">👁️</button>
+                    </div>
+                    <div class="field-err" id="regPwdErr"></div>
+                    <div class="field-tip">建议包含字母、数字和符号，长度至少 6 位</div>
+                </div>
+                <div class="field">
+                    <label class="field-label" for="regPwd2">确认密码</label>
+                    <div class="field-box">
+                        <span class="fi">🔒</span>
+                        <input class="with-eye" id="regPwd2" type="password" placeholder="再次输入密码"
+                            autocomplete="new-password">
+                        <button class="fi fi-eye" type="button" onclick="togglePwd(this,'regPwd2')" title="显示密码"
+                            aria-label="显示密码" aria-pressed="false">👁️</button>
+                    </div>
+                    <div class="field-err" id="regPwd2Err"></div>
+                </div>
+                <button class="btn btn-p btn-block" onclick="doRegister()">注 册</button>
+                <div class="modal-foot">已有账号？<button class="text-link" type="button"
+                        onclick="switchView('login')">直接登录</button></div>
+            </div>
+
+            <!-- 忘记密码 -->
+            <div id="forgotView" style="display:none">
+                <div class="modal-title">🔑 找回密码</div>
+                <div class="modal-sub">通过注册信息重置密码</div>
+                <div class="field">
+                    <label class="field-label" for="fgUser">用户名</label>
+                    <div class="field-box">
+                        <span class="fi">👤</span>
+                        <input id="fgUser" type="text" placeholder="请输入注册的用户名" autocomplete="username">
+                    </div>
+                    <div class="field-err" id="fgUserErr"></div>
+                </div>
+                <div class="field">
+                    <label class="field-label" for="fgPwd">新密码</label>
+                    <div class="field-box">
+                        <span class="fi">🔒</span>
+                        <input class="with-eye" id="fgPwd" type="password" placeholder="至少 6 位"
+                            autocomplete="new-password">
+                        <button class="fi fi-eye" type="button" onclick="togglePwd(this,'fgPwd')" title="显示密码"
+                            aria-label="显示密码" aria-pressed="false">👁️</button>
+                    </div>
+                    <div class="field-err" id="fgPwdErr"></div>
+                </div>
+                <div class="field">
+                    <label class="field-label" for="fgPwd2">确认新密码</label>
+                    <div class="field-box">
+                        <span class="fi">🔒</span>
+                        <input class="with-eye" id="fgPwd2" type="password" placeholder="再次输入新密码"
+                            autocomplete="new-password">
+                        <button class="fi fi-eye" type="button" onclick="togglePwd(this,'fgPwd2')" title="显示密码"
+                            aria-label="显示密码" aria-pressed="false">👁️</button>
+                    </div>
+                    <div class="field-err" id="fgPwd2Err"></div>
+                </div>
+                <button class="btn btn-p btn-block" onclick="doReset()">重 置 密 码</button>
+                <div class="modal-foot"><button class="text-link" type="button" onclick="switchView('login')">←
+                        返回登录</button></div>
+            </div>
+
+            <div class="divider">演示说明</div>
+            <div class="demo-tip">本演示版本账号与健康数据仅保存在当前浏览器，不会上传到服务器；请勿录入真实诊疗记录、身份信息或高敏感数据。关闭弹窗后可先以游客身份浏览首页与知识库。</div>
+            <div class="divider">AI 家庭医生</div>
+            <div class="demo-tip" style="margin-bottom:12px">
+                <strong style="display:block;margin-bottom:6px">🩺 随时在线，暖心问诊</strong>
+                登录后即可和 MediAI 家庭医生对话：描述你的症状，医生会先听你讲完、再帮你分析可能的原因，给出可以马上做起来的处理办法和就医指引。
+                全程数据仅保存在本地，无需任何 API 配置。
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息中心（通知） -->
+    <div class="modal-mask" id="notifMask" role="dialog" aria-modal="true" aria-label="消息中心">
+        <div class="modal notif-modal">
+            <button class="modal-close" type="button" onclick="closeNotif()" aria-label="关闭消息中心">✕</button>
+            <div class="modal-title">🔔 消息中心</div>
+            <div class="modal-sub" id="notifSub"></div>
+            <div class="notif-list" id="notifList"></div>
+        </div>
+    </div>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="s-logo">
+            <div class="s-logo-icon">⚕️</div>
+            <div><span class="s-logo-name">MediAI</span><span class="s-logo-sub">智能医疗助手平台</span></div>
+        </div>
+        <div class="s-sect">主要功能</div>
+        <div class="nav-item active" data-sec="home"><span class="nav-icon">🏠</span>首页总览</div>
+        <div class="nav-item" data-sec="chat"><span class="nav-icon">💬</span>AI 智能问诊<span class="nav-badge">在线</span>
+        </div>
+        <div class="nav-item" data-sec="health"><span class="nav-icon">❤️</span>健康档案</div>
+        <div class="nav-item" data-sec="kb"><span class="nav-icon">📚</span>医疗知识库</div>
+        <div class="s-sect">工具</div>
+        <div class="nav-item" data-sec="bmi"><span class="nav-icon">⚖️</span>BMI 计算器</div>
+        <div class="nav-item" data-sec="news"><span class="nav-icon">📰</span>科普资讯<span class="nav-badge"
+                id="newsBadge">每日更新</span></div>
+        <div class="s-foot" id="userFoot">
+            <div class="u-card" id="userCard" role="button" tabindex="0" title="账号操作"
+                onclick="userCardClick()">
+                <div class="u-av" id="uAv">游</div>
+                <div class="u-info">
+                    <div class="u-name" id="uName">游客模式</div>
+                    <div class="u-role" id="uRole">登录后启用全部功能</div>
+                </div>
+                <div class="u-more">▸</div>
+            </div>
+            <div class="u-menu" id="userMenu">
+                <button type="button" class="u-menu-item" onclick="userCardAct('notif')">🔔 消息中心</button>
+                <button type="button" class="u-menu-item danger" onclick="userCardAct('logout')">🚪 退出登录</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main">
+        <div class="mob-bar">
+            <button class="mob-menu" onclick="toggleSidebar()">☰</button>
+            <span class="mob-title" id="mobTitle">MediAI</span>
+            <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+                <button class="btn btn-g" id="mobAuthBtn" onclick="openAuth('login')"
+                    style="padding:5px 10px;font-size:12px">登录 / 注册</button>
+                <button class="btn btn-g" id="mobLogoutBtn" onclick="doLogout()"
+                    style="padding:5px 10px;font-size:12px;display:none">退出</button>
+            </div>
+        </div>
+        <header class="topbar">
+            <div>
+                <div class="tb-title" id="tb-title">首页总览</div>
+                <div class="tb-sub" id="tb-sub">欢迎使用 MediAI 智能医疗平台</div>
+            </div>
+            <div class="tb-right">
+                <button class="btn btn-g" id="notifBtn" onclick="openNotif()">🔔 通知<span class="notif-badge"
+                        id="notifBadge" style="display:none"></span></button>
+                <button class="btn btn-p" onclick="requireAuth(()=>showSec('chat'))">💬 开始问诊</button>
+                <button class="btn btn-g" id="pcAuthBtn" onclick="openAuth('login')">🔑 登录 / 注册</button>
+                <button class="btn btn-g" id="pcLogoutBtn" onclick="doLogout()" style="display:none">退出</button>
+            </div>
+        </header>
+        <main class="content" id="contentArea">
+            <!-- Home -->
+            <section class="sec active" id="sec-home">
+                <div class="notice">⚠️ <span><strong>免责声明：</strong>本平台仅供参考，不构成医疗建议。如有紧急情况，请立即拨打 <strong>120</strong>
+                        急救电话或前往最近医院就诊。</span></div>
+                <div class="hero">
+                    <div class="hero-title">🤖 AI 智能医疗助手</div>
+                    <div class="hero-sub">结合人工智能技术，为您提供症状分析、健康管理和医疗知识查询，全天候守护您和家人的健康。</div>
+                    <div class="hero-actions">
+                        <button class="btn-white" onclick="requireAuth(()=>showSec('chat'))">💬 立即问诊</button>
+                        <button class="btn-ow" onclick="showSec('kb')">📚 知识库</button>
+                    </div>
+                </div>
+                <div class="g4">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#e0f2fe">💬</div>
+                        <div>
+                            <div class="stat-val">12,847</div>
+                            <div class="stat-lbl">累计问诊次数</div>
+                            <div class="stat-change" style="color:var(--success)">↑ 12% 本月</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#dcfce7">📖</div>
+                        <div>
+                            <div class="stat-val">3,204</div>
+                            <div class="stat-lbl">知识库条目</div>
+                            <div class="stat-change" style="color:var(--success)">↑ 新增 48 条</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#fef3c7">🎯</div>
+                        <div>
+                            <div class="stat-val">98.6%</div>
+                            <div class="stat-lbl">AI 响应准确率</div>
+                            <div class="stat-change" style="color:var(--text3)">持续优化中</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:#fce7f3">🏥</div>
+                        <div>
+                            <div class="stat-val">156</div>
+                            <div class="stat-lbl">合作医疗机构</div>
+                            <div class="stat-change" style="color:var(--success)">↑ 新增 8 家</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sec-title">平台核心功能</div>
+                <div class="g3">
+                    <div class="feat-card" onclick="requireAuth(()=>showSec('chat'))">
+                        <div class="feat-icon" style="background:#e0f2fe">🩺</div>
+                        <div class="feat-title">智能问诊</div>
+                        <div class="feat-desc">描述您的症状，AI 为您分析可能的病因并给出就医建议，支持多轮对话，随时追问。</div>
+                    </div>
+                    <div class="feat-card" onclick="requireAuth(()=>showSec('health'))">
+                        <div class="feat-icon" style="background:#dcfce7">📊</div>
+                        <div class="feat-title">健康档案</div>
+                        <div class="feat-desc">记录血压、血糖、体重、心率等数据，智能生成健康评分和个性化改善建议。</div>
+                    </div>
+                    <div class="feat-card" onclick="showSec('kb')">
+                        <div class="feat-icon" style="background:#fef3c7">🔬</div>
+                        <div class="feat-title">医疗知识库</div>
+                        <div class="feat-desc">涵盖心血管、糖尿病、呼吸系统等常见疾病的专业知识，通俗易懂，随时查阅。</div>
+                    </div>
+                </div>
+            </section>
+            <!-- Chat -->
+            <section class="sec" id="sec-chat">
+                <div class="chat-sec">
+                    <div class="chat-mode-bar" id="chatModeBar">
+                        <span class="chat-mode-dot" id="chatModeDot">🟢</span>
+                        <span class="chat-mode-text" id="chatModeText">MediAI 家庭医生 · 正在值班</span>
+                        <span class="chat-mode-sub">先听你说完，再帮你分析</span>
+                    </div>
+                    <div class="chat-body" id="chatBody">
+                        <div class="msg ai">
+                            <div class="msg-av ai">🤖</div>
+                            <div>
+                                <div class="msg-bubble" id="chatWelcome"></div>
+                                <div class="msg-time">刚刚</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-hints" id="chatHints">
+                        <button class="hint-chip" type="button" onclick="sendHint(this)">头痛头晕</button>
+                        <button class="hint-chip" type="button" onclick="sendHint(this)">发烧咳嗽</button>
+                        <button class="hint-chip" type="button" onclick="sendHint(this)">胃痛恶心</button>
+                        <button class="hint-chip" type="button" onclick="sendHint(this)">心悸胸闷</button>
+                        <button class="hint-chip" type="button" onclick="sendHint(this)">失眠焦虑</button>
+                        <button class="hint-chip" type="button" onclick="sendHint(this)">腰背疼痛</button>
+                        <button class="hint-chip clear-chip" type="button" onclick="clearChat()">🗑️ 清空对话</button>
+                    </div>
+                    <div class="chat-foot">
+                        <textarea class="chat-input" id="chatInput" rows="1" placeholder="请描述您的症状，例如：头痛、发烧、咳嗽..."
+                            onkeydown="handleKey(event)"></textarea>
+                        <button class="chat-send" onclick="sendMsg()" title="发送（Enter）">➤</button>
+                    </div>
+                </div>
+            </section>
+            <!-- Health -->
+            <section class="sec" id="sec-health">
+                <div style="margin-bottom:20px">
+                    <h2 style="font-size:22px;font-weight:700">❤️ 健康档案</h2>
+                    <p style="font-size:13px;color:var(--text3);margin-top:4px">录入数据，智能生成健康评分与建议</p>
+                </div>
+                <div class="health-grid">
+                    <div>
+                        <div class="card" style="margin-bottom:16px">
+                            <div class="sec-title" style="margin-top:0">📝 录入健康数据</div>
+                            <div class="input-row">
+                                <div class="form-group"><label class="form-label" for="h-height">身高 (cm)</label><input
+                                        class="form-input" id="h-height" type="number" min="50" max="250" step="0.1"
+                                        inputmode="decimal" placeholder="170"></div>
+                                <div class="form-group"><label class="form-label" for="h-weight">体重 (kg)</label><input
+                                        class="form-input" id="h-weight" type="number" min="2" max="500" step="0.1"
+                                        inputmode="decimal" placeholder="65"></div>
+                            </div>
+                            <div class="input-row">
+                                <div class="form-group"><label class="form-label" for="h-sbp">收缩压 (mmHg)</label><input
+                                        class="form-input" id="h-sbp" type="number" min="40" max="300" step="1"
+                                        inputmode="numeric" placeholder="120"></div>
+                                <div class="form-group"><label class="form-label" for="h-dbp">舒张压 (mmHg)</label><input
+                                        class="form-input" id="h-dbp" type="number" min="20" max="200" step="1"
+                                        inputmode="numeric" placeholder="80"></div>
+                            </div>
+                            <div class="input-row">
+                                <div class="form-group"><label class="form-label" for="h-glucose">血糖
+                                        (mmol/L)</label><input class="form-input" id="h-glucose" type="number" min="1"
+                                        max="50" step="0.1" inputmode="decimal" placeholder="5.5">
+                                </div>
+                                <div class="form-group"><label class="form-label" for="h-hr">心率 (次/分)</label><input
+                                        class="form-input" id="h-hr" type="number" min="20" max="250" step="1"
+                                        inputmode="numeric" placeholder="75"></div>
+                            </div>
+                            <button class="btn btn-p" style="width:100%;justify-content:center;padding:10px"
+                                id="saveHealthBtn" onclick="requireAuth(saveHealth)">💾 保存并生成报告</button>
+                            <div class="hist-lock" id="healthSaveTip" style="display:none">🔒
+                                <span><strong>今日已归档：</strong><span
+                                        id="healthSaveTipTxt"></span>。健康档案每天只能归档一次，目的是防止随意修改数据，让每次记录都真实可比。</span>
+                            </div>
+                            <div class="bmi-result" id="bmiResult">
+                                <div class="bmi-val" id="bmiVal"></div>
+                                <div class="bmi-cat" id="bmiCat"></div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="sec-title" style="margin-top:0">📈 血压趋势图</div>
+                            <canvas id="bpChart" height="160" style="width:100%;display:block"></canvas>
+                            <div id="bpEmpty" style="text-align:center;color:var(--text3);font-size:13px;padding:20px">
+                                录入血压数据后将显示趋势图</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card" style="margin-bottom:16px">
+                            <div class="sec-title" style="margin-top:0">🏥 综合健康评分</div>
+                            <div class="score-wrap">
+                                <div class="score-ring"><canvas id="scoreCanvas" width="140" height="140"></canvas>
+                                    <div class="score-num" id="scoreNum">--<span class="score-lbl">分</span></div>
+                                </div>
+                                <div style="font-size:13px;color:var(--text2);text-align:center">基于您录入的健康数据综合计算</div>
+                            </div>
+                            <div class="vitals-grid">
+                                <div class="vital-item">
+                                    <div class="vital-val" id="v-bp">--/--</div>
+                                    <div class="vital-lbl">血压 mmHg</div>
+                                </div>
+                                <div class="vital-item">
+                                    <div class="vital-val" id="v-glucose">--</div>
+                                    <div class="vital-lbl">血糖 mmol/L</div>
+                                </div>
+                                <div class="vital-item">
+                                    <div class="vital-val" id="v-hr">--</div>
+                                    <div class="vital-lbl">心率 次/分</div>
+                                </div>
+                                <div class="vital-item">
+                                    <div class="vital-val" id="v-bmi">--</div>
+                                    <div class="vital-lbl">BMI 指数</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="sec-title" style="margin-top:0">💡 个性化健康建议</div>
+                            <div id="healthAdvice" style="font-size:13px;color:var(--text2);line-height:1.9">
+                                完善健康数据后将自动生成个性化建议...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:16px">
+                    <div class="sec-title" style="margin-top:0">📚 历史健康记录</div>
+                    <div id="healthHistory"></div>
+                </div>
+            </section>
+            <!-- BMI -->
+            <section class="sec" id="sec-bmi">
+                <div style="margin-bottom:20px">
+                    <h2 style="font-size:22px;font-weight:700">⚖️ BMI 计算器</h2>
+                    <p style="font-size:13px;color:var(--text3);margin-top:4px">快速计算身体质量指数，评估体重状况</p>
+                </div>
+                <div class="bmi-tabs" id="bmiTabs" role="tablist" aria-label="BMI 分析内容">
+                    <div class="bmi-tab active" data-btab="calc" role="tab" tabindex="0" aria-controls="bmi-calc"
+                        aria-selected="true" onclick="switchBmiTab(this,'calc')">🧮 计算与分析</div>
+                    <div class="bmi-tab" data-btab="weight" role="tab" tabindex="-1" aria-controls="bmi-weight"
+                        aria-selected="false" onclick="switchBmiTab(this,'weight')">🎯 理想体重</div>
+                    <div class="bmi-tab" data-btab="risk" role="tab" tabindex="-1" aria-controls="bmi-risk"
+                        aria-selected="false" onclick="switchBmiTab(this,'risk')">⚠️ 健康风险</div>
+                    <div class="bmi-tab" data-btab="plan" role="tab" tabindex="-1" aria-controls="bmi-plan"
+                        aria-selected="false" onclick="switchBmiTab(this,'plan')">📋 减重计划</div>
+                </div>
+
+                <!-- 计算与分析 -->
+                <div class="bmi-panel" id="bmi-calc">
+                    <div class="g2">
+                        <div class="card">
+                            <div class="sec-title" style="margin-top:0">📐 输入身高体重</div>
+                            <div class="input-row">
+                                <div class="form-group"><label class="form-label" for="b-height">身高 (cm)</label><input
+                                        class="form-input" id="b-height" type="number" min="50" max="250" step="0.1"
+                                        inputmode="decimal" placeholder="170"></div>
+                                <div class="form-group"><label class="form-label" for="b-weight">体重 (kg)</label><input
+                                        class="form-input" id="b-weight" type="number" min="2" max="500" step="0.1"
+                                        inputmode="decimal" placeholder="65"></div>
+                            </div>
+                            <button class="btn btn-p" style="width:100%;justify-content:center;padding:10px"
+                                onclick="calcBmi()">🧮 计算 BMI</button>
+                            <div class="bmi-result" id="bmiCalcResult" style="display:none">
+                                <div class="bmi-val" id="bmiCalcVal"></div>
+                                <div class="bmi-cat" id="bmiCalcCat"></div>
+                                <div id="bmiCalcAdvice"
+                                    style="font-size:12.5px;color:var(--text2);margin-top:6px;line-height:1.6"></div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="sec-title" style="margin-top:0">📊 BMI 参考标准</div>
+                            <div class="bmi-range-row">
+                                <div class="bmi-range" id="r-under"><b>&lt; 18.5</b>偏瘦</div>
+                                <div class="bmi-range" id="r-normal"><b>18.5 – 23.9</b>正常</div>
+                                <div class="bmi-range" id="r-over"><b>24 – 27.9</b>超重</div>
+                                <div class="bmi-range" id="r-obese"><b>≥ 28</b>肥胖</div>
+                            </div>
+                            <p style="font-size:12px;color:var(--text3);line-height:1.6">BMI
+                                是评估体重状况的常用指标，但不能区分脂肪与肌肉。运动员、孕妇及未成年人应结合腰围、体脂率等综合判断。</p>
+                        </div>
+                    </div>
+                    <div class="bmi-idea" id="bmiIdea" style="display:none">
+                        <span class="ic" id="bmiIdeaIc">💡</span>
+                        <div class="tx"><strong id="bmiIdeaTitle"></strong><span id="bmiIdeaText"></span></div>
+                    </div>
+                </div>
+
+                <!-- 理想体重 -->
+                <div class="bmi-panel" id="bmi-weight" style="display:none">
+                    <div class="card">
+                        <div class="sec-title" style="margin-top:0">🎯 你的理想体重区间</div>
+                        <p style="font-size:13px;color:var(--text2);line-height:1.7">系统根据你输入的身高，按亚太地区标准（Broca
+                            改良公式）给出理想体重范围，并对比你当前的体重差距。</p>
+                        <div class="bmi-range-row" style="margin-top:16px">
+                            <div class="bmi-range" style="grid-column:span 2"><b id="wRange">—</b>理想体重区间 (kg)</div>
+                            <div class="bmi-range"><b id="wNow">—</b>当前体重</div>
+                            <div class="bmi-range"><b id="wDiff">—</b>与理想差</div>
+                        </div>
+                        <div class="hist-progress">
+                            <div style="display:flex;justify-content:space-between;font-size:12.5px"><span
+                                    style="color:var(--text2)" id="wProgressTxt">请输入身高体重查看对比</span><span
+                                    class="hist-progress-val" id="wProgressVal">0%</span></div>
+                            <div class="hist-progress-bar">
+                                <div class="hist-progress-fill" id="wProgressBar" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <table class="ideal-table">
+                            <thead>
+                                <tr>
+                                    <th>评估项目</th>
+                                    <th>标准值</th>
+                                    <th>你的数据</th>
+                                    <th>结论</th>
+                                </tr>
+                            </thead>
+                            <tbody id="wTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 健康风险 -->
+                <div class="bmi-panel" id="bmi-risk" style="display:none">
+                    <div class="card">
+                        <div class="sec-title" style="margin-top:0">⚠️ 超重带来的健康风险</div>
+                        <p style="font-size:13px;color:var(--text2);line-height:1.7">BMI 越高，多种慢性疾病的发生风险随之上升。下图展示相对风险倍数（以
+                            BMI 18.5–23.9 为基准 = 1 倍），数据参考《中国居民肥胖防治专家共识》。</p>
+                        <div class="risk-bars" id="riskBars"></div>
+                        <div class="bmi-idea">
+                            <span class="ic">🩺</span>
+                            <div class="tx"><strong>风险不是命运</strong>即使 BMI 偏高，减重 5%–10% 即可显著改善血压、血糖和血脂水平。体重管理是最有效的"处方"之一。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 减重计划 -->
+                <div class="bmi-panel" id="bmi-plan" style="display:none">
+                    <div class="card">
+                        <div class="sec-title" style="margin-top:0">📋 分阶段可执行计划</div>
+                        <p style="font-size:13px;color:var(--text2);line-height:1.7">以下计划按"每周减重
+                            0.5–1kg"的健康节奏制定，分三个阶段推进，避免极端节食造成肌肉流失和反弹。</p>
+                        <div class="bmi-plan" id="bmiPlan"></div>
+                        <div class="bmi-idea">
+                            <span class="ic">⏱️</span>
+                            <div class="tx"><strong>估算你的达标时间</strong><span
+                                    id="planEstimate">输入身高体重后，系统会为你估算按健康节奏减重到理想区间所需的周数。</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- 科普资讯（每日新增） -->
+            <section class="sec" id="sec-news">
+                <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:6px">
+                    <div style="margin-bottom:20px;flex:1;min-width:240px">
+                        <h2 style="font-size:22px;font-weight:700">📰 健康科普资讯</h2>
+                        <p style="font-size:13px;color:var(--text3);margin-top:4px" id="newsDate"></p>
+                    </div>
+                    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+                        <button class="btn btn-g" id="nf-all" onclick="filterNews('all',this)">全部</button>
+                        <button class="btn btn-g" onclick="filterNews('饮食健康',this)">🥗 饮食健康</button>
+                        <button class="btn btn-g" onclick="filterNews('保健品',this)">💊 保健品</button>
+                        <button class="btn btn-g" onclick="filterNews('医学科普',this)">🔬 医学科普</button>
+                        <button class="btn btn-g" onclick="filterNews('健康生活',this)">🌿 健康生活</button>
+                    </div>
+                </div>
+                <div id="newsResult"></div>
+            </section>
+            <!-- Knowledge Base -->
+            <section class="sec" id="sec-kb">
+                <div style="margin-bottom:20px">
+                    <h2 style="font-size:22px;font-weight:700">📚 医疗知识库</h2>
+                    <p style="font-size:13px;color:var(--text3);margin-top:4px">查询常见疾病、症状和用药知识</p>
+                </div>
+                <div class="kb-search-wrap">
+                    <span class="kb-search-icon">🔍</span>
+                    <input class="kb-search" id="kbSearch" placeholder="搜索疾病、症状、药品名称..." oninput="kbFilter()">
+                </div>
+                <div class="sec-title" style="margin-top:0">疾病分类浏览</div>
+                <div class="g4" style="margin-bottom:24px">
+                    <div class="cat-card" onclick="selectCat(this,'心血管')">
+                        <div class="cat-icon">❤️</div>
+                        <div class="cat-name">心血管疾病</div>
+                    </div>
+                    <div class="cat-card" onclick="selectCat(this,'糖尿病')">
+                        <div class="cat-icon">🩸</div>
+                        <div class="cat-name">糖尿病</div>
+                    </div>
+                    <div class="cat-card" onclick="selectCat(this,'呼吸系统')">
+                        <div class="cat-icon">🫁</div>
+                        <div class="cat-name">呼吸系统</div>
+                    </div>
+                    <div class="cat-card" onclick="selectCat(this,'消化系统')">
+                        <div class="cat-icon">🫃</div>
+                        <div class="cat-name">消化系统</div>
+                    </div>
+                    <div class="cat-card" onclick="selectCat(this,'神经系统')">
+                        <div class="cat-icon">🧠</div>
+                        <div class="cat-name">神经系统</div>
+                    </div>
+                    <div class="cat-card" onclick="selectCat(this,'骨科')">
+                        <div class="cat-icon">🦴</div>
+                        <div class="cat-name">骨科</div>
+                    </div>
+                    <div class="cat-card" onclick="selectCat(this,'皮肤科')">
+                        <div class="cat-icon">🩹</div>
+                        <div class="cat-name">皮肤科</div>
+                    </div>
+                    <div class="cat-card" onclick="selectCat(this,'儿科')">
+                        <div class="cat-icon">👶</div>
+                        <div class="cat-name">儿科</div>
+                    </div>
+                    <div class="cat-card" onclick="selectCat(this,'饮食营养')">
+                        <div class="cat-icon">🥗</div>
+                        <div class="cat-name">饮食营养</div>
+                    </div>
+                    <div class="cat-card" onclick="selectCat(this,'用药安全')">
+                        <div class="cat-icon">💊</div>
+                        <div class="cat-name">用药安全</div>
+                    </div>
+                    <div class="cat-card" onclick="selectCat(this,'心理精神')">
+                        <div class="cat-icon">🧘</div>
+                        <div class="cat-name">心理精神</div>
+                    </div>
+                    <div class="cat-card" onclick="selectCat(this,'五官科')">
+                        <div class="cat-icon">👁️</div>
+                        <div class="cat-name">五官科</div>
+                    </div>
+                </div>
+                <div class="kb-search-wrap" style="margin-bottom:14px">
+                    <span class="kb-search-icon">🔎</span>
+                    <select class="kb-search" id="kbType" onchange="renderKb(kbData)"
+                        style="padding-left:40px;cursor:pointer">
+                        <option value="">全部分类</option>
+                        <option value="心血管">心血管</option>
+                        <option value="糖尿病">糖尿病</option>
+                        <option value="呼吸系统">呼吸系统</option>
+                        <option value="消化系统">消化系统</option>
+                        <option value="神经系统">神经系统</option>
+                        <option value="骨科">骨科</option>
+                        <option value="皮肤科">皮肤科</option>
+                        <option value="儿科">儿科</option>
+                        <option value="饮食营养">饮食营养</option>
+                        <option value="用药安全">用药安全</option>
+                        <option value="心理精神">心理精神</option>
+                        <option value="五官科">五官科</option>
+                    </select>
+                </div>
+                <div class="sec-title" style="margin-top:0">相关条目 <span id="kbCount"
+                        style="font-size:12px;font-weight:400;color:var(--text3)"></span></div>
+                <div id="kbResult"></div>
+            </section>
+        </main>
+    </div>
+    <script>
+        // ─── 账号系统 ─────────────────────────────────────────────
+        const USERS_KEY = 'mediai-users';      // {username:{password:{salt,hash},...}}
+        const SESSION_KEY = 'mediai-session';  // {username}
+        const PASSWORD_ITERATIONS = 120000;
+        const textEncoder = new TextEncoder();
+        function getUsers() { try { return JSON.parse(localStorage.getItem(USERS_KEY)) || {} } catch (e) { return {} } }
+        function setUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)) }
+        function getSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY)) } catch (e) { return null } }
+        function setSession(s) { s ? localStorage.setItem(SESSION_KEY, JSON.stringify(s)) : localStorage.removeItem(SESSION_KEY) }
+        function currentUser() { const s = getSession(); const u = getUsers(); return s && u[s.username] ? s.username : null }
+        function bytesToBase64(bytes) { return btoa(String.fromCharCode(...bytes)); }
+        function base64ToBytes(value) { return Uint8Array.from(atob(value), c => c.charCodeAt(0)); }
+        async function derivePassword(password, salt) {
+            const key = await crypto.subtle.importKey('raw', textEncoder.encode(password), 'PBKDF2', false, ['deriveBits']);
+            const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: PASSWORD_ITERATIONS, hash: 'SHA-256' }, key, 256);
+            return bytesToBase64(new Uint8Array(bits));
+        }
+        async function createPasswordRecord(password) {
+            if (!globalThis.crypto || !crypto.subtle) throw new Error('Web Crypto is unavailable');
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            return { salt: bytesToBase64(salt), hash: await derivePassword(password, salt) };
+        }
+        async function passwordMatches(password, record) {
+            // 注册页旧版本使用明文；用户成功登录后会自动迁移为带盐哈希。
+            if (typeof record === 'string') return password === record;
+            if (!record || typeof record.salt !== 'string' || typeof record.hash !== 'string') return false;
+            return (await derivePassword(password, base64ToBytes(record.salt))) === record.hash;
+        }
+        function isValidUsername(user) { return /^[\u4e00-\u9fa5A-Za-z0-9_-]{3,20}$/.test(user); }
+
+        function openAuth(view) {
+            switchView(view || 'login');
+            document.getElementById('authMask').classList.add('show');
+        }
+        function closeAuth() { document.getElementById('authMask').classList.remove('show') }
+        function togglePwd(eye, inputId) {
+            const inp = document.getElementById(inputId);
+            const isVisible = inp.type === 'password';
+            inp.type = isVisible ? 'text' : 'password';
+            eye.textContent = isVisible ? '🙈' : '👁️';
+            eye.setAttribute('aria-pressed', String(isVisible));
+            eye.setAttribute('aria-label', isVisible ? '隐藏密码' : '显示密码');
+            eye.title = isVisible ? '隐藏密码' : '显示密码';
+        }
+        function switchView(v) {
+            ['loginView', 'registerView', 'forgotView'].forEach(id => document.getElementById(id).style.display = 'none');
+            const view = document.getElementById(v + 'View');
+            view.style.display = 'block';
+            document.querySelectorAll('.field-err').forEach(e => e.classList.remove('show'));
+            requestAnimationFrame(() => view.querySelector('input')?.focus());
+        }
+        function showForgot() { switchView('forgot') }
+
+        // 未登录时的拦截：传入一个登录后要执行的函数
+        function requireAuth(action) {
+            if (currentUser()) { action(); return }
+            pendingAction = action;
+            openAuth('login');
+        }
+        let pendingAction = null;
+
+        function elVal(id) { return document.getElementById(id).value.trim() }
+        function showErr(id, msg) { const e = document.getElementById(id); e.textContent = msg; e.classList.add('show') }
+
+        async function doRegister() {
+            const user = elVal('regUser'), pwd = document.getElementById('regPwd').value, pwd2 = document.getElementById('regPwd2').value;
+            const users = getUsers();
+            if (!isValidUsername(user)) { showErr('regUserErr', '用户名限 3–20 位中文、字母、数字、下划线或连字符'); return }
+            if (users[user]) { showErr('regUserErr', '该用户名已被注册'); return }
+            if (pwd.length < 6) { showErr('regPwdErr', '密码至少 6 位'); return }
+            if (pwd !== pwd2) { showErr('regPwd2Err', '两次输入的密码不一致'); return }
+            try {
+                users[user] = { password: await createPasswordRecord(pwd), created: Date.now() };
+                setUsers(users);
+            } catch (e) { showErr('regPwdErr', '当前浏览器无法安全保存密码，请使用最新版浏览器'); return }
+            setSession({ username: user });
+            loadRecordsFor(user);
+            restoreHealthSummary();
+            renderHistory();
+            syncUserUI();
+            closeAuth();
+            showSec('home');
+            alert('🎉 注册成功，欢迎使用 MediAI！');
+        }
+        async function doLogin() {
+            const user = elVal('loginUser'), pwd = document.getElementById('loginPwd').value;
+            const users = getUsers();
+            if (!user) { showErr('loginUserErr', '请输入用户名'); return }
+            if (!pwd) { showErr('loginPwdErr', '请输入密码'); return }
+            if (!users[user]) { showErr('loginUserErr', '该账号不存在，请先注册'); return }
+            try {
+                if (!(await passwordMatches(pwd, users[user].password))) { showErr('loginPwdErr', '密码错误，请重试'); return }
+                if (typeof users[user].password === 'string') {
+                    users[user].password = await createPasswordRecord(pwd);
+                    setUsers(users);
+                }
+            } catch (e) { showErr('loginPwdErr', '当前浏览器无法验证密码，请使用最新版浏览器'); return }
+            setSession({ username: user });
+            loadRecordsFor(user);
+            restoreHealthSummary();
+            renderHistory();
+            syncUserUI();
+            closeAuth();
+            if (pendingAction) { pendingAction(); pendingAction = null }
+        }
+        function doLogout() {
+            if (!confirm('确定要退出当前账号吗？')) return;
+            setSession(null);
+            healthRecords = []; bpHistory = [];
+            restoreHealthSummary();
+            renderHistory();
+            syncUserUI();
+            showSec('home');
+        }
+        async function doReset() {
+            const user = elVal('fgUser'), pwd = document.getElementById('fgPwd').value, pwd2 = document.getElementById('fgPwd2').value;
+            const users = getUsers();
+            if (!users[user]) { showErr('fgUserErr', '该账号不存在'); return }
+            if (pwd.length < 6) { showErr('fgPwdErr', '密码至少 6 位'); return }
+            if (pwd !== pwd2) { showErr('fgPwd2Err', '两次输入的密码不一致'); return }
+            try {
+                users[user].password = await createPasswordRecord(pwd);
+                setUsers(users);
+            } catch (e) { showErr('fgPwdErr', '当前浏览器无法安全保存密码，请使用最新版浏览器'); return }
+            alert('✅ 密码重置成功，请使用新密码登录');
+            switchView('login');
+        }
+        function syncUserUI() {
+            const u = currentUser();
+            const authBtns = ['pcAuthBtn', 'mobAuthBtn'], logoutBtns = ['pcLogoutBtn', 'mobLogoutBtn'];
+            authBtns.forEach(id => document.getElementById(id).style.display = u ? 'none' : 'inline-flex');
+            logoutBtns.forEach(id => document.getElementById(id).style.display = u ? 'inline-flex' : 'none');
+            if (u) {
+                document.getElementById('uName').textContent = u;
+                document.getElementById('uAv').textContent = u.charAt(0).toUpperCase();
+                document.getElementById('uRole').textContent = '已登录 · 数据已同步';
+            } else {
+                document.getElementById('uName').textContent = '游客模式';
+                document.getElementById('uAv').textContent = '游';
+                document.getElementById('uRole').textContent = '登录后启用全部功能';
+            }
+            updateChatWelcome();
+            updateNotifBadge();
+            const menu = document.getElementById('userMenu');
+            if (menu) menu.classList.remove('show');
+        }
+
+        // ─── 左下角用户卡（游客点击登录 / 登录后账号菜单） ────────
+        function userCardClick() {
+            const u = currentUser();
+            if (!u) { openAuth('login'); return }
+            const menu = document.getElementById('userMenu');
+            if (menu) menu.classList.toggle('show');
+        }
+        function userCardAct(act) {
+            const menu = document.getElementById('userMenu');
+            if (menu) menu.classList.remove('show');
+            if (act === 'notif') openNotif();
+            else doLogout();
+        }
+        // 点击页面其他位置时收起账号菜单
+        document.addEventListener('click', e => {
+            const foot = document.getElementById('userFoot');
+            const menu = document.getElementById('userMenu');
+            if (menu && foot && !foot.contains(e.target)) menu.classList.remove('show');
+        });
+
+        // ─── 消息中心（通知） ─────────────────────────────────────
+        const NOTIF_PREFIX = 'mediai-notifs_';
+        const NOTIF_TIPS = [
+            ['多喝水', '成人每天饮水 1500–1700ml，别等口渴才喝——口渴时身体已经轻度缺水了。'],
+            ['护眼 20-20-20', '每看屏幕 20 分钟，抬头看 6 米外 20 秒，眼睛会谢谢你。'],
+            ['久坐提醒', '每坐 1 小时起身活动 5 分钟，比周末集中锻炼更护心血管。'],
+            ['睡眠优先', '固定起床时间比固定入睡时间更重要，周末也别赖床超过 2 小时。'],
+            ['早餐别省', '规律早餐有助稳定血糖和体重，哪怕一个鸡蛋一杯奶也好。'],
+            ['盐要少吃', '每天盐 <5g（约一啤酒瓶盖），小心酱油、挂面、零食里的"隐形盐"。'],
+            ['动起来', '每周 150 分钟中等强度运动，快走到微微出汗、能说话不能唱歌就刚刚好。'],
+        ];
+        function notifStoreKey(u) { return NOTIF_PREFIX + u }
+        function getNotifStore(u) { try { return JSON.parse(localStorage.getItem(notifStoreKey(u))) || {} } catch (e) { return {} } }
+        function setNotifStore(u, s) { try { localStorage.setItem(notifStoreKey(u), JSON.stringify(s)) } catch (e) { } }
+
+        // 生成今日通知（按账号、按天稳定生成）
+        function buildNotifs(u) {
+            const dayKey = todayKey();
+            const list = [];
+            list.push({ id: 'hello', icon: '👋', title: '欢迎回来，' + u, text: '你的健康空间已同步。今天也要好好照顾自己呀。', sec: 'home' });
+            const dailyCount = pickDailyNews().length;
+            list.push({ id: 'news', icon: '📰', title: '今日新增 ' + dailyCount + ' 篇科普资讯', text: '有新的健康科普可以看啦，点击去看看今日更新。', sec: 'news' });
+            const t = todayRecord();
+            if (t) list.push({ id: 'checkin', icon: '📊', title: '今日健康档案已归档', text: '今日健康评分 ' + t.score + ' 分 · ' + badgeFor(t)[1] + '。明天继续坚持记录！', sec: 'health' });
+            else list.push({ id: 'checkin', icon: '📝', title: '健康打卡提醒', text: '今天还没有录入健康数据，花 1 分钟记录一下，让健康档案更完整。', sec: 'health' });
+            const sorted = [...healthRecords].sort((a, b) => b.key.localeCompare(a.key));
+            if (sorted.length) {
+                const last = sorted[0];
+                const days = Math.max(0, Math.round((new Date() - new Date(last.key + 'T00:00:00')) / 86400000));
+                if (days >= 1) list.push({ id: 'review', icon: '🩺', title: '定期复查提醒', text: '距离上次健康记录已经 ' + days + ' 天啦，建议定期复查，让档案保持新鲜。', sec: 'health' });
+            }
+            const dayNum = parseInt(dayKey.replace(/-/g, ''), 10);
+            const tip = NOTIF_TIPS[dayNum % NOTIF_TIPS.length];
+            list.push({ id: 'tip', icon: '💡', title: '今日健康小贴士 · ' + tip[0], text: tip[1], sec: 'home' });
+            list.push({ id: 'doctor', icon: '💬', title: 'MediAI 家庭医生在线', text: '哪里不舒服随时来聊，我 24 小时都在。', sec: 'chat' });
+            return list;
+        }
+
+        // 今天还没打开过消息中心 = 有未读
+        function unreadCount() {
+            const u = currentUser();
+            if (!u) return 0;
+            const store = getNotifStore(u);
+            if (store.readDay === todayKey()) return 0;
+            return buildNotifs(u).length;
+        }
+        function updateNotifBadge() {
+            const b = document.getElementById('notifBadge');
+            if (!b) return;
+            const n = unreadCount();
+            b.style.display = n > 0 ? 'inline-flex' : 'none';
+            b.textContent = n > 9 ? '9+' : String(n);
+        }
+
+        function openNotif() {
+            const u = currentUser();
+            if (!u) {
+                // 游客：引导登录
+                document.getElementById('notifSub').textContent = '登录后即可接收个性化通知';
+                document.getElementById('notifList').innerHTML =
+                    '<div class="notif-login">🔐 你还没有登录哦<br><br>通知会基于你的健康档案个性化生成——比如今天的打卡提醒、复查提醒和科普更新。<br><br><button class="btn btn-p" onclick="closeNotif();openAuth(\'login\')">去登录 / 注册</button></div>';
+                document.getElementById('notifMask').classList.add('show');
+                return;
+            }
+            const notifs = buildNotifs(u);
+            const store = getNotifStore(u);
+            const dayKey = todayKey();
+            const isNew = store.readDay !== dayKey;
+            const now = new Date();
+            document.getElementById('notifSub').textContent =
+                '共 ' + notifs.length + ' 条消息 · ' + (now.getMonth() + 1) + '月' + now.getDate() + '日';
+            document.getElementById('notifList').innerHTML = notifs.map(n => `
+            <div class="notif-item${isNew ? ' unread' : ''}" role="button" tabindex="0" onclick="showSec('${n.sec}');closeNotif()">
+              <div class="notif-icon">${n.icon}</div>
+              <div class="notif-body">
+                <div class="notif-title">${n.title}${isNew ? '<span class="notif-new">新</span>' : ''}</div>
+                <div class="notif-text">${n.text}</div>
+              </div>
+            </div>`).join('');
+            // 打开即视为已读
+            store.readDay = dayKey;
+            setNotifStore(u, store);
+            updateNotifBadge();
+            document.getElementById('notifMask').classList.add('show');
+        }
+        function closeNotif() { document.getElementById('notifMask').classList.remove('show'); }
+
+        // ─── 移动端侧边栏 ─────────────────────────────────────────
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open') }
+        function closeSidebar() { document.getElementById('sidebar').classList.remove('open') }
+
+        // ─── Navigation ───────────────────────────────────────────
+        const titles = { home: '首页总览', chat: 'AI 智能问诊', health: '健康档案', kb: '医疗知识库', bmi: 'BMI 计算器', news: '健康科普资讯' };
+        const subs = { home: '欢迎使用 MediAI 智能医疗平台', chat: '描述症状，AI 为您分析并给出建议', health: '记录和追踪您的健康数据', kb: '查询疾病、症状和用药知识', bmi: '快速计算身体质量指数', news: '每日更新 · 饮食健康 / 保健品 / 医学科普' };
+        function showSec(id) {
+            if ((id === 'chat' || id === 'health') && !currentUser()) { openAuth('login'); return }
+            document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => {
+                n.classList.remove('active');
+                n.removeAttribute('aria-current');
+                n.tabIndex = -1;
+            });
+            document.getElementById('sec-' + id).classList.add('active');
+            const ni = document.querySelector('[data-sec="' + id + '"]');
+            if (ni) { ni.classList.add('active'); ni.setAttribute('aria-current', 'page'); ni.tabIndex = 0; }
+            document.getElementById('tb-title').textContent = titles[id] || id;
+            document.getElementById('tb-sub').textContent = subs[id] || '';
+            document.getElementById('mobTitle').textContent = 'MediAI · ' + (titles[id] || id);
+            const ca = document.getElementById('contentArea');
+            ca.style.overflow = id === 'chat' ? 'hidden' : 'auto';
+            ca.scrollTop = 0;
+            closeSidebar();
+            if (id === 'health') setTimeout(() => { drawScore(healthScore); drawBpChart(); }, 50);
+            if (id === 'kb') renderKb(kbData);
+            if (id === 'news') { newsType = 'all'; renderNews(); }
+        }
+        document.querySelectorAll('.nav-item').forEach(n => {
+            n.setAttribute('role', 'button');
+            n.tabIndex = n.classList.contains('active') ? 0 : -1;
+            if (n.classList.contains('active')) n.setAttribute('aria-current', 'page');
+            n.addEventListener('click', () => showSec(n.dataset.sec));
+        });
+
+        // ─── Knowledge Base Data ──────────────────────────────────
+        const kbData = [
+            // ── 心血管 ──
+            {
+                title: '高血压', cat: '心血管', tags: ['慢性病', '血管', '常见'], desc: '持续血压≥140/90 mmHg，是心血管疾病的主要危险因素。需长期控制饮食（低盐低脂），坚持服药，定期监测血压。',
+                detail: {
+                    symptoms: ['多数无明显症状，被称为"无声杀手"', '部分人出现头晕、头痛、颈后紧绷感', '严重时视物模糊、胸闷、鼻出血'],
+                    measures: ['限盐：每日食盐＜5g（约一啤酒瓶盖）', '每周中等强度有氧运动≥150分钟', '戒烟限酒，控制体重（BMI＜24）', '规律服药，不可自行停药或减量'],
+                    danger: '血压≥180/120 mmHg 伴剧烈头痛、胸痛、意识模糊 → 立即拨打120，属高血压急症'
+                }
+            },
+            {
+                title: '冠心病', cat: '心血管', tags: ['心脏', '血管', '缺血'], desc: '冠状动脉粥样硬化导致心肌缺血，表现为胸痛、胸闷。需戒烟限酒、低脂饮食，可能需要支架或搭桥手术。',
+                detail: {
+                    symptoms: ['胸骨后压榨性疼痛，可放射至左肩、下颌', '常在劳累、情绪激动、饱餐后诱发', '休息或含服硝酸甘油后可缓解'],
+                    measures: ['坚持服用阿司匹林、他汀类等药物', '低脂低胆固醇饮食，多吃深海鱼、坚果', '每周运动，避免突然剧烈运动', '控制血压、血糖、血脂三大危险因素'],
+                    danger: '胸痛持续＞20分钟不缓解、伴大汗冷汗、濒死感 → 立即拨120，警惕心肌梗死'
+                }
+            },
+            {
+                title: '心律不齐', cat: '心血管', tags: ['心脏', '心悸'], desc: '心跳节律异常，包括心动过速、过缓或不规则。需心电图检查确认类型，部分需抗心律失常药物治疗。',
+                detail: {
+                    symptoms: ['自觉心跳过快、过慢或不规则', '可伴头晕、乏力、胸闷', '部分人毫无症状，体检发现'],
+                    measures: ['做一次12导联心电图或24小时动态心电图', '减少咖啡因、浓茶、酒精摄入', '保持情绪稳定，避免过度疲劳', '按医嘱服药，切勿自行调整剂量'],
+                    danger: '心律不齐伴胸痛、呼吸困难或晕厥 → 立即就医'
+                }
+            },
+            {
+                title: '心力衰竭', cat: '心血管', tags: ['心脏', '慢性病'], desc: '心脏泵血功能减退，导致呼吸困难、下肢水肿。需限制液体摄入，规律服用利尿剂和强心药。',
+                detail: {
+                    symptoms: ['活动后气短，夜间平卧呼吸困难', '双下肢凹陷性水肿', '乏力、食欲下降、体重短期增加'],
+                    measures: ['每日称重，3天内增重2kg以上需就医', '限盐限水，液体摄入控制在1.5-2L/天', '坚持服用利尿剂、ACEI/ARB等', '接种流感和肺炎疫苗预防感染'],
+                    danger: '夜间突发严重气促无法平卧、咳粉红色泡沫痰 → 立即拨120'
+                }
+            },
+            {
+                title: '高脂血症', cat: '心血管', tags: ['代谢', '血管', '慢性病'], desc: '血液中胆固醇或甘油三酯过高，是动脉粥样硬化的重要推手。多数无症状，靠体检发现。',
+                detail: {
+                    symptoms: ['通常无明显症状', '严重高甘油三酯可出现黄色瘤（眼睑、肘部）', '长期可导致冠心病、脑梗死'],
+                    measures: ['低密度脂蛋白（LDL）是首要控制目标', '饮食减少反式脂肪和内脏、蛋黄等高胆固醇食物', '每周≥150分钟有氧运动', '必要时长期服用他汀类药物'],
+                    danger: '合并高血压、糖尿病、吸烟时心血管风险成倍上升，需积极干预'
+                }
+            },
+            // ── 糖尿病 ──
+            {
+                title: '2型糖尿病', cat: '糖尿病', tags: ['代谢', '慢性病', '血糖'], desc: '胰岛素相对不足导致血糖持续升高，需控制饮食（低糖低GI食物）、规律运动及药物治疗。空腹血糖正常值＜6.1 mmol/L。',
+                detail: {
+                    symptoms: ['"三多一少"：多饮、多尿、多食、体重下降', '皮肤瘙痒、伤口不易愈合、视物模糊', '部分患者早期毫无症状'],
+                    measures: ['主食粗细搭配，少食多餐，控制总热量', '每周150分钟中等强度运动', '按时服药或注射胰岛素，不可随意停药', '定期监测血糖，每3个月查糖化血红蛋白'],
+                    danger: '血糖过高出现恶心呕吐、呼吸深快、意识模糊（酮症酸中毒）→ 立即就医'
+                }
+            },
+            {
+                title: '糖尿病并发症', cat: '糖尿病', tags: ['肾病', '眼病', '神经'], desc: '长期高血糖可损伤肾脏（糖尿病肾病）、眼底（视网膜病变）、神经，需严格控糖并定期筛查。',
+                detail: {
+                    symptoms: ['早期无明显症状，需靠筛查发现', '晚期可出现蛋白尿、视力下降、手足麻木', '严重者可致尿毒症、失明'],
+                    measures: ['每年查一次尿微量白蛋白/肌酐比值', '每年做一次眼底检查', '每日检查双脚，穿宽松鞋袜', '血压控制在130/80 mmHg以下'],
+                    danger: '突发单侧视力下降、足部发黑溃烂感染 → 尽快就医'
+                }
+            },
+            {
+                title: '低血糖', cat: '糖尿病', tags: ['急症', '血糖'], desc: '血糖低于3.9 mmol/L，表现为出冷汗、心悸、颤抖、乏力，严重可昏迷。应立即补充含糖食物，症状不缓解立即就医。',
+                detail: {
+                    symptoms: ['心慌、手抖、出冷汗、饥饿感强烈', '烦躁、注意力不集中、行为异常', '严重者抽搐、昏迷'],
+                    measures: ['随身携带糖果、饼干，遵循"15克法则"', '意识清醒：口服15克糖，15分钟后复测', '夜间低血糖需调整晚餐药量', '家属学会注射胰高血糖素'],
+                    danger: '患者意识不清时切勿喂食，立即拨打120'
+                }
+            },
+            {
+                title: '痛风', cat: '糖尿病', tags: ['代谢', '关节', '急性'], desc: '血尿酸升高导致尿酸盐结晶沉积在关节，引起突发剧烈红肿热痛，多见于大脚趾。',
+                detail: {
+                    symptoms: ['夜间突发单侧关节（多第一跖趾）剧痛', '关节红、肿、热、触痛明显', '发作间歇期可完全无症状'],
+                    measures: ['急性期：抬高患肢、冷敷、遵医嘱服用秋水仙碱', '缓解期：长期服用降尿酸药控制尿酸＜360', '严格戒酒，尤其是啤酒', '少吃内脏、海鲜、浓汤、高糖饮料'],
+                    danger: '发作频繁或已形成痛风石、合并肾结石 → 需风湿免疫科规范治疗'
+                }
+            },
+            // ── 呼吸系统 ──
+            {
+                title: '上呼吸道感染', cat: '呼吸系统', tags: ['感冒', '病毒', '常见'], desc: '病毒性感染引起鼻塞、流涕、咽痛、低热，多数7天内自愈。注意休息补水，避免着凉，必要时对症处理。',
+                detail: {
+                    symptoms: ['鼻塞、流涕、打喷嚏、咽痛', '咳嗽、低热、全身酸痛', '一般无呼吸困难'],
+                    measures: ['多休息、多饮水，每日＞1500ml', '盐水漱口缓解咽痛，生理盐水喷鼻', '体温＞38.5℃可服对乙酰氨基酚', '超过10天不缓解或反复高热需就医'],
+                    danger: '高热不退、呼吸困难、胸痛、咳血 → 立即就医'
+                }
+            },
+            {
+                title: '肺炎', cat: '呼吸系统', tags: ['感染', '发热', '细菌'], desc: '细菌或病毒感染导致肺部炎症，表现为高热、咳嗽、胸痛、咳黄痰，需尽快就医，严重时需住院抗生素治疗。',
+                detail: {
+                    symptoms: ['高热、寒战、咳嗽加重', '咳黄绿色脓痰或铁锈色痰', '胸痛（深呼吸时加重）、气促'],
+                    measures: ['按医嘱足疗程使用抗生素', '多饮水、拍背排痰、必要时吸氧', '接种肺炎疫苗和流感疫苗预防', '老年人和儿童是高危人群'],
+                    danger: '呼吸急促＞30次/分、口唇发紫、意识改变 → 立即拨120'
+                }
+            },
+            {
+                title: '哮喘', cat: '呼吸系统', tags: ['慢性病', '过敏', '喘息'], desc: '气道慢性炎症引起反复发作性喘息、胸闷，多与过敏有关。需规律使用吸入性激素和支气管扩张剂控制症状。',
+                detail: {
+                    symptoms: ['反复发作的喘息、气促、胸闷、咳嗽', '夜间或清晨加重，可自行缓解', '接触过敏原、冷空气后诱发'],
+                    measures: ['随身携带速效支气管扩张剂（如沙丁胺醇）', '坚持规律吸入糖皮质激素控制炎症', '远离过敏原，定期清洗床品', '每年做一次肺功能检查评估控制情况'],
+                    danger: '用药后仍气促明显、说话不能成句 → 立即就医'
+                }
+            },
+            {
+                title: '慢性阻塞性肺疾病', cat: '呼吸系统', tags: ['吸烟', '慢性病', '气促'], desc: '长期吸烟等导致气道不可逆阻塞，表现为活动后气促、慢性咳嗽咳痰，简称慢阻肺（COPD）。',
+                detail: {
+                    symptoms: ['长期咳嗽、咳白粘痰，冬季加重', '活动后气短，逐年加重', '严重者静息也喘，桶状胸'],
+                    measures: ['立即戒烟是最有效的干预措施', '长期家庭氧疗（氧流量遵医嘱）', '接种流感和肺炎疫苗', '坚持缩唇呼吸和腹式呼吸训练'],
+                    danger: '突然气促加重、痰量增多变黄 → 警惕急性加重，尽快就医'
+                }
+            },
+            // ── 消化系统 ──
+            {
+                title: '急性胃肠炎', cat: '消化系统', tags: ['感染', '腹泻', '急症'], desc: '食物中毒或病毒感染引起恶心、呕吐、腹泻，需大量补液防止脱水。若24小时不改善或血便，须立即就医。',
+                detail: {
+                    symptoms: ['恶心、呕吐、腹痛、腹泻', '可伴低热、全身乏力', '严重时口干、尿少、眼窝凹陷'],
+                    measures: ['少量多次口服补液盐（ORS）', '暂禁食油腻食物，好转后进清淡流食', '可服蒙脱石散止泻，益生菌调节菌群', '避免滥用抗生素'],
+                    danger: '持续呕吐无法进食、高热、血便、尿量减少 → 立即就医补液'
+                }
+            },
+            {
+                title: '消化性溃疡', cat: '消化系统', tags: ['胃', '慢性病'], desc: '胃或十二指肠黏膜损伤形成溃疡，表现为规律性上腹痛，空腹时加重。与幽门螺杆菌（Hp）密切相关，需抗菌治疗。',
+                detail: {
+                    symptoms: ['规律性上腹痛，餐后或空腹时加重', '反酸、烧心、嗳气', '可有黑便或呕血'],
+                    measures: ['检测并根除幽门螺杆菌（四联疗法）', '按时服用质子泵抑制剂（如奥美拉唑）', '少食多餐，避免辛辣、浓茶、酒精', '避免自行长期服用布洛芬等止痛药'],
+                    danger: '突发剧烈腹痛、呕血、黑便如柏油 → 立即就医，警惕穿孔或出血'
+                }
+            },
+            {
+                title: '肠易激综合征', cat: '消化系统', tags: ['功能性', '腹痛', '慢性'], desc: '无器质性病变的肠道功能紊乱，表现为腹痛、腹泻或便秘交替。与压力、饮食有关，需调整生活方式。',
+                detail: {
+                    symptoms: ['腹痛或不适，排便后缓解', '腹泻型、便秘型或混合型', '可伴腹胀、黏液便'],
+                    measures: ['记录饮食日记，避开诱发食物（乳制品、高脂、辛辣）', '规律作息，适度运动减压', '可尝试低FODMAP饮食', '按分型使用解痉药或通便/止泻药'],
+                    danger: '出现便血、夜间痛醒、体重下降、贫血 → 需肠镜排查器质性病变'
+                }
+            },
+            {
+                title: '脂肪肝', cat: '消化系统', tags: ['代谢', '肝脏', '肥胖'], desc: '肝细胞内脂肪堆积过多，多与肥胖、糖尿病、高脂血症相关，早期常无症状。',
+                detail: {
+                    symptoms: ['多数无明显症状，体检发现', '部分人右上腹闷胀、乏力', '重度者可进展为脂肪性肝炎'],
+                    measures: ['减重是关键，3-6个月内减5%-10%体重', '戒酒，控制血糖血脂', '低脂低糖饮食，增加膳食纤维', '坚持中等强度有氧运动'],
+                    danger: '转氨酶持续升高、肝纤维化进展 → 需消化科/肝病科随访'
+                }
+            },
+            // ── 神经系统 ──
+            {
+                title: '偏头痛', cat: '神经系统', tags: ['头痛', '慢性病', '发作性'], desc: '反复发作的单侧搏动性头痛，持续4-72小时，伴恶心、畏光。需记录诱因（睡眠不足、某些食物），发作时可服曲普坦类药物。',
+                detail: {
+                    symptoms: ['单侧搏动性头痛，中重度', '恶心、呕吐，畏光畏声', '发作前可有视觉先兆（闪光、暗点）'],
+                    measures: ['记录头痛日记，识别诱因（红酒、奶酪、压力、月经）', '发作时在安静、避光环境休息', '急性期可服布洛芬或曲普坦类', '频繁发作者需预防性用药'],
+                    danger: '突发"一生中最剧烈的头痛"、伴发热颈硬 → 警惕蛛网膜下腔出血'
+                }
+            },
+            {
+                title: '脑卒中', cat: '神经系统', tags: ['急症', '致残', '脑血管'], desc: '脑血管破裂或堵塞，FAST口诀：Face（面瘫）、Arm（单侧无力）、Speech（言语不清）、Time（立即拨120）。黄金抢救时间4.5小时内。',
+                detail: {
+                    symptoms: ['突发一侧面部或肢体无力/麻木', '说话含糊、理解困难', '单眼或双眼视物模糊、剧烈头痛'],
+                    measures: ['控制血压、血糖、血脂三大危险因素', '房颤患者需遵医嘱抗凝', '戒烟限酒，坚持运动', '识别症状立即拨打120，切勿等待自行缓解'],
+                    danger: '出现任何中风症状 → 立即拨120，静脉溶栓黄金时间窗4.5小时'
+                }
+            },
+            {
+                title: '帕金森病', cat: '神经系统', tags: ['慢性病', '老年'], desc: '中枢神经系统退行性疾病，表现为静止性震颤、肌肉僵硬、行动迟缓。药物治疗可改善症状，早诊断早干预。',
+                detail: {
+                    symptoms: ['静止性震颤，典型"搓丸样"动作', '肌肉僵硬、动作迟缓、面具脸', '小碎步、前倾姿势、写字越写越小'],
+                    measures: ['按时服药，切忌随意停药', '坚持康复训练（步态、平衡、语言）', '家居防跌倒改造', '出现吞咽困难时调整食物质地'],
+                    danger: '突发高热、肌强直加重、意识改变 → 警惕恶性综合征，需急诊'
+                }
+            },
+            {
+                title: '面神经麻痹', cat: '神经系统', tags: ['面瘫', '急性'], desc: '面神经发炎导致一侧面部肌肉瘫痪，表现为口角歪斜、闭眼困难，俗称"面瘫"。',
+                detail: {
+                    symptoms: ['一侧额纹消失、不能皱眉', '口角向对侧歪斜、流涎', '患侧闭眼不全、流泪'],
+                    measures: ['急性期可口服糖皮质激素（需医生指导）', '保护角膜：白天滴眼药水、夜间涂眼膏', '热敷、按摩面部，做抬眉闭眼鼓腮训练', '配合针灸、理疗促进恢复'],
+                    danger: '同时伴肢体无力、言语不清 → 警惕脑卒中，需急诊做头颅CT'
+                }
+            },
+            // ── 骨科 ──
+            {
+                title: '腰椎间盘突出', cat: '骨科', tags: ['慢性病', '疼痛', '腰部'], desc: '椎间盘退变压迫神经，表现为腰痛放射至下肢（坐骨神经痛）。需核磁确诊，急性期卧床，慢性期加强核心肌群。',
+                detail: {
+                    symptoms: ['腰痛伴单侧下肢放射痛（坐骨神经痛）', '咳嗽、打喷嚏时疼痛加重', '严重者足背麻木、拇背伸无力'],
+                    measures: ['急性期卧硬板床休息，避免久坐弯腰', '慢性期加强核心肌群训练（平板支撑、鸟狗式）', '避免久坐，每小时起身活动5分钟', '牵引、理疗、手法治疗可辅助'],
+                    danger: '腰痛伴大小便失禁或双下肢无力 → 警惕马尾综合征，需急诊手术'
+                }
+            },
+            {
+                title: '骨质疏松', cat: '骨科', tags: ['老年', '慢性病', '骨折'], desc: '骨密度降低导致骨折风险增加，多见于绝经后女性和老年男性。补充钙和维生素D，适度负重运动，防止跌倒。',
+                detail: {
+                    symptoms: ['早期常无明显症状', '身高变矮、驼背、腰背隐痛', '轻微外力即可发生骨折（椎体、髋部、腕部）'],
+                    measures: ['每日补钙1000-1200mg，维生素D 800-1000IU', '坚持负重运动（快走、太极、抗阻训练）', '防跌倒：居家防滑、穿防滑鞋、夜间留灯', '绝经后女性定期做骨密度检查'],
+                    danger: '轻微跌倒即髋部骨折（"人生最后一次骨折"）→ 需紧急就医'
+                }
+            },
+            {
+                title: '颈椎病', cat: '骨科', tags: ['久坐', '疼痛', '神经'], desc: '颈椎退变引起颈肩痛、头晕、上肢麻木，长期低头是主要诱因。',
+                detail: {
+                    symptoms: ['颈肩痛、僵硬，转头时加重', '上肢放射痛、麻木、无力', '交感型可伴头晕、心慌、耳鸣'],
+                    measures: ['避免长时间低头，每隔40分钟活动颈部', '选择合适的枕头（一拳高）', '做颈部米字操、扩胸拉伸训练', '睡觉时避免趴睡'],
+                    danger: '突然四肢无力、走路踩棉花感、大小便异常 → 警惕脊髓型颈椎病，需手术评估'
+                }
+            },
+            {
+                title: '膝骨关节炎', cat: '骨科', tags: ['老年', '疼痛', '关节'], desc: '膝关节软骨退变磨损，表现为上下楼疼痛、晨僵、活动时弹响，多见于中老年人和肥胖者。',
+                detail: {
+                    symptoms: ['上下楼梯、下蹲起立时疼痛明显', '晨起关节僵硬＜30分钟', '活动时有摩擦感或弹响'],
+                    measures: ['减重是首要措施，每减1kg体重关节减负4kg', '避免爬楼、深蹲、久蹲、跑跳', '加强股四头肌力量训练（直腿抬高）', '疼痛明显时可口服氨基葡萄糖、局部用药'],
+                    danger: '关节突然红肿发热伴全身发热 → 警惕感染或痛风，需就医'
+                }
+            },
+            // ── 皮肤科 ──
+            {
+                title: '荨麻疹', cat: '皮肤科', tags: ['过敏', '急性', '瘙痒'], desc: '皮肤过敏反应，出现红疹、风团，伴剧烈瘙痒，数小时内消退。需找并避免过敏原，可服抗组胺药（氯雷他定等）。',
+                detail: {
+                    symptoms: ['突发的红色风团，此起彼伏', '剧烈瘙痒，夜间尤甚', '严重者可伴口唇、眼睑肿胀'],
+                    measures: ['寻找并规避诱因（食物、药物、感染、冷热）', '口服第二代抗组胺药（氯雷他定、西替利嗪）', '避免热水烫洗、过度搔抓', '穿宽松棉质衣物'],
+                    danger: '伴喉头水肿、呼吸困难、腹痛呕吐 → 立即拨120，警惕过敏性休克'
+                }
+            },
+            {
+                title: '湿疹', cat: '皮肤科', tags: ['慢性', '过敏', '皮炎'], desc: '慢性炎症性皮肤病，表现为皮肤干燥、瘙痒、红斑，反复发作。需保湿润肤，急性期可外用激素药膏，避免已知刺激物。',
+                detail: {
+                    symptoms: ['皮肤干燥、粗糙、脱屑', '剧烈瘙痒，抓破后渗液结痂', '慢性期皮肤增厚、苔藓样变'],
+                    measures: ['坚持每天涂抹保湿霜（沐浴后3分钟内最佳）', '急性期按医嘱短期外用激素药膏', '避免热水烫洗、肥皂、酒精等刺激', '排查并规避过敏原'],
+                    danger: '大面积红肿渗液、伴发热 → 警惕继发感染，需就医'
+                }
+            },
+            {
+                title: '带状疱疹', cat: '皮肤科', tags: ['病毒', '疼痛', '老年人'], desc: '水痘-带状疱疹病毒再激活引起，沿神经分布呈带状排列的水疱，疼痛剧烈，多见于老年人。',
+                detail: {
+                    symptoms: ['单侧身体带状分布的簇集水疱', '疼痛可先于皮疹出现', '常见于胸背部、腰腹部、头面部'],
+                    measures: ['发病72小时内使用抗病毒药（阿昔洛韦）效果最佳', '按医嘱使用止痛药物控制神经痛', '保持皮疹清洁干燥，避免抓破继发感染', '50岁以上建议接种带状疱疹疫苗'],
+                    danger: '皮疹位于眼周或伴视力改变、耳部伴面瘫 → 立即就医，警惕并发症'
+                }
+            },
+            // ── 儿科 ──
+            {
+                title: '手足口病', cat: '儿科', tags: ['病毒', '传染', '儿童'], desc: '肠道病毒（EV71等）感染儿童，手、足、口出现疱疹，伴发热。需隔离休息，多为自限性7天内自愈，重症须住院。',
+                detail: {
+                    symptoms: ['口腔、手、足、臀部出现疱疹', '低热或中度发热', '食欲下降、流口水'],
+                    measures: ['居家隔离2周，避免接触其他儿童', '清淡饮食，保持口腔清洁', '多饮水，穿宽松棉质衣物', '玩具、餐具定期消毒'],
+                    danger: '持续高热不退、精神萎靡、惊跳、肢体抖动 → 警惕重症，立即就医'
+                }
+            },
+            {
+                title: '小儿发热', cat: '儿科', tags: ['儿童', '发热', '常见'], desc: '体温＞37.5℃。38.5℃以上可使用对乙酰氨基酚退热，多补充水分。3个月以下婴儿发热、高热惊厥须立即就医。',
+                detail: {
+                    symptoms: ['腋温≥37.5℃为发热', '可伴食欲下降、烦躁或嗜睡', '高热时可能出现寒战、手足冰凉'],
+                    measures: ['＜3月龄体温≥38℃ → 立即就医', '38.5℃以上用对乙酰氨基酚或布洛芬退热', '多补充水分，穿宽松衣物', '物理降温用温水擦浴，禁用酒精擦浴'],
+                    danger: '出现抽搐、意识不清、持续昏睡、囟门隆起 → 立即就医'
+                }
+            },
+            {
+                title: '儿童哮喘', cat: '儿科', tags: ['慢性', '过敏', '喘息'], desc: '儿童最常见的慢性呼吸道疾病，表现为反复发作的咳嗽、喘息，多与过敏和呼吸道感染有关。',
+                detail: {
+                    symptoms: ['反复喘息、咳嗽，夜间或运动后加重', '可有湿疹、过敏性鼻炎病史', '部分儿童随年龄增长可缓解'],
+                    measures: ['坚持规范吸入治疗，定期复查肺功能', '明确过敏原并规避（尘螨、宠物皮屑、霉菌）', '定期清洗床品、保持室内通风', '流感季节接种疫苗'],
+                    danger: '出现呼吸费力、鼻翼扇动、三凹征 → 立即就医'
+                }
+            },
+            // ── 饮食营养 ──
+            {
+                title: '地中海饮食', cat: '饮食营养', tags: ['饮食模式', '心血管', '长寿'], desc: '以橄榄油、蔬菜、水果、全谷物、坚果、鱼类为主的饮食模式，被公认为最健康的饮食之一。',
+                detail: {
+                    symptoms: ['这不是疾病，而是一种饮食模式'],
+                    measures: ['主食换成全谷物（糙米、燕麦、藜麦）', '每日蔬菜≥500g，水果2份', '每周吃鱼2-3次，红肉＜2次', '用橄榄油代替动物油，适量吃坚果', '适量饮用红酒（非必需，可省略）'],
+                    danger: '任何饮食模式都需结合个人情况，慢性病患者应咨询医生或营养师'
+                }
+            },
+            {
+                title: '低盐饮食', cat: '饮食营养', tags: ['高血压', '饮食', '控盐'], desc: '每日食盐控制在5g以内，是高血��、心衰患者的基础治疗，也有助于预防脑卒中。',
+                detail: {
+                    symptoms: ['适用于高血压、心衰、肾病、水肿人群'],
+                    measures: ['使用限盐勺，每日＜5g盐（约一啤酒瓶盖）', '警惕隐形盐：酱油、味精、腌制品、挂面、零食', '多用醋、柠檬汁、葱姜蒜、香料调味', '购买包装食品看营养成分表，钠＜120mg/100g为低钠'],
+                    danger: '限盐需适度，心衰患者遵医嘱，切勿自行极端无盐饮食'
+                }
+            },
+            {
+                title: '高纤维饮食', cat: '饮食营养', tags: ['肠道', '糖尿病', '降脂'], desc: '每日摄入25-30g膳食纤维，有助于通便、控血糖、降胆固醇，预防结直肠癌。',
+                detail: {
+                    symptoms: ['适用于便秘、糖尿病、高脂血症、肥胖人群'],
+                    measures: ['每日蔬菜500g、水果200-350g、全谷物占主食1/3', '多吃豆类、燕麦、红薯、菌菇', '增加纤维要循序渐进，同时多饮水', '避免加工精细的白米白面'],
+                    danger: '肾功能不全者需限制部分高钾高磷的粗纤维食物，遵医嘱'
+                }
+            },
+            {
+                title: '优质蛋白选择', cat: '饮食营养', tags: ['营养', '增肌', '肾病'], desc: '蛋白质是身体修复和免疫的基础，优质蛋白指氨基酸组成接近人体需要的蛋白来源。',
+                detail: {
+                    symptoms: ['健康成人每日需蛋白约1.0-1.2g/kg体重'],
+                    measures: ['首选：鸡蛋、牛奶、鱼虾、瘦肉、豆制品', '蛋奶被称为"完全蛋白"，利用率最高', '健身增肌者可在训练后补充乳清蛋白', '素食者需多种植物蛋白搭配互补'],
+                    danger: '肾功能不全者需严格限制蛋白总量，以优质蛋白为主，遵医嘱'
+                }
+            },
+            {
+                title: '饮水与健康', cat: '饮食营养', tags: ['日常', '补水', '结石'], desc: '足量饮水有助于维持代谢、预防结石和便秘，成人每日推荐1500-1700ml。',
+                detail: {
+                    symptoms: ['尿液深黄、口干、皮肤干、头晕乏力提示缺水'],
+                    measures: ['成人每日饮水1500-1700ml，高温或运动出汗多时增加', '少量多次饮用，每次100-150ml', '首选白开水或淡茶水，少喝含糖饮料', '不要等口渴才喝，口渴已是轻度缺水信号'],
+                    danger: '心衰、肾功能不全者需严格限水，每日量遵医嘱'
+                }
+            },
+            {
+                title: '代糖与无糖饮料', cat: '饮食营养', tags: ['减肥', '血糖', '科普'], desc: '代糖（阿斯巴甜、三氯蔗糖等）几乎不产生热量，但长期大量摄入的健康影响仍存在争议。',
+                detail: {
+                    symptoms: ['常用于无糖饮料、无糖食品作为甜味剂'],
+                    measures: ['不能因为"无糖"就无限量饮用', '部分人会出现腹胀、腹泻等不耐受反应', '糖尿病患���仍需计入总碳水摄入', '最健康的选择仍是白开水和无糖茶'],
+                    danger: 'WHO建议应限制游离糖和代糖摄入，不要形成依赖甜味的条件反射'
+                }
+            },
+            // ── 用药安全 ──
+            {
+                title: '退烧药怎么吃', cat: '用药安全', tags: ['用药', '发热', '常识'], desc: '对乙酰氨基酚和布洛芬是常用退烧药，用法、间隔和禁忌各有不同，用错可能伤肝伤胃。',
+                detail: {
+                    symptoms: ['体温≥38.5℃或明显不适时考虑用药'],
+                    measures: ['成人对乙酰氨基酚每次500mg，间隔≥4-6小时，每日≤2000mg', '布洛芬需餐后服用，避免空腹伤胃', '两种药不建议同时服用，可交替使用需间隔', '儿童按体重精确计算剂量，不用成人药掰半'],
+                    danger: '对乙酰氨基酚过量可致严重肝损伤；肝功能异常、饮酒者慎用；切勿叠加含同类成分的复方感冒药'
+                }
+            },
+            {
+                title: '抗生素使用误区', cat: '用药安全', tags: ['用药', '抗生素', '误区'], desc: '抗生素只对细菌感染有效，滥用会导致耐药菌产生。感冒多由病毒引起，无需抗生素。',
+                detail: {
+                    symptoms: ['抗生素滥用是全球公共健康问题'],
+                    measures: ['感冒、流感多为病毒引起，抗生素无效', '不自行购买、不随意停药、不把剩药下次再用', '遵医嘱使用，足疗程服用完毕', '不要求医生"挂水好得快"，能口服不输液'],
+                    danger: '滥用抗生素可导致耐药、肠道菌群紊乱、过敏反应，严重时可致过敏性休克'
+                }
+            },
+            {
+                title: '降压药不能随意停', cat: '用药安全', tags: ['高血压', '用药', '常识'], desc: '原发性高血压需长期甚至终身服药，擅自停药可导致血压反跳性升高，引发心脑血管意外。',
+                detail: {
+                    symptoms: ['血压正常是药物控制的结果，不是病好了'],
+                    measures: ['坚持每日定时服药，即使血压正常也不断药', '清晨起床后服药，利尿剂避免晚上服', '每日固定时间测血压并记录', '血压控制稳定也需定期复诊调整方案'],
+                    danger: '突然停药可致反跳性高血压，诱发脑出血、心梗，务必遵医嘱调整'
+                }
+            },
+            {
+                title: '服药与饮食禁忌', cat: '用药安全', tags: ['用药', '饮食', '相互作用'], desc: '很多药物与食物存在相互作用，服药时用温水送服，不��用牛奶、果汁、茶水送药。',
+                detail: {
+                    symptoms: ['错误的送服方式会降低药效或增加副作用'],
+                    measures: ['温水送服最安全，不要用牛奶、果汁、茶水', '钙铁剂不与茶叶、咖啡同服', '头孢类、甲硝唑服药期间及停药7天内禁酒', '华法林需稳定维生素K摄入（绿叶菜），避免大幅波动'],
+                    danger: '葡萄柚汁会影响数十种药物代谢，服药期间尽量避免'
+                }
+            },
+            {
+                title: '保健品能替代药物吗', cat: '用药安全', tags: ['保健品', '误区', '用药'], desc: '保健品是食品而非药品，不能治疗疾病，更不能替代处方药，这是最重要的常识。',
+                detail: {
+                    symptoms: ['保健品包装上只有"蓝帽子"标志，无"国药准字"'],
+                    measures: ['保健品不能治疗或预防疾病，不可停药换药', '购买时查看"蓝帽子"标志和批准文号', '警惕夸大宣传："根治""包治""无副作用"都是骗局', '保健品同样可能与药物相互作用'],
+                    danger: '用保健品替代正规治疗可延误病情，尤其肿瘤、糖尿病、高血压等慢性病'
+                }
+            },
+            // ── 心理精神 ──
+            {
+                title: '焦虑症', cat: '心理精神', tags: ['情绪', '慢性病', '心理'], desc: '以持续过度担忧、紧张为主要表现，常伴心悸、出汗、失眠，可通过心理治疗与药物缓解。',
+                detail: {
+                    symptoms: ['持续的过度担忧，难以控制', '心悸、出汗、手抖、呼吸急促', '失眠、易惊、坐立不安'],
+                    measures: ['认知行为疗法（CBT）是首选心理治疗', '4-7-8呼吸法：吸气4秒→屏气7秒→呼气8秒', '规律有氧运动，每周150分钟', '中重度可遵医嘱用抗焦虑药物'],
+                    danger: '出现自伤念头、无法工作生活 → 立即寻求精神科/心理科专业帮助'
+                }
+            },
+            {
+                title: '抑郁症', cat: '心理精神', tags: ['情绪', '心理', '常见'], desc: '以持续情绪低落、兴趣减退为核心表现，不是"想不开"，而是一种需要治疗的疾病。',
+                detail: {
+                    symptoms: ['持续两周以上情绪低落、兴趣丧失', '乏力、睡眠和食欲改变、注意力下降', '可有自责、无望感，严重时出现自伤念头'],
+                    measures: ['及时就诊精神科/心理科，规范治疗可治愈', '药物治疗需足疗程（通常6-12个月），不可自行停药', '规律作息、适度运动、保持社交', '家人朋友的理解支持至关重要'],
+                    danger: '出现自伤自杀念头或计划 → 立即就医或拨打心理援助热线，切勿独自承受'
+                }
+            },
+            {
+                title: '失眠', cat: '心理精神', tags: ['睡眠', '常见', '行为'], desc: '入睡困难、易醒、早醒，每周≥3晚、持续≥1个月即属慢性失眠，需综合行为干预。',
+                detail: {
+                    symptoms: ['入睡时间＞30分钟、夜醒≥2次、早醒且无法再睡'],
+                    measures: ['固定起床时间，即使周末也不赖床', '床只用来睡觉，不在床上刷手机', '睡前1小时调暗灯光，避免蓝光', '午后戒咖啡因，白天不补觉'],
+                    danger: '长期依赖安眠药需在医生指导下逐渐减药，突然停药可反弹加重失眠'
+                }
+            },
+            // ── 五官科 ──
+            {
+                title: '干眼症', cat: '五官科', tags: ['眼睛', '屏幕', '常见'], desc: '泪液分泌不足或蒸发过快导致眼睛干涩、异物感，长期看屏幕人群高发。',
+                detail: {
+                    symptoms: ['眼睛干涩、异物感、烧灼感', '畏光、视物模糊、易疲劳'],
+                    measures: ['遵循"20-20-20"法则：每20分钟看20英尺外20秒', '有意识多眨眼，每小时闭眼休息', '使用不含防腐剂的人工泪液', '屏幕略低于视线，保持环境湿度'],
+                    danger: '出现眼痛、视力下降、眼红加重 → 需眼科就诊排查其他眼病'
+                }
+            },
+            {
+                title: '白内障', cat: '五官科', tags: ['眼睛', '老年', '手术'], desc: '晶状体混浊导致渐进性无痛性视力下降，多见于老年人，手术是唯一有效治疗方法。',
+                detail: {
+                    symptoms: ['渐进性无痛性视力下降', '视物模糊、重影、眩光', '夜间开车困难、颜色变暗淡'],
+                    measures: ['目前尚无药物可治愈白内障', '视力下降影响生活时行超声乳化手术', '术前控制血糖血压达标', '术后按医嘱滴用眼药水，避免揉眼和进水'],
+                    danger: '突然眼痛、视力骤降伴恶心呕吐 → 警惕急性闭角型青光眼，立即急诊'
+                }
+            },
+            {
+                title: '过敏性鼻炎', cat: '五官科', tags: ['过敏', '鼻塞', '鼻部'], desc: '接触过敏原后鼻黏膜过敏反应，表现为阵发性喷嚏、清水鼻涕、鼻塞鼻痒。',
+                detail: {
+                    symptoms: ['阵发性连续喷嚏、清水样鼻涕', '鼻塞、鼻痒，常伴眼痒流泪'],
+                    measures: ['明确过敏原并规避（尘螨、花粉、宠物皮屑）', '生理盐水冲洗鼻腔，每日1-2次', '规律使用鼻用糖皮质激素喷剂', '外出佩戴口罩，花粉季关窗'],
+                    danger: '症状持续加重伴喘息、胸闷 → 警惕合并哮喘，需就医评估'
+                }
+            },
+            {
+                title: '口腔溃疡', cat: '五官科', tags: ['口腔', '疼痛', '常见'], desc: '口腔黏膜出现的圆形或椭圆形疼痛性溃疡，一般7-10天自愈，反复发作需排查原因。',
+                detail: {
+                    symptoms: ['口腔内出现圆形凹陷性溃疡，周围红晕', '进食刺激食物时疼痛明显', '多数7-10天自愈'],
+                    measures: ['局部使用溃疡贴或西瓜霜、含漱液止痛促愈合', '多吃富含B族维生素、铁、锌的食物', '避免辛辣、过烫、过硬食物刺激', '保持口腔卫生，规律作息减压'],
+                    danger: '溃疡超过2周不愈合、形态不规则、伴硬结 → 需口腔科排除癌变'
+                }
+            },
+        ];
+        let activeCat = '';
+        let detailOpen = null;   // 当前展开的条目索引（列表视图内）
+        let detailOnly = null;   // 单独打开的详情条目
+        function renderKb(data) {
+            const q = document.getElementById('kbSearch').value.trim().toLowerCase();
+            const typeSel = document.getElementById('kbType');
+            const typeFilter = typeSel ? typeSel.value : '';
+            const res = data.filter(d =>
+                (!activeCat || d.cat === activeCat) &&
+                (!typeFilter || d.cat === typeFilter) &&
+                (!q || d.title.includes(q) || d.desc.includes(q) || d.tags.some(t => t.includes(q)))
+            );
+            const el = document.getElementById('kbResult');
+            document.getElementById('kbCount').textContent = '(共 ' + res.length + ' 条)';
+            if (detailOnly !== null) {
+                const d = detailOnly;
+                el.innerHTML = `
+      <div class="kb-back" role="button" tabindex="0" onclick="detailOnly=null;renderKb(kbData)">← 返回列表</div>
+      <div class="card">
+        <div class="kb-item-title" style="font-size:18px">${d.title} <span style="font-size:12px;color:var(--text3);font-weight:400">${d.cat}</span></div>
+        <div style="margin:8px 0 4px">${d.tags.map(t => `<span class="kb-item-tag">${t}</span>`).join('')}</div>
+        <p style="font-size:14px;color:var(--text2);line-height:1.8;margin-top:12px">${d.desc}</p>
+        ${renderDetail(d)}
+      </div>`;
+                return;
+            }
+            el.innerHTML = res.length ? res.map((d, i) => {
+                const open = detailOpen === i;
+                return `<div class="kb-item${open ? ' open' : ''}" role="button" tabindex="0" aria-expanded="${open}" onclick="toggleKbItem(${i})">
+      <div class="kb-item-head">
+        <div style="flex:1">
+          <div class="kb-item-title">${d.title} <span style="font-size:11px;color:var(--text3);font-weight:400">${d.cat}</span></div>
+          <div style="margin-top:6px">${d.tags.map(t => `<span class="kb-item-tag">${t}</span>`).join('')}</div>
+        </div>
+        <span class="kb-item-arrow">▶</span>
+      </div>
+      <div class="kb-item-desc">${d.desc}</div>
+      <div class="kb-item-detail">${renderDetail(d)}</div>
+    </div>`;
+            }).join('')
+                : '<div style="text-align:center;color:var(--text3);padding:32px;font-size:14px">😔 未找到相关条目，请尝试其他关键词</div>';
+        }
+        function renderDetail(d) {
+            if (!d.detail) return '';
+            const x = d.detail;
+            let h = '';
+            if (x.symptoms && x.symptoms.length) h += `<div class="kb-detail-h">📋 常见表现</div><ul class="kb-detail-ul">${x.symptoms.map(s => `<li>${s}</li>`).join('')}</ul>`;
+            if (x.measures && x.measures.length) h += `<div class="kb-detail-h">💡 建议措施</div><ul class="kb-detail-ul">${x.measures.map(s => `<li>${s}</li>`).join('')}</ul>`;
+            if (x.danger) h += `<div class="kb-detail-warn">🚨 <strong>危险信号：</strong>${x.danger}</div>`;
+            return h;
+        }
+        function toggleKbItem(i) {
+            detailOpen = detailOpen === i ? null : i;
+            renderKb(kbData);
+            const el = document.getElementById('kbResult');
+            const open = el.querySelector('.kb-item.open');
+            if (open && open.scrollIntoView) open.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+        function selectCat(el, cat) {
+            document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('sel'));
+            const typeSel = document.getElementById('kbType');
+            if (activeCat === cat) { activeCat = ''; }
+            else { activeCat = cat; el.classList.add('sel'); }
+            if (typeSel) typeSel.value = activeCat;
+            detailOpen = null; detailOnly = null;
+            renderKb(kbData);
+        }
+        function kbFilter() {
+            activeCat = ''; detailOpen = null; detailOnly = null;
+            document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('sel'));
+            renderKb(kbData);
+        }
+
+        // ─── AI 问诊（本地家庭医生引擎） ─────────────────────────
+        const CHAT_HISTORY_KEY = 'mediai-chat-history';
+
+        // 常见症状速查回答
+        const aiReplies = {
+            '头痛': '您描述了头痛症状。头痛原因多样，常见有：\n\n① 紧张性头痛（占70%）：压力、姿势不良引起，可热敷、颈部拉伸放松\n② 偏头痛：单侧搏动性疼痛，伴恶心畏光，可服布洛芬\n③ 高血压性头痛：伴后颈部压迫感，需测量血压\n\n⚠️ 若头痛突然剧烈如"雷击"、伴发热颈硬、或视力改变，请立即就医！',
+            '头晕': '头晕需区分是眩晕（天旋地转）还是头昏（头脑不清晰）。\n\n常见原因：\n• 良性位置性眩晕（耳石症）：体位改变时加重，耳鼻喉科可复位治疗\n• 低血糖/低血压：补充糖分、补水\n• 贫血：检查血常规\n\n建议测量血压血糖，充分休息。若突发持续眩晕伴恶心呕吐，请就医。',
+            '发烧': '发烧是机体对感染的防御反应。\n\n📊 分级：37.3-38℃ 低热 | 38-39℃ 中等热 | >39℃ 高热\n\n处理建议：\n① 多饮水，毛巾物理降温\n② 体温 >38.5℃ 可服用对乙酰氨基酚（泰诺）或布洛芬\n③ 高热惊厥、婴儿高热、持续 >3天、伴皮疹 → 立即就医',
+            '咳嗽': '咳嗽分急性（＜3周）和慢性（＞8周）。\n\n常见原因：\n• 急性：感冒、支气管炎（多为病毒，无需抗生素）\n• 慢性：咳嗽变异性哮喘、胃食管反流、慢阻肺\n\n建议：多饮温水，避免刺激性气体。咳痰带血、持续超过3周或伴发烧，请就医检查胸片。',
+            '胃痛': '胃痛部位和特征有助于判断原因：\n\n• 上腹灼烧痛，餐前加重 → 胃/十二指肠溃疡\n• 右上腹绞痛，餐后加重 → 胆囊问题\n• 脐周/下腹痛，伴腹泻 → 肠炎\n\n建议清淡饮食，避免辛辣、酒精。若剧烈腹痛、腹部硬如板状，或呕血/黑便，立即就医！',
+            '恶心': '恶心常见于胃肠炎、消化不良、妊娠反应或药物副作用。\n\n建议：\n• 少量多次进清淡流食（粥、白吐司）\n• 充分休息，暂时避免油腻\n• 可喝姜茶缓解\n\n若持续呕吐无法进食24小时、伴血便、或严重脱水（口干、无尿），需及时就医补液。',
+            '心悸': '心悸（自觉心跳异常）需关注：规律吗？持续多久？有无晕厥？\n\n常见原因：焦虑/压力、过量咖啡因、甲状腺功能亢进、心律失常\n\n建议：\n• 减少咖啡因和酒精\n• 记录发作时间和规律\n• 做一次12导联心电图检查\n\n⚠️ 若伴胸痛、呼吸困难或晕厥，立即拨打120！',
+            '胸闷': '胸闷需警惕心脏和肺部问题。\n\n🚨 立即拨打120的情况：\n• 胸闷伴左肩/下颌放射性疼痛（心梗前兆）\n• 出冷汗、面色苍白、濒死感\n• 突发呼吸极度困难\n\n若仅轻微胸闷伴紧张焦虑，可能为焦虑症或过度换气，可缓慢腹式深呼吸缓解，并告知医生。',
+            '失眠': '改善睡眠的科学方法：\n\n① 固定作息：每天同一时间睡觉和起床（含周末）\n② 睡前1小时停用手机和电脑\n③ 卧室保持黑暗、凉爽（18-20℃）、安静\n④ 午后避免咖啡因\n⑤ 白天适量有氧运动\n⑥ 只在困意明显时才上床\n\n持续2周无改善，建议睡眠科或心理科就诊。',
+            '焦虑': '焦虑症状可以通过以下方式缓解：\n\n🧘 即时缓解：\n4-7-8呼吸法：吸气4秒→屏气7秒→呼气8秒，重复4次\n\n📅 日常管理：\n• 规律有氧运动（每周150分钟）\n• 正念冥想（每天10分钟）\n• 减少咖啡因\n• 保持规律睡眠\n\n若焦虑影响日常生活和工作，请寻求心理咨询或精神科帮助，不要独自承担。',
+            '腰痛': '腰痛80%为非特异性腰痛，与姿势和肌肉劳损相关。\n\n急性腰扭伤处理：\n• 前48小时冷敷，之后热敷\n• 避免完全卧床，适度活动\n• 可服布洛芬等消炎止痛药\n\n预防慢性腰痛：\n• 避免久坐，每小时起立活动5分钟\n• 练习核心肌群（平板支撑）\n\n⚠️ 腰痛放射至下肢麻木、或伴大小便失禁 → 紧急就医！',
+        };
+        // 兜底：没命中知识库时，先共情 + 温和引导，避免机械复读反问
+        const defaultReply = '谢谢你愿意和我说这些，不管是身体上的不舒服，还是心里觉得累，我都愿意听。\n\n要帮你分析得更贴合你的情况，能再多告诉我一点吗？比如是哪里不舒服、有多久了、有没有发烧头晕这些伴随情况、最近饮食睡眠怎么样。\n\n你先说最难受的那一点，我们从它开始慢慢梳理，好吗？❤️';
+
+        // 多轮对话历史
+        let chatHistory = [];
+        let isBusy = false;
+
+        // 问诊欢迎语（随登录状态个性化）
+        function updateChatWelcome() {
+            const w = document.getElementById('chatWelcome');
+            if (!w) return;
+            const u = currentUser();
+            const hello = u ? '你好呀，<strong>' + escapeHtml(u) + '</strong>！' : '你好呀！';
+            w.innerHTML = hello + '我是 <strong>MediAI</strong> 家庭医生小助手 🩺。<br><br>不管是不舒服想找人问问，还是想了解健康小知识，都可以随时来找我。我会先听你说完，再帮你梳理可能的原因、给你能马上做起来的处理办法，也会告诉你什么情况需要去看医生。<br><br>先和我说说，你今天感觉怎么样？也可以点击下方快捷症状快速开始。<br><br>⚠️ 本系统仅供参考，不能替代专业医生诊断。如症状严重请及时就医。';
+        }
+
+        function getTime() { const d = new Date(); return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0'); }
+
+        function addMsg(text, role, asHtml) {
+            const body = document.getElementById('chatBody');
+            const wrap = document.createElement('div');
+            wrap.className = 'msg ' + role;
+            const avatar = document.createElement('div');
+            avatar.className = 'msg-av ' + role;
+            avatar.textContent = role === 'ai' ? '🤖' : '👤';
+            const content = document.createElement('div');
+            const bubble = document.createElement('div');
+            bubble.className = 'msg-bubble';
+            if (asHtml) bubble.innerHTML = text; else bubble.textContent = text;
+            const time = document.createElement('div');
+            time.className = 'msg-time';
+            time.textContent = getTime();
+            content.append(bubble, time);
+            wrap.append(avatar, content);
+            body.appendChild(wrap);
+            body.scrollTop = body.scrollHeight;
+            return { wrap, bubble };
+        }
+
+        function showTyping() {
+            const body = document.getElementById('chatBody');
+            const t = document.createElement('div');
+            t.className = 'msg ai'; t.id = 'typing-ind';
+            t.innerHTML = '<div class="msg-av ai">🤖</div><div class="typing"><span></span><span></span><span></span></div>';
+            body.appendChild(t); body.scrollTop = body.scrollHeight;
+        }
+        function hideTyping() { const t = document.getElementById('typing-ind'); if (t) t.remove(); }
+
+        // ── 本地家庭医生引擎 ─────────────────────────────────────
+        let lastTopic = null;   // 上一次命中的知识库条目，支持“继续说”追问
+
+        // 紧急情况：先救命，再谈其他
+        function urgentCheck(msg) {
+            const rules = [
+                { keys: ['胸痛', '胸口痛', '心前区', '心梗'], tip: '胸痛可能提示心脏问题（如心肌梗死）。如果疼痛持续超过 20 分钟、出冷汗、或放射到左肩/下颌，请立即拨打 120。' },
+                { keys: ['呼吸困难', '喘不上气', '喘不过气', '气促', '窒息'], tip: '呼吸困难可能提示严重心肺问题。如果口唇发紫、说话困难，请立即拨打 120。' },
+                { keys: ['意识模糊', '晕厥', '昏倒', '昏迷', '抽搐', '惊厥'], tip: '意识改变属于急症。请立即拨打 120，让患者平躺、保持呼吸道通畅，不要喂水喂药。' },
+                { keys: ['大出血', '吐血', '呕血', '咯血', '黑便'], tip: '出血类症状需要尽快就医：呕血/黑便提示消化道出血，咯血提示肺部问题。请立即就医或拨打 120。' },
+                { keys: ['雷击样', '一生中最剧烈的头痛'], tip: '突然发作的剧烈头痛要警惕脑出血，请立即拨打 120。' },
+                { keys: ['自伤', '自杀', '不想活', '活不下去'], tip: '请先拨打心理援助热线（如 12356 全国心理援助热线）或 120，也可以找身边信任的人陪你。你不是一个人，我们都在。' },
+            ];
+            for (const r of rules) { if (r.keys.some(k => msg.includes(k))) return r.tip; }
+            return null;
+        }
+
+        // 按时段问好，带用户名，开口就有温度
+        function warmGreeting() {
+            const h = new Date().getHours();
+            const u = currentUser();
+            if (h < 5) return u ? '夜深了，' + u + '，要注意休息' : '夜深了，要注意休息';
+            if (h < 11) return u ? '早上好，' + u : '早上好呀';
+            if (h < 14) return u ? '中午好，' + u : '中午好呀';
+            if (h < 18) return u ? '下午好，' + u : '下午好呀';
+            return u ? '晚上好，' + u : '晚上好呀';
+        }
+        const warmOpeners = [
+            '先别着急，我们一步一步来。',
+            '听起来确实挺难受的，先放宽心。',
+            '别担心，我在呢，我们先把情况理清楚。',
+            '辛苦了，不舒服的时候最需要人陪着，我来帮你分析。',
+            '来，深呼吸，慢慢和我说，我们一起想办法。',
+        ];
+
+        // 口语别名 → 命中知识库条目
+        const kbAliases = {
+            '高血压': ['血压高', '血压'],
+            '2型糖尿病': ['糖尿病', '血糖高'],
+            '低血糖': ['血糖低'],
+            '上呼吸道感染': ['感冒', '着凉', '流鼻涕', '鼻塞', '喉咙痛', '嗓子疼'],
+            '急性胃肠炎': ['拉肚子', '腹泻', '肠胃炎', '上吐下泻', '呕吐'],
+            '消化性溃疡': ['胃溃疡', '十二指肠溃疡', '胃疼', '胃痛', '反酸', '烧心'],
+            '肠易激综合征': ['肠易激'],
+            '脑卒中': ['中风', '脑梗', '脑出血', '半边身子'],
+            '腰椎间盘突出': ['腰突', '坐骨神经'],
+            '颈椎病': ['脖子痛', '脖子疼', '颈肩'],
+            '膝骨关节炎': ['膝盖痛', '膝盖疼'],
+            '荨麻疹': ['风团', '风疹块'],
+            '湿疹': ['皮肤痒', '皮肤瘙痒'],
+            '带状疱疹': ['缠腰龙', '蛇缠腰'],
+            '手足口病': ['手足口'],
+            '小儿发热': ['孩子发烧', '宝宝发烧', '小孩发烧'],
+            '失眠': ['睡不着', '入睡困难', '睡不好', '早醒'],
+            '焦虑症': ['焦虑', '紧张不安'],
+            '抑郁症': ['抑郁', '情绪低落', '开心不起来', '提不起兴趣'],
+            '干眼症': ['眼睛干', '眼干', '眼睛干涩'],
+            '白内障': ['看不清', '视力下降'],
+            '痛风': ['尿酸高', '脚趾痛'],
+            '哮喘': ['喘息'],
+            '肺炎': ['咳黄痰', '咳浓痰'],
+            '偏头痛': ['头疼', '偏头疼'],
+            '高脂血症': ['血脂高', '血脂'],
+        };
+
+        // 在 49 条疾病知识里找最匹配的条目
+        function findKbMatch(msg) {
+            let best = null, bestScore = 0;
+            for (const item of kbData) {
+                let score = 0;
+                if (item.title.length >= 2 && msg.includes(item.title)) score += 8;
+                for (const a of (kbAliases[item.title] || [])) { if (msg.includes(a)) score += 6; }
+                for (const tag of item.tags) { if (tag.length >= 2 && msg.includes(tag)) score += 3; }
+                for (const s of item.detail.symptoms) {
+                    for (const w of s.split(/[，,、（）()：:。；;\s]+/)) {
+                        if (w.length >= 2 && msg.includes(w)) score += 1;
+                    }
+                }
+                if (score > bestScore) { bestScore = score; best = item; }
+            }
+            return bestScore >= 3 ? best : null;
+        }
+
+        function composeKbReply(item, msg) {
+            const brief = msg.length > 14 ? msg.slice(0, 14) + '…' : msg;
+            const lines = [];
+            lines.push(warmGreeting() + '。' + warmOpeners[Math.floor(Math.random() * warmOpeners.length)]);
+            lines.push('');
+            lines.push('根据你描述的「' + brief + '」，我帮你梳理了关于「' + item.title + '」的要点：');
+            lines.push('');
+            lines.push('📋 常见表现');
+            item.detail.symptoms.slice(0, 3).forEach((s, i) => lines.push((i + 1) + '. ' + s));
+            lines.push('');
+            lines.push('✅ 你可以先这样做');
+            item.detail.measures.slice(0, 4).forEach((s, i) => lines.push((i + 1) + '. ' + s));
+            lines.push('');
+            lines.push('⚠️ 什么情况要立刻就医');
+            lines.push(item.detail.danger);
+            lines.push('');
+            lines.push('❤️ 这些是健康参考，不能替代医生面诊。你现在最需要做的一件事是：' + (item.detail.measures[0] || '观察并记录变化') + '。');
+            lines.push('还有没有别的地方不舒服，或者想让我说得更细一点？比如这个症状持续多久了、有多严重——告诉我，我能帮你判断得更准。');
+            return lines.join('\n');
+        }
+
+        // 追问：接着上一个话题补充
+        function continueTopic(item) {
+            const lines = ['嗯嗯，关于「' + item.title + '」我再多说几句：'];
+            const rest = item.detail.measures.slice(4);
+            if (rest.length) rest.forEach(m => lines.push('• ' + m));
+            else lines.push('• 刚才提到的几点里，最关键是坚持规律作息、清淡饮食，别硬扛。');
+            lines.push('');
+            lines.push('当然，如果症状一直不缓解、或者有加重的趋势，就别再等啦，尽快去看医生，让专业的人帮你看一看。');
+            lines.push('');
+            lines.push('你也可以换个话题——除了这个，还有哪里不舒服吗？');
+            return lines.join('\n');
+        }
+
+        // 给规则库回答包一层暖心开场和收尾
+        function wrapWarm(body) {
+            return warmGreeting() + '。' + warmOpeners[Math.floor(Math.random() * warmOpeners.length)] + '\n\n' + body + '\n\n❤️ 如果还有哪里不舒服，或者想让我说得更细一点，随时告诉我。记得：以上是健康参考，不能替代医生面诊哦。';
+        }
+
+        const smallTalk = [
+            { keys: ['你好', '您好', 'hi', 'hello', '在吗'], reply: '你好呀～我是 MediAI 家庭医生小助手，随时在线。哪里不舒服都可以告诉我，也可以问我一些健康小知识 😊' },
+            { keys: ['谢谢', '感谢', '辛苦'], reply: '不客气～能帮到你我很开心。照顾好自己，有需要随时来找我 ❤️' },
+            { keys: ['你是谁', '你叫什么', '你能做什么', '你会什么', '介绍一下'], reply: '我是 MediAI 家庭医生小助手 🩺 我可以：\n① 帮你分析常见症状（头痛、发烧、咳嗽……）\n② 讲解 12 大类常见疾病的科普知识\n③ 给你可执行的居家处理建议和就医指引\n\n把我当成一个耐心的家庭医生朋友就好～' },
+            { keys: ['再见', '拜拜', '晚安', '先这样'], reply: '嗯嗯，照顾好自己～记得按时吃饭、早点休息。我随时都在，晚安 ❤️' },
+        ];
+        const FOLLOW_KEYS = ['还有', '然后', '继续', '别的', '其他', '注意什么', '怎么办'];
+
+        // 结合健康档案的个性化提醒（升级：医生"记得"你的健康数据）
+        function personalReminder() {
+            const u = currentUser();
+            if (!u || !healthRecords.length) return '';
+            const latest = [...healthRecords].sort((a, b) => b.key.localeCompare(a.key))[0];
+            const tips = [];
+            if (latest.sbp != null) {
+                if (latest.sbp >= 130 || latest.dbp >= 85) tips.push('你最近一次记录的血压偏高（' + latest.sbp + '/' + latest.dbp + '），记得低盐饮食、按时监测');
+                else if (latest.sbp < 90 || latest.dbp < 60) tips.push('你最近一次记录的血压偏低，起身慢一点、注意补水');
+            }
+            if (latest.glucose != null && latest.glucose > 6.1) tips.push('你的空腹血糖偏高（' + latest.glucose + ' mmol/L），注意控制精制糖和主食量');
+            if (latest.bmi != null && latest.bmi >= 24) tips.push('你的 BMI 是 ' + latest.bmi + '，已经超重了，坚持每周 150 分钟有氧运动会很有帮助');
+            if (typeof latest.score === 'number' && latest.score < 70) tips.push('你上次的健康评分只有 ' + latest.score + ' 分，要对自己多上点心');
+            if (!tips.length) return '';
+            return '\n\n💡 P.S. 我还记得你的健康档案：' + tips[0] + '。';
+        }
+
+        // 解读用户补充的描述性信息（一天了/一阵一阵/很疼/睡不着等）
+        function interpretInfo(msg, prev, prevTopic) {
+            const out = [];
+            const m = msg.toLowerCase();
+            out.push(warmGreeting() + '。' + warmOpeners[Math.floor(Math.random() * warmOpeners.length)]);
+            out.push('');
+            // 把用户说过的话"复述"回去，让他感觉被听懂
+            if (prev) out.push('我记着你刚才说的「' + prev.slice(-40) + '」，现在你又说「' + msg.slice(0, 30) + '」——我试着一起帮你理一理：');
+            else out.push('根据你说的「' + msg.slice(0, 30) + '」，我试着帮你理一理：');
+            out.push('');
+            // 中文数字 → 阿拉伯数字
+            function cnNum(s) {
+                const map = { '一': 1, '两': 2, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10, '几': 3, '半': 0.5 };
+                if (/^\d+$/.test(s)) return parseInt(s, 10);
+                if (s === '十' || s === '十几') return 10;
+                if (s.length === 2 && map[s[0]] && s[1] === '十') return map[s[0]] * 10;
+                if (s.length === 2 && s[0] === '十' && map[s[1]]) return 10 + map[s[1]];
+                if (s.length === 3 && map[s[0]] && s[1] === '十' && map[s[2]]) return map[s[0]] * 10 + map[s[2]];
+                return map[s] || 1;
+            }
+            // 持续时长 → 给出阶段判断
+            const dur = msg.match(/(\d+|[一二三四五六七八九十半]+)\s*(个)?\s*(小时|钟头|天|日|号|周|星期|礼拜|个月|月|年|小时)/);
+            if (dur) {
+                const n = cnNum(dur[1]), unit = dur[3] || dur[2];
+                const hours = unit === '小时' || unit === '钟头' ? n : (unit === '天' || unit === '日' || unit === '号') ? n * 24 : (unit === '周' || unit === '星期' || unit === '礼拜') ? n * 168 : (unit === '个月' || unit === '月') ? n * 720 : (unit === '年') ? n * 8760 : 0;
+                if (hours <= 24) out.push('🕐 时间上：这才刚开始不到一天，多数情况下身体还处在"反应期"，先别太焦虑，观察 + 对症处理往往就够了。');
+                else if (hours <= 168) out.push('🕐 时间上：已经超过好几天了，说明这不是一过性的小状况，值得认真处理——自己扛着不是办法。');
+                else if (hours <= 720) out.push('🕐 时间上：已经拖了好几周，建议别再等了，尽快去正规医院相关科室查一查，拖久了容易变成慢性问题。');
+                else out.push('🕐 时间上：持续这么久了，这种情况需要医生系统评估，建议近期就安排一次就诊。');
+            }
+            // 阵发性 vs 持续性
+            if (/(一阵一阵|阵发|反复|时好时坏|一会儿一|一阵阵)/.test(msg)) {
+                out.push('🔁 规律上：一阵一阵、时好时坏的，通常不是器质性病变，更像功能性的——比如受凉、紧张、饮食刺激、肌肉痉挛这类，往往对症处理就能缓解。');
+            } else if (/(一直|持续|不停|不间断|全天)/.test(msg)) {
+                out.push('🔁 规律上：持续不断、没有缓解的，说明刺激因素还在，需要找一找根源，单纯忍着不行。');
+            }
+            // 疼痛程度
+            if (/(很疼|剧痛|疼死了|受不了|难以忍受|特别疼)/.test(msg)) {
+                out.push('😣 疼痛上：你说得很疼，这个程度不该自己硬扛，影响到吃饭睡觉就一定要去看医生。');
+            }
+            // 已经采纳的措施
+            if (/(吃了|喝了|用了|吃了药|吃药|退烧|睡了一觉|贴了|敷了|喝了热水)/.test(msg)) {
+                out.push('💊 措施上：你已经在处理了，很好。如果这样处理 24 小时还没好转，就别再加量或换药，直接去问医生。');
+            }
+            // 影响睡眠 / 吃饭
+            if (/(睡不着|睡不好|没胃口|吃不下|影响睡眠)/.test(msg)) {
+                out.push('😴 影响上：已经开始影响睡眠和食欲了，这是身体在发信号，别再忽视，建议尽快就诊。');
+            }
+            // 频率
+            if (/(第一次|从来没|以前没有|最近才)/.test(msg)) {
+                out.push('📅 历史上：以前从没这样、最近才出现，说明是新的变化，更值得重视和记录。');
+            }
+            out.push('');
+            out.push('✅ 现在就能做的三件事');
+            out.push('1. 把刚才说的这些记下来（时间、频率、程度），就诊时医生一眼就能看懂');
+            out.push('2. 今天先保证休息、温水、清淡饮食，别熬夜别喝酒别剧烈运动');
+            out.push('3. 如果越来越重，或者出现我下面说的这些危险信号，别犹豫直接去医院');
+            out.push('');
+            out.push('⚠️ 出现这些情况别再等：持续高烧不退、剧烈或持续加重的疼痛、胸闷气短、意识模糊、呕血黑便、突然一侧肢体无力。');
+            out.push('');
+            if (prevTopic) {
+                // 结合之前提到的病症，给出针对性提醒
+                out.push('结合你之前说的「' + prevTopic.title + '」，我最想提醒你的是：' + prevTopic.detail.danger);
+                out.push('');
+                out.push('如果这些危险信号还没出现，就先按上面的三件事做，观察一两天，多数情况会慢慢好转。❤️');
+            } else {
+                out.push('如果你能告诉我具体是哪里不舒服（比如胃、头、胸口），我能给你更对口的建议。你也可以先看看左下角的知识库，里面有常见疾病的详细科普。❤️');
+            }
+            return out.join('\n');
+        }
+
+        function getLocalReply(msg) {
+            const m = msg.toLowerCase();
+            // ① 紧急情况优先
+            const urgent = urgentCheck(msg);
+            if (urgent) return warmGreeting() + '。先别慌，听我说——\n\n🚨 ' + urgent + '\n\n在等待救护车或去医院的路上，尽量保持安静休息，不要走动或进食。别怕，及时求助就是最正确的做法。❤️';
+            // ② 疾病知识库匹配
+            const kb = findKbMatch(msg);
+            if (kb) { lastTopic = kb; return composeKbReply(kb, msg) + personalReminder(); }
+            // ③ 症状关键词兜底
+            for (const [key, val] of Object.entries(aiReplies)) {
+                if (m.includes(key)) { lastTopic = null; return wrapWarm(val) + personalReminder(); }
+            }
+            // ④ 接着上次话题继续
+            if (lastTopic && FOLLOW_KEYS.some(k => msg.includes(k))) return continueTopic(lastTopic);
+            // ⑤ 用户给了描述性信息（时长/阵发性/疼痛程度等）→ 真正消化并解读，而不是复读反问
+            const infoWords = chatHistory.filter(h => h && h.role === 'user' && h.content).map(h => typeof h.content === 'string' ? h.content : '');
+            const lastMsg = infoWords[infoWords.length - 1] || '';
+            const prevMsg = infoWords.length > 1 ? infoWords[infoWords.length - 2] : '';
+            const prevTopic = prevMsg ? findKbMatch(prevMsg) : null;
+            const NUM = '\\d+|[一二三四五六七八九十半两]';
+            const hasInfo = new RegExp('(' + NUM + '\\s*(个)?\\s*(小时|钟头|天|日|号|周|星期|礼拜|个月|月|年))|(一阵一阵|阵发|反复|一直|持续|很疼|疼死了|睡不着|睡不好|没胃口|吃不下|吃了|喝了|退烧|影响睡眠|以前没|最近才|第一次|越来越|好几天|好久了)').test(msg);
+            if (hasInfo && (infoWords.length >= 1 || lastMsg)) { return interpretInfo(msg, prevMsg || lastMsg, prevTopic) + personalReminder(); }
+            // ⑥ 闲聊
+            for (const t of smallTalk) { if (t.keys.some(k => m.includes(k))) return t.reply; }
+            // ⑦ 兜底：引导式追问
+            return wrapWarm(defaultReply) + personalReminder();
+        }
+
+        // 加载/保存对话历史
+        function loadChatHistory() {
+            try {
+                chatHistory = JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY)) || [];
+            } catch (e) { chatHistory = []; }
+        }
+        function persistChatHistory() {
+            try { localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(chatHistory.slice(-20))); } catch (e) { }
+        }
+
+        function sendMsg() {
+            if (!currentUser()) { openAuth('login'); return }
+            if (isBusy) return;
+            const inp = document.getElementById('chatInput');
+            const msg = inp.value.trim();
+            if (!msg) return;
+            inp.value = ''; inp.style.height = 'auto';
+            addMsg(msg, 'user');
+            document.getElementById('chatHints').style.display = 'none';
+            chatHistory.push({ role: 'user', content: msg });
+            persistChatHistory();
+
+            isBusy = true; showTyping();
+
+            const finishWith = (text) => {
+                hideTyping();
+                // 用打字机逐字"说"出来，有真人医生在和你对话的感觉
+                const { bubble } = addMsg('', 'ai');
+                bubble.classList.add('typing-active');
+                let typed = 0;
+                const tick = () => {
+                    if (typed >= text.length) {
+                        bubble.classList.remove('typing-active');
+                        chatHistory.push({ role: 'assistant', content: text });
+                        persistChatHistory();
+                        isBusy = false;
+                        return;
+                    }
+                    const ch = text.charAt(typed);
+                    if (ch === '\n') bubble.appendChild(document.createElement('br'));
+                    else bubble.appendChild(document.createTextNode(ch));
+                    typed++;
+                    document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
+                    // 句号停顿更长，模拟真人思考节奏
+                    setTimeout(tick, ch === '。' || ch === '！' || ch === '？' ? 140 : 20);
+                };
+                tick();
+            };
+
+            // 先"想一想"再回答，更像真人
+            const reply = getLocalReply(msg);
+            setTimeout(() => finishWith(reply), 500 + Math.random() * 600);
+        }
+
+        function sendHint(el) { document.getElementById('chatInput').value = el.textContent; sendMsg(); }
+        function handleKey(e) {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+            const t = e.target; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 120) + 'px';
+        }
+
+        // 清空对话
+        function clearChat() {
+            if (!confirm('确定清空当前对话记录吗？')) return;
+            chatHistory = [];
+            lastTopic = null;
+            persistChatHistory();
+            document.getElementById('chatBody').innerHTML = '';
+            document.getElementById('chatHints').style.display = 'flex';
+            addMsg('对话已清空～我还在呢，哪里不舒服随时告诉我。', 'ai');
+        }
+
+        // ─── Health ───────────────────────────────────────────────
+        let healthScore = 0;
+        function readOptionalNumber(id) {
+            const value = document.getElementById(id).value.trim();
+            return value === '' ? null : Number(value);
+        }
+        function isInRange(value, min, max) { return Number.isFinite(value) && value >= min && value <= max; }
+        function validateHealthData(d) {
+            const checks = [
+                ['height', '身高', 50, 250], ['weight', '体重', 2, 500], ['sbp', '收缩压', 40, 300],
+                ['dbp', '舒张压', 20, 200], ['glucose', '血糖', 1, 50], ['hr', '心率', 20, 250]
+            ];
+            const invalid = checks.find(([key, , min, max]) => d[key] !== null && !isInRange(d[key], min, max));
+            if (invalid) { alert(`${invalid[1]}请输入 ${invalid[2]}–${invalid[3]} 范围内的数值`); return false; }
+            if ((d.height === null) !== (d.weight === null)) { alert('身高和体重需同时填写才能计算 BMI'); return false; }
+            if ((d.sbp === null) !== (d.dbp === null)) { alert('收缩压和舒张压需同时填写'); return false; }
+            if (d.sbp !== null && d.sbp <= d.dbp) { alert('收缩压应大于舒张压，请检查输入'); return false; }
+            return true;
+        }
+        function saveHealth() {
+            if (!currentUser()) { openAuth('login'); return }
+            loadRecordsFor(currentUser());
+            if (todayRecord()) { alert('今日已归档，不可重复提交。\n\n系统每天只允许生成一份健康档案，防止随意修改数据、保证记录真实可比。\n\n请于 ' + nextOpenText() + ' 再来。'); return }
+            const d = {
+                height: readOptionalNumber('h-height'), weight: readOptionalNumber('h-weight'),
+                sbp: readOptionalNumber('h-sbp'), dbp: readOptionalNumber('h-dbp'),
+                glucose: readOptionalNumber('h-glucose'), hr: readOptionalNumber('h-hr')
+            };
+            if (Object.values(d).every(value => value === null)) { alert('请至少填写一项健康数据'); return }
+            if (!validateHealthData(d)) return;
+            d.bmi = d.height === null ? null : +(d.weight / ((d.height / 100) ** 2)).toFixed(1);
+            const { score, advice } = assessHealth(d);
+            // 写入档案（自动封存，不可改不可删）
+            healthRecords.push(buildRecord(d, score, advice));
+            persistRecords();
+            // 血压趋势图保留最近 7 次
+            if (d.sbp !== null) {
+                bpHistory.push({ sbp: d.sbp, dbp: d.dbp, t: new Date().toLocaleDateString('zh', { month: 'short', day: 'numeric' }) });
+                if (bpHistory.length > 7) bpHistory.shift();
+                persistBpHistory();
+            }
+            // 展示
+            renderHealthSummary(healthRecords[healthRecords.length - 1]);
+            renderHistory();
+            // 清空输入框
+            ['h-height', 'h-weight', 'h-sbp', 'h-dbp', 'h-glucose', 'h-hr'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('bmiResult').style.display = 'none';
+            // 引导用户看历史
+            setTimeout(() => {
+                const first = document.querySelector('.hist-card .hist-head');
+                if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        }
+        function drawScore(score) {
+            const canvas = document.getElementById('scoreCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            const cx = 70, cy = 70, r = 54;
+            ctx.clearRect(0, 0, 140, 140);
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 10; ctx.stroke();
+            if (score > 0) {
+                const ang = (score / 100) * Math.PI * 2 - Math.PI / 2;
+                const color = score >= 80 ? '#10b981' : score >= 60 ? '#f59e0b' : '#ef4444';
+                ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, ang);
+                ctx.strokeStyle = color; ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.stroke();
+                document.getElementById('scoreNum').innerHTML = score + '<span class="score-lbl">分</span>';
+                document.getElementById('scoreNum').style.color = color;
+            }
+        }
+        function drawBpChart() {
+            const canvas = document.getElementById('bpChart');
+            const empty = document.getElementById('bpEmpty');
+            if (!canvas || bpHistory.length < 1) { if (empty) empty.style.display = 'block'; return; }
+            if (empty) empty.style.display = 'none';
+            const W = Math.max(canvas.parentElement.offsetWidth - 40, 280), H = 160;
+            canvas.width = W; canvas.height = H;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            ctx.clearRect(0, 0, W, H);
+            const pad = { t: 22, r: 16, b: 28, l: 36 };
+            const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
+            const all = [...bpHistory.map(d => d.sbp), ...bpHistory.map(d => d.dbp)];
+            const mn = Math.min(...all) - 15, mx = Math.max(...all) + 15;
+            const xs = bpHistory.length > 1 ? cw / (bpHistory.length - 1) : cw;
+            const py = v => pad.t + ch * (1 - (v - mn) / (mx - mn));
+            for (let i = 0; i <= 4; i++) { const y = pad.t + ch * i / 4; ctx.beginPath(); ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 1; ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke(); ctx.fillStyle = '#94a3b8'; ctx.font = '9px system-ui'; ctx.textAlign = 'right'; ctx.fillText(Math.round(mx - (mx - mn) * i / 4), pad.l - 4, y + 3); }
+            [['sbp', '#0ea5e9'], ['dbp', '#06b6d4']].forEach(([k, color]) => {
+                ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+                bpHistory.forEach((d, j) => { const x = pad.l + j * xs; j === 0 ? ctx.moveTo(x, py(d[k])) : ctx.lineTo(x, py(d[k])); });
+                ctx.stroke();
+                bpHistory.forEach((d, j) => { ctx.beginPath(); ctx.arc(pad.l + j * xs, py(d[k]), 3.5, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill(); });
+            });
+            ctx.fillStyle = '#94a3b8'; ctx.font = '10px system-ui'; ctx.textAlign = 'center';
+            bpHistory.forEach((d, j) => ctx.fillText(d.t, pad.l + j * xs, H - 6));
+            ctx.fillStyle = '#0ea5e9'; ctx.fillRect(pad.l, 6, 10, 3); ctx.fillStyle = '#475569'; ctx.font = '10px system-ui'; ctx.textAlign = 'left'; ctx.fillText('收缩压', pad.l + 14, 10);
+            ctx.fillStyle = '#06b6d4'; ctx.fillRect(pad.l + 60, 6, 10, 3); ctx.fillStyle = '#475569'; ctx.fillText('舒张压', pad.l + 74, 10);
+        }
+
+        // ─── BMI 计算 ─────────────────────────────────────────────
+        function calcBmi() {
+            const ht = readOptionalNumber('b-height');
+            const wt = readOptionalNumber('b-weight');
+            const box = document.getElementById('bmiCalcResult');
+            const idea = document.getElementById('bmiIdea');
+            if (ht === null || wt === null) { alert('请输入身高和体重'); box.style.display = 'none'; if (idea) idea.style.display = 'none'; return }
+            if (!isInRange(ht, 50, 250) || !isInRange(wt, 2, 500)) { alert('请输入合理的身高（50–250cm）和体重（2–500kg）'); box.style.display = 'none'; if (idea) idea.style.display = 'none'; return }
+            const bmi = +(wt / ((ht / 100) ** 2)).toFixed(1);
+            let cat = '', adv = '', ic = '💡', title = '';
+            if (bmi < 18.5) { cat = '偏瘦'; adv = '你的 BMI 低于 18.5，提示可能存在营养摄入不足。建议优先增加优质蛋白（鸡蛋、鱼、豆制品）和复合碳水，配合力量训练增肌，而非单纯"多吃"。'; title = '偏瘦也需要重视'; ic = '🍳'; }
+            else if (bmi < 24) { cat = '正常 ✅'; adv = '体型处于健康范围。BMI 正常不代表可以放松——腰围、体脂率、血压血糖同样重要，建议每年体检一次，把好习惯长期保持下去。'; title = '继续保持，但别松懈'; ic = '✅'; }
+            else if (bmi < 28) { cat = '超重 ⚠️'; adv = '超出正常范围，是多种慢性病的风险因素。别急着节食，先把"每周运动150分钟 + 减少精制糖油和夜宵"这两件事做到，通常 1-2 个月就能看到变化。'; title = '方向对了，效果自然会来'; ic = '🥗'; }
+            else { cat = '肥胖 ❌'; adv = '属于肥胖范畴，建议尽早到内分泌科或营养科做一次系统评估，排查代谢综合征、睡眠呼吸暂停等问题，制定可执行的分阶段减重方案。'; title = '越早干预，收益越大'; ic = '🩺'; }
+            document.getElementById('bmiCalcVal').textContent = bmi;
+            document.getElementById('bmiCalcCat').textContent = cat;
+            document.getElementById('bmiCalcAdvice').textContent = '💡 ' + adv;
+            box.style.display = 'block';
+            if (idea) { idea.style.display = 'flex'; document.getElementById('bmiIdeaIc').textContent = ic; document.getElementById('bmiIdeaTitle').textContent = title; document.getElementById('bmiIdeaText').textContent = adv; }
+            // 高亮参考标准区间
+            ['r-under', 'r-normal', 'r-over', 'r-obese'].forEach(id => document.getElementById(id).classList.remove('active'));
+            let rid = 'r-normal';
+            if (bmi < 18.5) rid = 'r-under'; else if (bmi < 24) rid = 'r-normal'; else if (bmi < 28) rid = 'r-over'; else rid = 'r-obese';
+            document.getElementById(rid).classList.add('active');
+            // 同步填充其他标签页
+            fillWeight(ht, wt, bmi);
+            fillRisk(bmi);
+            fillPlan(bmi, ht, wt);
+        }
+        function switchBmiTab(el, tab) {
+            document.querySelectorAll('#bmiTabs .bmi-tab').forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+                t.tabIndex = -1;
+            });
+            el.classList.add('active');
+            el.setAttribute('aria-selected', 'true');
+            el.tabIndex = 0;
+            ['calc', 'weight', 'risk', 'plan'].forEach(k => {
+                const p = document.getElementById('bmi-' + k);
+                if (p) p.style.display = (k === tab) ? 'block' : 'none';
+            });
+            // 没算过就先用示例值演示
+            const enteredHeight = readOptionalNumber('b-height'), enteredWeight = readOptionalNumber('b-weight');
+            const ht = isInRange(enteredHeight, 50, 250) ? enteredHeight : 170;
+            const wt = isInRange(enteredWeight, 2, 500) ? enteredWeight : 65;
+            const bmi = +(wt / ((ht / 100) ** 2)).toFixed(1);
+            if (tab === 'weight') fillWeight(ht, wt, bmi);
+            if (tab === 'risk') fillRisk(bmi);
+            if (tab === 'plan') fillPlan(bmi, ht, wt);
+        }
+        function fillWeight(ht, wt, bmi) {
+            const lo = +(ht - 100 - ((ht - 150) / 2.5)).toFixed(1);   // 改良 Broca 下限
+            const hi = +(lo * 1.1).toFixed(1);
+            const elR = document.getElementById('wRange');
+            if (elR) elR.textContent = lo + ' – ' + hi + ' kg';
+            const elN = document.getElementById('wNow');
+            if (elN) elN.textContent = wt || '--';
+            const diff = document.getElementById('wDiff');
+            if (diff) diff.textContent = wt ? (wt > hi ? '超 ' + (wt - hi).toFixed(1) : wt < lo ? '差 ' + (lo - wt).toFixed(1) : '已在区间内') + ' kg' : '--';
+            // 进度条
+            const pct = wt ? (Math.min(Math.max((wt / hi) * 100, 15), 100)) : 0;
+            const bar = document.getElementById('wProgressBar'), val = document.getElementById('wProgressVal'), txt = document.getElementById('wProgressTxt');
+            if (bar) setTimeout(() => bar.style.width = pct + '%', 50);
+            if (val) val.textContent = Math.round(pct) + '%';
+            if (txt) {
+                if (!wt) txt.textContent = '请输入身高体重查看对比';
+                else if (wt > hi) txt.textContent = '当前体重超过理想区间上限，减重到 ' + hi + ' kg 即达标';
+                else if (wt < lo) txt.textContent = '当前低于理想区间，需增重至 ' + lo + ' kg';
+                else txt.textContent = '当前体重已在理想区间内 ✅';
+            }
+            // 表格
+            const tb = document.getElementById('wTable');
+            if (!tb) return;
+            const rows = [
+                ['BMI 指数', bmi.toFixed(1), (bmi < 18.5 ? '偏瘦' : bmi < 24 ? '正常' : bmi < 28 ? '超重' : '肥胖')],
+                ['理想体重', lo + ' – ' + hi + ' kg', (wt && wt >= lo && wt <= hi) ? '达标 ✅' : '需调整'],
+                ['腰围（参考）', '男 < 85cm / 女 < 80cm', (bmi >= 24 ? '建议关注' : '当前参考值')],
+                ['体脂率参考', bmi < 18.5 ? '偏低' : bmi < 24 ? '男15-20%/女20-25%' : '偏高', '结合体脂秤评估']
+            ];
+            tb.innerHTML = rows.map(r => `<tr class="${r[2] === '达标 ✅' ? 'you' : ''}"><td>${r[0]}</td><td>${r[1]}</td><td>${wt || '--'}</td><td style="color:${r[2] === '达标 ✅' ? 'var(--success)' : r[2] === '需调整' ? 'var(--warning)' : 'var(--text3)'}">${r[2]}</td></tr>`).join('');
+        }
+        function fillRisk(bmi) {
+            const box = document.getElementById('riskBars');
+            if (!box) return;
+            // 相对风险倍数（示意，基于中国肥胖防治共识的定性描述量化）
+            const data = bmi < 18.5
+                ? [['2 型糖尿病', 'var(--warning)', 20], ['高血压', 'var(--warning)', 25], ['骨质疏松', 'var(--danger)', 55], ['营养不良', 'var(--danger)', 70], ['血脂异常', 'var(--success)', 15]]
+                : bmi < 24
+                    ? [['2 型糖尿病', 'var(--success)', 15], ['高血压', 'var(--success)', 15], ['脂肪肝', 'var(--success)', 20], ['睡眠呼吸暂停', 'var(--success)', 10], ['血脂异常', 'var(--success)', 18]]
+                    : bmi < 28
+                        ? [['2 型糖尿病', 'var(--warning)', 45], ['高血压', 'var(--warning)', 50], ['脂肪肝', 'var(--warning)', 55], ['睡眠呼吸暂停', 'var(--warning)', 35], ['血脂异常', 'var(--warning)', 48]]
+                        : [['2 型糖尿病', 'var(--danger)', 100], ['高血压', 'var(--danger)', 90], ['脂肪肝', 'var(--danger)', 100], ['睡眠呼吸暂停', 'var(--danger)', 85], ['血脂异常', 'var(--danger)', 95]];
+            box.innerHTML = data.map(([n, c, v]) => `<div class="risk-bar"><div style="display:flex;justify-content:space-between"><span>${n}</span><span class="rb-val">相对风险 ${v}%</span></div><div class="rb-track"><div class="rb-fill" style="width:0;background:${c}" data-w="${v}"></div></div></div>`).join('');
+            setTimeout(() => box.querySelectorAll('.rb-fill').forEach(f => f.style.width = f.dataset.w + '%'), 60);
+        }
+        function fillPlan(bmi, ht, wt) {
+            const box = document.getElementById('bmiPlan');
+            if (!box) return;
+            if (bmi >= 24) {
+                const ideal = +((ht - 100 - ((ht - 150) / 2.5)) * 1.05).toFixed(1);
+                const drop = Math.max(0, +(wt - ideal).toFixed(1));
+                const weeks = Math.ceil(drop / 0.7);
+                const est = document.getElementById('planEstimate');
+                if (est) est.textContent = drop > 0 ? `按每周减重 0.5–0.7kg 的健康节奏，你大约需要 ${weeks} 周（约 ${(weeks / 4.3).toFixed(1)} 个月）就能回到理想区间。` : '当前已在理想区间内，重点是保持。';
+                box.innerHTML = `
+      <h5>🥇 第一阶段 · 第 1–2 周：先改习惯，不看秤</h5>
+      <div class="bp-item"><span class="n">1</span><span>戒掉含糖饮料和夜宵，三餐定时，每餐先吃蔬菜和蛋白再吃主食</span></div>
+      <div class="bp-item"><span class="n">2</span><span>每天步行 8000 步，从每周 3 次、每次 20 分钟有氧开始（快走、骑车、游泳）</span></div>
+      <div class="bp-item"><span class="n">3</span><span>保证 7 小时以上睡眠，睡眠不足会刺激食欲激素分泌</span></div>
+      <h5>🥈 第二阶段 · 第 3–8 周：量化管理</h5>
+      <div class="bp-item"><span class="n">4</span><span>每日摄入减少 300–500 kcal（不是不吃，而是替换：精白米换杂粮、油炸换蒸煮）</span></div>
+      <div class="bp-item"><span class="n">5</span><span>有氧运动提升到每周 150–250 分钟，加入每周 2 次力量训练增肌提高基础代谢</span></div>
+      <div class="bp-item"><span class="n">6</span><span>每周固定一天晨起空腹称重，记录趋势而不是纠结单日波动</span></div>
+      <h5>🥉 第三阶段 · 第 9 周起：巩固与防反弹</h5>
+      <div class="bp-item"><span class="n">7</span><span>达标后进入维持期，热量可逐步回调 10%–15%，但运动习惯要终身保留</span></div>
+      <div class="bp-item"><span class="n">8</span><span>每月做一次"反弹预警"自查：连续 2 周上涨超过 1kg 就及时干预</span></div>`;
+            } else if (bmi < 18.5) {
+                box.innerHTML = `
+      <h5>🍳 增重不是"放开吃"，而是"聪明吃"</h5>
+      <div class="bp-item"><span class="n">1</span><span>每天增加 300–500 kcal 热量盈余，优先来自坚果、牛油果、全脂奶、鸡蛋、鱼肉</span></div>
+      <div class="bp-item"><span class="n">2</span><span>少食多餐，避免一次吃太多导致消化不良，餐间加 2–3 次小食</span></div>
+      <div class="bp-item"><span class="n">3</span><span>配合每周 3 次力量训练（深蹲、硬拉、俯卧撑），让增加的体重变成肌肉而非脂肪</span></div>
+      <div class="bp-item"><span class="n">4</span><span>保证蛋白质摄入 1.2–1.6g/kg 体重，这是增肌的原料</span></div>
+      <div class="bp-item"><span class="n">5</span><span>如长期体重偏低，建议查一下甲状腺功能、血糖和消化道吸收情况</span></div>`;
+                const est = document.getElementById('planEstimate');
+                if (est) est.textContent = '偏瘦人群的重点不是减，而是"补得对"——用力量和蛋白把体重变成肌肉。';
+            } else {
+                box.innerHTML = `
+      <h5>✅ 体重达标，保持就是最好的计划</h5>
+      <div class="bp-item"><span class="n">1</span><span>每周 150 分钟中等强度有氧 + 2 次力量训练，这是公认的"最低有效剂量"</span></div>
+      <div class="bp-item"><span class="n">2</span><span>饮食遵循"餐盘法则"：一半蔬菜、四分之一蛋白、四分之一主食</span></div>
+      <div class="bp-item"><span class="n">3</span><span>每年做一次全面体检，重点关注血压、血糖、血脂、腰围的变化趋势</span></div>
+      <div class="bp-item"><span class="n">4</span><span>把好习惯写进日程而不是靠意志力，坚持 21 天就能形成惯性</span></div>`;
+                const est = document.getElementById('planEstimate');
+                if (est) est.textContent = '你不需要减重，真正有价值的是把现在的状态长期保持下去。';
+            }
+        }
+
+        // ─── 科普资讯（每日新增） ────────────────────────────────
+        let newsType = 'all';   // 当前分类筛选
+        let openNews = null;    // 打开的资讯详情索引
+        // 内容池：每天按日期取模选出今日新增内容，实现"每天增加新内容"
+        const newsPool = [
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '每天一苹果，真能远离医生吗？', date: '每日新增', read: '4 分钟',
+                summary: '苹果富含果胶和多酚，确有助心血管健康，但它只是均衡饮食中的一环，不能替代药物和多样化膳食。',
+                body: ['苹果中的可溶性膳食纤维（果胶）有助于降低低密度脂蛋白胆固醇，多酚类抗氧化物质可减少炎症反应。',
+                    '每天一个中等大小的苹果（约200g）能提供4-5g膳食纤维，相当于每日推荐量的1/6。',
+                    '但它不能"清血管""治三高"——对血糖、血压的作用是长期、温和的，不是药物治疗。'],
+                points: ['每天吃一个水果是好习惯，但种类要换，别只吃苹果', '糖尿病患者在两餐之间食用，注意计入全天碳水', '带皮吃能多摄入一半膳食纤维'],
+                warn: '任何"某一种食物治百病"的说法都是夸大宣传，均衡饮食才是核心。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '鱼油该怎么选？看懂 EPA 和 DHA 是关键', date: '每日新增', read: '5 分钟',
+                summary: '鱼油不等于"深海鱼油"，真正起作用的活性成分是 EPA 和 DHA，含量高低决定了保健效果和性价比。',
+                body: ['鱼油的核心有效成分是两种 Omega-3 脂肪酸：EPA（有助抗炎、降甘油三酯）和 DHA（有助大脑和视力发育）。',
+                    '选购时别只看"鱼油含量1000mg"，要看标签上 EPA+DHA 的合计克数，这个才是活性成分。',
+                    '普通保健建议每日 EPA+DHA 约250-500mg；甘油三酯明显升高者需处方级高剂量（遵医嘱）。'],
+                points: ['看 EPA+DHA 含量，不看"鱼油总含量"', '关注重金属、PCB 检测报告，选有第三方认证的品牌', '随餐服用吸收率更高，减少鱼腥味反胃'],
+                warn: '鱼油有抗血小板作用，术前两周应停用；正在服用华法林等抗凝药者需咨询医生。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '为什么验血要空腹？搞懂抽血那些规矩', date: '每日新增', read: '3 分钟',
+                summary: '空腹采血是为了保证结果可比性。进食后血糖、甘油三酯会明显升高，血脂和血糖检测必须空腹。',
+                body: ['进食后甘油三酯可在2-4小时内升高2-3倍，直接影响血脂四项结果的准确性。',
+                    '空腹血糖要求在禁食8-12小时后检测，且只能喝少量白开水。',
+                    '并非所有抽血都需空腹：血常规、甲状腺功能、糖化血红蛋白、心肌酶等不受进食影响。'],
+                points: ['需空腹的项目：血糖、血脂、肝功能（建议8-12小时）', '可正常吃喝：血常规、电解质、糖化血红蛋白、甲状腺功能', '空腹时间别超过16小时，否则结果也可能失真'],
+                warn: '慢性病患者如需按时服药，可用少量清水送服，但降糖药、利尿剂应告知医生。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '午睡多久最合适？20 分钟是个分水岭', date: '每日新增', read: '3 分钟',
+                summary: '午睡超过30分钟容易进入深睡眠，醒来反而更困、反应更慢，这种现象叫"睡眠惰性"。',
+                body: ['10-20分钟的短午睡能提升警觉性、改善情绪和工作效率，且不进入深睡眠。',
+                    '超过30分钟进入深睡眠阶段，被唤醒后会出现方向感差、反应迟钝，可持续30分钟以上。',
+                    '下午3点后午睡会影响夜间睡眠，尤其失眠人群应尽量避免。'],
+                points: ['理想时长：10-20分钟，下午1-3点之间', '睡醒后喝杯水、晒太阳，帮助快速清醒', '长期午睡超1小时且夜间失眠，需排查睡眠呼吸暂停'],
+                warn: '白天异常嗜睡、不分场合睡着，可能是发作性睡病或睡眠呼吸暂停，需就医。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '"无糖"食品真的不升血糖吗？', date: '每日新增', read: '4 分钟',
+                summary: '"无糖"只是没有添加蔗糖，不等于没有碳水。饼干、糕点即使标无糖，面粉本身照样升血糖。',
+                body: ['国标规定"无糖"指每100g含糖≤0.5g，但这个"糖"仅指单糖和双糖，不限制淀粉。',
+                    '无糖饼干、无糖月饼的面粉照样被消化成葡萄糖，升糖指数并不低。',
+                    '代糖虽然几乎不升血糖，但可能影响肠道菌群和食欲调节。'],
+                points: ['看营养成分表的总碳水化合物，不只看"无糖"标签', '无糖食品也要计入全天主食量', '警惕"无蔗糖"却加了麦芽糖浆的产品'],
+                warn: '糖尿病患者的"无糖"食品也要限量，选购时学会看配料表和营养成分表。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '维生素 D 到底要不要补？晒太阳能补够吗', date: '每日新增', read: '5 分钟',
+                summary: '我国成人维生素 D 缺乏率超过 80%。仅靠晒太阳很难补够，尤其久坐室内、防晒严格的人群。',
+                body: ['维生素 D 参与钙磷代谢和免疫调节，缺乏与骨质疏松、肌少症、部分自身免疫病相关。',
+                    '皮肤合成维生素 D 需要紫外线 UVB，但隔着玻璃、防晒霜 SPF30 以上会阻挡95%以上。',
+                    '秋冬日照不足地区，每日补充400-800IU 是安全的常见做法，长期大剂量需监测血钙。'],
+                points: ['先查血清 25-羟维生素 D 再决定是否大剂量补充', '成年人常规补充 400-800IU/天通常安全', '过量（长期＞4000IU/天）可致高钙血症、肾结石'],
+                warn: '维生素 D 是脂溶性的，过量会在体内蓄积中毒，不要自行长期超量服用。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '片子拍了，为什么还要等报告？AI 会取代医生吗', date: '每日新增', read: '4 分钟',
+                summary: 'AI 已能辅助发现肺结节、骨折等问题，但影像诊断需要结合病史、症状、体征综合判断，AI 目前只是辅助工具。',
+                body: ['影像 AI 在肺结节筛查、骨龄评估、眼底病变等场景已广泛应用，能减少漏诊。',
+                    '但同一影像表现可能对应多种疾病，"影像+临床"结合才是诊断的核心，这正是 AI 目前做不到的。',
+                    '报告需要医生复核，对异常征象判断良恶性、制定下一步检查方案。'],
+                points: ['AI 辅助 ≠ AI 独立诊断，最终报告由医生审核', '拿到报告建议先找开单医生解读', '影像正常但有典型症状，仍需结合其他检查'],
+                warn: '"片子看着没事"不代表绝对没事，症状持续请遵医嘱进一步检查。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '每天走一万步是必须的吗？', date: '每日新增', read: '3 分钟',
+                summary: '"日行万步"源自日本上世纪60年代的营销口号，并非医学结论。对健康成人而言，关键在于"动起来"。',
+                body: ['《中国居民膳食指南》推荐每天主动身体活动6000步以上，并不强求一万步。',
+                    '研究显示每天约8000步即可显著降低全因死亡率，继续增加获益逐渐平缓。',
+                    '比步数更重要的是中等强度——走路时能说完整句子但不能唱歌的状态。'],
+                points: ['健康成人每天6000-8000步已达标', '步数并非越多越好，过度步行增加膝关节负担', '久坐人群每坐1小时起身活动5分钟更重要'],
+                warn: '关节疼痛或患有心肺疾病者，运动方式和强度应遵医嘱，循序渐进。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '喝骨头汤能补钙吗？你可能白喝了', date: '每日新增', read: '4 分钟',
+                summary: '骨头汤里的钙含量极低，2斤猪骨熬2小时，汤里钙含量不到牛奶的1/20，反而是脂肪和嘌呤含量不低。',
+                body: ['骨头中的钙以羟基磷灰石形式存在，难溶于水，不加醋的熬煮几乎溶不出多少钙。',
+                    '一碗骨头汤的钙约2-4mg，而一杯牛奶约250-300mg，差距近百倍。',
+                    '真正补钙靠牛奶、豆制品、绿叶菜、芝麻酱，必要时钙片补充。'],
+                points: ['补钙首选牛奶（每日300ml）、豆腐、深绿叶菜', '加少量醋炖煮能略微提高钙溶出，但效果有限', '骨头汤高脂肪高嘌呤，痛风患者尤其要少喝'],
+                warn: '与其迷信骨头汤，不如每天喝够奶、吃足豆制品，必要时补充维生素D促进钙吸收。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '褪黑素是安眠药吗？长期吃会依赖吗', date: '每日新增', read: '5 分钟',
+                summary: '褪黑素是调节睡眠节律的激素，主要改善入睡困难，不是镇静催眠药，对已经躺下却睡不着的人效果有限。',
+                body: ['褪黑素对"时差、倒班、入睡困难"有一定帮助，尤其适合昼夜节律后移的青少年和跨时区旅行者。',
+                    '它对已躺下30分钟仍清醒、睡眠维持困难的效果证据有限。',
+                    '长期大剂量使用的安全性数据不足，低剂量（0.3-1mg）短期使用通常较安全。'],
+                points: ['建议睡前30-60分钟服用，从小剂量开始', '配合避蓝光、固定起床时间效果更好', '连续使用建议不超过4周，之后评估'],
+                warn: '不要与酒精、镇静类药物同服；自身免疫病、癫痫、孕妇慎用，需遵医嘱。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '血压一天要量几次？量哪只手有讲究', date: '每日新增', read: '4 分钟',
+                summary: '首次测量应左右手各测一次，以较高的那只为准。长期监测固定量同一只手，早晚各一次即可。',
+                body: ['双臂血压通常有5-10mmHg差异，首次应两边都量，后续固定测较高的那只手。',
+                    '两臂相差＞20mmHg可能提示锁骨下动脉狭窄等血管问题，需就医。',
+                    '建议晨起排尿后、服药前测；晚上睡前再测一次，取连续7天平均值评估。'],
+                points: ['测量前静坐5分钟，袖带与心脏同高', '不要说话、翘腿，连续测2-3次取平均值', '记录每次结果，复诊时带给医生看'],
+                warn: '电子血压计需定期校准（每年1次），与医院水银柱读数比对。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '久坐是新的吸烟？每坐一小时该起来动一动', date: '每日新增', read: '3 分钟',
+                summary: '久坐与心血管疾病、糖尿病、全因死亡率升高相关，风险独立于运动量之外，即"即使每天锻炼，久坐仍有害"。',
+                body: ['研究发现每天久坐＞8小时、缺乏运动的人，全因死亡风险增加约60%。',
+                    '风险独立于运动量：即使每天锻炼30分钟，剩下的久坐时间依然有危害。',
+                    '每坐1小时起身活动5分钟，打断"持续久坐"是关键。'],
+                points: ['设置每小时提醒，起身走动、拉伸或爬两层楼梯', '可尝试站立办公，交替坐站', '通勤提前一站下车步行也是有效打断'],
+                warn: '已有下肢静脉血栓者，突然久站或久坐都需谨慎，活动方式遵医嘱。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '白粥养胃？这五个饮食误区坑了太多人', date: '每日新增', read: '6 分钟',
+                summary: '白粥并不养胃，它升糖快、营养单一；真正养胃靠规律饮食、细嚼慢咽和营养均衡。',
+                body: ['白粥是精制碳水，升糖指数高、蛋白质和维生素极少，长期只喝粥会导致营养不良。',
+                    '"喝汤养胃""吃辣伤胃""空腹不能吃水果"等说法都缺乏科学依据。',
+                    '规律三餐、细嚼慢咽、适量膳食纤维才是保护胃黏膜的正确方式。'],
+                points: ['白粥只能短期用于胃肠不适时的过渡', '胃酸过多者应少食多餐、避免浓茶咖啡', '养胃的核心是规律饮食而非依赖某一种食物'],
+                warn: '长期胃部不适、体重下降、黑便、呕血，务必做胃镜检查，别靠食疗耽误。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '辅酶 Q10 是心脏保健品还是智商税？', date: '每日新增', read: '5 分钟',
+                summary: '辅酶 Q10 是人体自身合成的物质，主要用于他汀类药物引起的肌痛辅助缓解，对健康人的心脏保护作用证据不足。',
+                body: ['部分服用他汀类降脂药的人会出现肌肉酸痛，补充辅酶Q10可缓解症状，这是最明确的用途。',
+                    '对于健康人预防心脏病、抗疲劳、抗衰老，目前高质量证据有限。',
+                    '人体可自行合成，健康饮食者通常不缺乏。'],
+                points: ['他汀相关肌痛者可尝试，有效再继续服用', '健康人非必需，不必盲目长期吃', '随餐服用吸收率更高'],
+                warn: '不能替代他汀类降脂治疗，不要因服用辅酶Q10而擅自停药。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '体检报告上的箭头都危险吗？', date: '每日新增', read: '5 分钟',
+                summary: '指标轻微偏离参考范围不一定有病。参考范围是95%健康人的分布区间，健康人也可能有5%的指标落在区间外。',
+                body: ['参考范围来自大样本健康人群统计，本身就有约5%的健康人会有一项指标落在范围外。',
+                    '单项轻微异常、无症状，多数只需定期复查，不必过度焦虑。',
+                    '真正需要重视的是：多项指标同时异常、数值明显偏离、伴有相关症状。'],
+                points: ['先看箭头方向、偏离幅度，再看是否有症状', '异常项目定期复查比一次恐慌更重要', '体检前熬夜、饮酒、剧烈运动都可能造成一过性异常'],
+                warn: '持续异常或明显偏离的，务必找医生解读，不要自行网上对号入座。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '熬夜后补觉有用吗？周末狂睡能还债吗', date: '每日新增', read: '4 分钟',
+                summary: '睡眠债无法靠周末一次性还清。长期不规律作息会打乱生物钟，反而加重日间困倦和代谢问题。',
+                body: ['人体生物钟依赖规律的入睡和起床时间，周末补觉超过2小时就会"社交时差"。',
+                    '偶尔一次熬夜，次日午睡20分钟或提前入睡即可，不必猛睡12小时。',
+                    '长期睡眠不足与肥胖、胰岛素抵抗、免疫力下降密切相关。'],
+                points: ['补觉以提前入睡为主，午睡不超过20分钟', '固定起床时间比固定入睡时间更重要', '倒班人群可用遮光窗帘、眼罩模拟夜间环境'],
+                warn: '长期依赖安眠药或靠酒精助眠，都会破坏睡眠结构，应寻求专业帮助。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '控盐不只是少放盐，隐形盐藏在这些食物里', date: '每日新增', read: '4 分钟',
+                summary: '我国居民日均盐摄入约9-10g，远超推荐5g。其中约80%的盐来自加工食品和调味品，而非炒菜时放的盐。',
+                body: ['挂面、面包、饼干、方便面等加工食品在制作时就加盐，一份方便面钠含量常超全天推荐量。',
+                    '酱油、蚝油、豆瓣酱、鸡精的钠含量都不低，用了这些就应减少盐。',
+                    '购买包装食品看营养成分表，每100g含钠＞600mg属于高钠食品。'],
+                points: ['用醋、柠檬汁、葱姜蒜、香料代替部分盐', '做菜出锅前再放盐，咸味更明显', '备一个2g限盐勺，全家每日用盐量控制在5g内'],
+                warn: '心衰、肾功能不全者限盐需遵医嘱，避免极端无盐饮食。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '益生菌真的能调理肠道吗？选对菌株才有效', date: '每日新增', read: '5 分钟',
+                summary: '益生菌对抗生素相关性腹泻、部分肠易激综合征有帮助，但效果高度依赖菌株和剂量，并非所有产品都有效。',
+                body: ['益生菌的效果是"菌株特异"的——鼠李糖乳杆菌GG对抗生素腹泻有效，不代表随便一种酸奶都有效。',
+                    '要达到临床效果，通常需要达到一定活菌数量（10^9-10^11 CFU/天）。',
+                    '多数益生菌无法在肠道长期定植，停止服用后2-3周即被代谢排出。'],
+                points: ['明确用途选对应菌株，看活菌数和保质期', '与抗生素间隔2小时以上服用', '可搭配膳食纤维（益生元）效果更佳'],
+                warn: '免疫缺陷、重症患者使用益生菌有感染风险，需严格遵医嘱。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '发烧一定要退烧吗？体温不是敌人', date: '每日新增', read: '4 分钟',
+                summary: '发烧是免疫系统对抗感染的防御反应，适度发热有助于抑制病原体。退烧的目的主要是缓解不适，而非把体温"压"到正常。',
+                body: ['体温38-38.5℃时，机体免疫功能增强、病原体复制受抑，一般无需急于退烧。',
+                    '退烧主要针对明显不适或存在高热惊厥史的儿童，目标是提高舒适度。',
+                    '物理降温（温水擦浴）效果有限，酒精擦浴是禁忌。'],
+                points: ['38.5℃以下、精神尚可，可观察、多补水', '对乙酰氨基酚和布洛芬选一种即可', '反复高热超过3天需就医查因'],
+                warn: '3个月以下婴儿体温≥38℃、任何年龄高热伴抽搐或意识改变，立即就医。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '喝咖啡到底是好是坏？每天几杯算多', date: '每日新增', read: '4 分钟',
+                summary: '对大多数健康人而言，适量咖啡利大于弊，与降低2型糖尿病、帕金森、肝癌风险相关，但过量会心慌失眠。',
+                body: ['大量研究显示，每天3-4杯咖啡与全因死亡率下降、2型糖尿病和帕金森风险降低相关。',
+                    '问题在于添加物：一���大杯加了糖奶的连锁咖啡饮品，热量可超300大卡。',
+                    '每天咖啡因摄入控制在400mg以内（约3-4杯黑咖啡）通常安全。'],
+                points: ['尽量喝黑咖啡，少加糖奶', '下午2点后避免，以免影响睡眠', '心慌、焦虑、胃食管反流者应减量或停用'],
+                warn: '孕妇建议每日咖啡因＜200mg；骨质疏松、心律失常患者需遵医嘱限制。'
+            },
+        ];
+        const NEWS_KEY = 'mediai-news-day';   // 记录上次"新增"是哪一天
+        function pickDailyNews() {
+            const today = new Date();
+            const key = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+            let store = {};
+            try { store = JSON.parse(localStorage.getItem(NEWS_KEY)) || {} } catch (e) { store = {} }
+            if (store.day !== key || !store.ids || store.ids.length < 3) {
+                // 每天从内容池里选出今日固定的 3 条（按日期做种子，保证当天不变）
+                const seed = parseInt(key.replace(/-/g, ''), 10);
+                const ids = [];
+                for (let i = 0; i < 3; i++) { ids.push((seed * 7 + i * 13) % newsPool.length); }
+                // 去重
+                const uniq = [...new Set(ids)];
+                store = { day: key, ids: uniq };
+                localStorage.setItem(NEWS_KEY, JSON.stringify(store));
+            }
+            return store.ids;
+        }
+        function getNewsList() {
+            const dailyIds = pickDailyNews();
+            const daily = dailyIds.map(i => newsPool[i]);
+            // 其余内容作为历史/储备条目，按分类可筛选
+            const rest = newsPool.filter((_, i) => !dailyIds.includes(i));
+            return { daily, dailyIds, rest };
+        }
+        function renderNews() {
+            const { daily, rest } = getNewsList();
+            const list = newsType === 'all' ? newsPool : newsPool.filter(n => n.cat === newsType);
+            const today = new Date();
+            const dStr = today.getFullYear() + '年' + (today.getMonth() + 1) + '月' + today.getDate() + '日';
+            document.getElementById('newsDate').textContent = '每日更新 · 今日 ' + dStr + ' · 共 ' + newsPool.length + ' 篇内容可选';
+            const badge = document.getElementById('newsBadge');
+            if (badge) badge.textContent = '今日 +' + daily.length;
+            const el = document.getElementById('newsResult');
+            if (openNews !== null) {
+                const n = newsPool[openNews];
+                el.innerHTML = `
+      <div class="kb-back" role="button" tabindex="0" onclick="openNews=null;renderNews()">← 返回资讯列表</div>
+      <div class="news-detail">
+        <div class="news-head">
+          <span class="news-cat ${n.catClass}">${n.cat}</span>
+          <span class="news-date">${n.date} · ${n.read}阅读</span>
+        </div>
+        <div class="news-title" style="margin-bottom:10px">${n.title}</div>
+        ${n.body.map(p => `<p>${p}</p>`).join('')}
+        <h4>📌 要点总结</h4>
+        <ul>${n.points.map(p => `<li>${p}</li>`).join('')}</ul>
+        <div class="kb-detail-warn">${n.warn}</div>
+      </div>`;
+                return;
+            }
+            el.innerHTML = list.map((n, i) => {
+                const realIdx = newsPool.indexOf(n);
+                const isNew = daily.some(d => d === n);
+                return `<div class="news-card" role="button" tabindex="0" onclick="openNews=${realIdx};renderNews()">
+      <div class="news-head">
+        <span class="news-cat ${n.catClass}">${n.cat}</span>
+        ${isNew ? '<span class="news-cat c-sci">今日新增</span>' : ''}
+        <span class="news-date">${n.date} · ${n.read}阅读</span>
+      </div>
+      <div class="news-title">${n.title}</div>
+      <div class="news-summary">${n.summary}</div>
+      <div class="news-meta"><span>📖 点击阅读全文</span><span>👍 有帮助</span><span>🔖 收藏</span></div>
+    </div>`;
+            }).join('');
+        }
+        function filterNews(type, btn) {
+            newsType = type;
+            openNews = null;
+            document.querySelectorAll('#sec-news .btn-g').forEach(b => b.classList.remove('btn-p'));
+            if (btn) btn.classList.add('btn-p');
+            renderNews();
+        }
+
+        // ─── 动态开场页 ───────────────────────────────────────────
+        const SP_KEY = 'mediai-splash-seen';
+        const spWords = ['正在准备你的健康空间', '加载医疗知识库', '整理今日科普资讯', '校准健康评分模型', '✨ 一切就绪，我们开始吧'];
+        let spIdx = 0;
+        function spTypeLoop() {
+            const el = document.getElementById('spTypewriter');
+            if (!el || !document.getElementById('splash')) return;
+            el.textContent = spWords[spIdx];
+            spIdx = (spIdx + 1) % spWords.length;
+        }
+        function makeDots() {
+            const box = document.getElementById('spDots');
+            if (!box) return;
+            for (let i = 0; i < 18; i++) {
+                const s = document.createElement('span');
+                s.style.left = Math.random() * 100 + '%';
+                s.style.animationDuration = (5 + Math.random() * 7) + 's';
+                s.style.animationDelay = (Math.random() * 8) + 's';
+                s.style.width = s.style.height = (3 + Math.random() * 6) + 'px';
+                s.style.opacity = .2 + Math.random() * .4;
+                box.appendChild(s);
+            }
+        }
+        function countUp(id, target, dur) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const start = performance.now();
+            const from = 0;
+            const step = now => {
+                const p = Math.min((now - start) / dur, 1);
+                const eased = 1 - Math.pow(1 - p, 3);
+                el.textContent = Math.round(from + (target - from) * eased);
+                if (p < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+        }
+        function enterApp() {
+            const sp = document.getElementById('splash');
+            if (!sp) return;
+            sp.classList.add('hide');
+            const d = document.getElementById('spDots');
+            if (d) d.style.display = 'none';
+            // 每个浏览器会话只展示一次（新开标签页会再次看到）
+            try { sessionStorage.setItem(SP_KEY, '1') } catch (e) { }
+            setTimeout(() => sp.remove(), 500);
+        }
+        function initSplash() {
+            makeDots();
+            spTypeLoop();
+            setInterval(spTypeLoop, 1800);
+            countUp('spStatKb', kbData.length, 1400);
+            countUp('spStatNews', newsPool.length, 1400);
+            countUp('spStatCats', new Set(kbData.map(k => k.cat)).size, 1400);
+            countUp('spStatMeasures', kbData.reduce((s, k) => s + (k.measures ? k.measures.length : 0), 0), 1400);
+            // 同一会话内只看一次开场页
+            let seen = false;
+            try { seen = sessionStorage.getItem(SP_KEY) === '1' } catch (e) { }
+            if (seen) {
+                const sp = document.getElementById('splash');
+                if (sp) sp.remove();
+                const d = document.getElementById('spDots');
+                if (d) d.remove();
+            }
+        }
+
+        // ─── 健康档案 · 历史记录（按账号隔离，每日一次） ──────────
+        const HREC_KEY = 'mediai-health-records';
+        const BP_HISTORY_KEY = 'mediai-bp-history';
+        let healthRecords = [];        // 当前账号的历史记录
+        let bpHistory = [];             // 当前账号的血压趋势
+        let recordsByUser = {};        // {username:[...]}
+
+        // 给单次录入打分 + 建议（抽出复用）
+        function assessHealth(d) {
+            let score = 100, advice = [];
+            if (d.bmi) {
+                if (d.bmi < 18.5) { score -= 10; advice.push('BMI 偏低，建议增加优质蛋白质和碳水化合物摄入'); }
+                else if (d.bmi < 24) { advice.push('BMI 正常，请继续保持健康的饮食和运动习惯！'); }
+                else if (d.bmi < 28) { score -= 10; advice.push('体重偏重，建议每周有氧运动150分钟，控制精制碳水摄入'); }
+                else { score -= 20; advice.push('体重明显超标，建议就医制定专业的减重方案'); }
+            }
+            if (d.sbp && d.dbp) {
+                if (d.sbp >= 140 || d.dbp >= 90) { score -= 20; advice.push('血压偏高！建议低盐饮食（每日<5g盐），坚持服降压药，及时就医复查'); }
+                else if (d.sbp >= 130 || d.dbp >= 85) { score -= 8; advice.push('血压处于正常高值，需注意减少盐分摄入并加强运动'); }
+                else if (d.sbp < 90 || d.dbp < 60) { score -= 10; advice.push('血压偏低，注意补充水分和适当增加盐分，避免快速起身'); }
+                else advice.push('血压正常（' + d.sbp + '/' + d.dbp + ' mmHg）✅，请继续保持！');
+            }
+            if (d.glucose) {
+                if (d.glucose > 7) { score -= 15; advice.push('空腹血糖偏高，建议控制精制糖和高GI食物摄入，尽快就医检查糖化血红蛋白'); }
+                else if (d.glucose > 6.1) { score -= 8; advice.push('血糖处于糖尿病前期范围（' + d.glucose + ' mmol/L），建议运动干预并3个月后复查'); }
+                else if (d.glucose < 3.9) { score -= 10; advice.push('血糖偏低，注意随身携带糖果，避免空腹剧烈运动'); }
+                else advice.push('血糖正常（' + d.glucose + ' mmol/L）✅');
+            }
+            if (d.hr) {
+                if (d.hr > 100) { score -= 10; advice.push('心率偏快（' + d.hr + ' 次/分），注意充分休息，减少咖啡因，必要时查心电图'); }
+                else if (d.hr < 50) { score -= 8; advice.push('心率较慢（' + d.hr + ' 次/分），若无运动员背景，建议心电图排查'); }
+                else advice.push('心率正常（' + d.hr + ' 次/分）✅');
+            }
+            return { score: Math.max(score, 0), advice };
+        }
+        function loadRecordsFor(username) {
+            if (!recordsByUser[username]) {
+                try {
+                    const storedRecords = JSON.parse(localStorage.getItem(HREC_KEY + '_' + username)) || [];
+                    recordsByUser[username] = Array.isArray(storedRecords) ? storedRecords : [];
+                } catch (e) { recordsByUser[username] = [] }
+            }
+            healthRecords = recordsByUser[username];
+            try {
+                const stored = localStorage.getItem(BP_HISTORY_KEY + '_' + username);
+                if (stored !== null) {
+                    const storedHistory = JSON.parse(stored) || [];
+                    bpHistory = Array.isArray(storedHistory) ? storedHistory : [];
+                }
+                else {
+                    const legacy = JSON.parse(localStorage.getItem('mediai-bp') || '[]');
+                    bpHistory = Object.keys(getUsers()).length === 1 && Array.isArray(legacy) ? legacy : [];
+                    if (bpHistory.length) localStorage.setItem(BP_HISTORY_KEY + '_' + username, JSON.stringify(bpHistory));
+                }
+            } catch (e) { bpHistory = [] }
+        }
+        function persistRecords() {
+            const u = currentUser();
+            if (!u) return;
+            recordsByUser[u] = healthRecords;
+            try { localStorage.setItem(HREC_KEY + '_' + u, JSON.stringify(healthRecords)) } catch (e) { }
+        }
+        function persistBpHistory() {
+            const u = currentUser();
+            if (!u) return;
+            try { localStorage.setItem(BP_HISTORY_KEY + '_' + u, JSON.stringify(bpHistory)) } catch (e) { }
+        }
+        function todayKey() {
+            const t = new Date();
+            return t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
+        }
+        // 把一次录入整理成记录对象
+        function buildRecord(d, score, advice) {
+            return {
+                id: 'r' + Date.now(),
+                date: new Date().toLocaleDateString('zh', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' }),
+                key: todayKey(),
+                savedAt: new Date().toLocaleString('zh', { hour: '2-digit', minute: '2-digit' }),
+                height: d.height, weight: d.weight, bmi: d.bmi === null ? null : +d.bmi.toFixed(1), sbp: d.sbp, dbp: d.dbp, glucose: d.glucose, hr: d.hr,
+                score, advice
+            };
+        }
+        function todayRecord() { return healthRecords.find(r => r.key === todayKey()) || null }
+        function badgeFor(r) {
+            if (r.score >= 85) return ['open', '状态良好'];
+            if (r.score >= 70) return ['warn', '需要关注'];
+            return ['danger', '风险偏高'];
+        }
+        function clsFor(name, val, lo, hi) {
+            if (val == null || val === '') return '';
+            if (name === 'bmi') { if (val < 18.5) return 'mid'; if (val < 24) return 'good'; if (val < 28) return 'mid'; return 'bad'; }
+            if (name === 'bp') { if (val < 90) return 'mid'; if (val <= 120) return 'good'; if (val <= 139) return 'mid'; return 'bad'; }
+            if (name === 'dbp') { if (val < 60) return 'mid'; if (val <= 80) return 'good'; if (val <= 89) return 'mid'; return 'bad'; }
+            if (name === 'glucose') { if (val < 3.9) return 'mid'; if (val <= 6.1) return 'good'; return 'bad'; }
+            if (name === 'hr') { if (val < 50) return 'mid'; if (val <= 100) return 'good'; return 'bad'; }
+            return '';
+        }
+        function setHealthAdvice(advice) {
+            const el = document.getElementById('healthAdvice');
+            if (!el) return;
+            el.replaceChildren();
+            if (!Array.isArray(advice) || advice.length === 0) {
+                el.textContent = '完善健康数据后将自动生成个性化建议...';
+                return;
+            }
+            advice.forEach((item, index) => {
+                if (index) el.append(document.createElement('br'), document.createElement('br'));
+                el.append(document.createTextNode('• ' + item));
+            });
+        }
+        function renderHealthSummary(record) {
+            healthScore = record && Number.isFinite(Number(record.score)) ? Number(record.score) : 0;
+            setHealthAdvice(record && record.advice);
+            const scoreEl = document.getElementById('scoreNum');
+            scoreEl.replaceChildren(document.createTextNode(healthScore ? String(healthScore) : '--'));
+            const label = document.createElement('span');
+            label.className = 'score-lbl';
+            label.textContent = '分';
+            scoreEl.append(label);
+            scoreEl.style.color = healthScore ? '' : 'var(--primary)';
+            document.getElementById('v-bmi').textContent = record && record.bmi != null ? record.bmi : '--';
+            document.getElementById('v-bp').textContent = record && record.sbp != null ? record.sbp + '/' + record.dbp : '--/--';
+            document.getElementById('v-glucose').textContent = record && record.glucose != null ? record.glucose : '--';
+            document.getElementById('v-hr').textContent = record && record.hr != null ? record.hr : '--';
+            document.getElementById('bmiResult').style.display = 'none';
+            drawScore(healthScore);
+            drawBpChart();
+        }
+        function restoreHealthSummary() {
+            const latest = [...healthRecords].sort((a, b) => b.key.localeCompare(a.key))[0];
+            renderHealthSummary(latest);
+        }
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[char]);
+        }
+        function formatRecordAdvice(advice) {
+            return Array.isArray(advice) ? advice.map(item => '• ' + escapeHtml(item)).join('<br>') : '';
+        }
+        function renderHistory() {
+            const box = document.getElementById('healthHistory');
+            const tip = document.getElementById('healthSaveTip');
+            const btn = document.getElementById('saveHealthBtn');
+            if (!box) return;
+            // 今日封存提示
+            const t = todayRecord();
+            if (tip && btn) {
+                if (t) {
+                    tip.style.display = 'flex';
+                    const badge = badgeFor(t);
+                    document.getElementById('healthSaveTipTxt').innerHTML =
+                        '今日评分 <strong>' + t.score + ' 分</strong>（' + badge[1] + '），下次归档将在 <strong>' + nextOpenText() + '</strong>';
+                    btn.disabled = true; btn.style.opacity = .5; btn.style.cursor = 'not-allowed';
+                    btn.textContent = '🔒 今日已归档，明天再来';
+                } else {
+                    tip.style.display = 'none';
+                    btn.disabled = false; btn.style.opacity = 1; btn.style.cursor = 'pointer';
+                    btn.textContent = '💾 保存并生成报告';
+                }
+            }
+            if (healthRecords.length === 0) {
+                box.innerHTML = `<div class="hist-empty">
+      📭 还没有历史记录<br><br>
+      填写上方表单并保存，即可生成你的第一份健康档案。<br>
+      <strong>每份档案一经生成即自动封存，不可修改、不可删除</strong>——这就是它值得信赖的原因。
+    </div>`;
+                return;
+            }
+            const sorted = [...healthRecords].sort((a, b) => b.key.localeCompare(a.key));
+            box.innerHTML = sorted.map((r, idx) => {
+                const [bcls, blabel] = badgeFor(r);
+                const open = idx === 0 ? ' open' : '';
+                const locked = idx > 0;
+                return `<div class="hist-card${open}">
+      <div class="hist-head" role="button" tabindex="0" aria-expanded="${idx === 0}" onclick="toggleHist(this)">
+        <span style="font-size:20px">${idx === 0 ? '📄' : '📁'}</span>
+        <span class="hist-date">${escapeHtml(r.date)}${r.key === todayKey() ? ' <span style="font-size:11px;color:var(--primary)">· 今日</span>' : ''}</span>
+        <span class="hist-badge ${locked ? 'locked' : 'open'}">${locked ? '🔒 已封存' : '✅ 有效'}</span>
+        <span class="hist-badge ${bcls}">${r.score} 分 · ${blabel}</span>
+        <span class="hist-arrow">▶</span>
+      </div>
+      <div class="hist-body">
+        <div class="hist-vitals">
+          <div class="hist-vital"><div class="hist-vital-v ${clsFor('bmi', r.bmi)}">${r.bmi ?? '--'}</div><div class="hist-vital-l">BMI 指数</div></div>
+          <div class="hist-vital"><div class="hist-vital-v ${clsFor('bp', r.sbp)}">${r.sbp ?? '--'}/${r.dbp ?? '--'}</div><div class="hist-vital-l">血压 mmHg</div></div>
+          <div class="hist-vital"><div class="hist-vital-v ${clsFor('glucose', r.glucose)}">${r.glucose ?? '--'}</div><div class="hist-vital-l">血糖 mmol/L</div></div>
+          <div class="hist-vital"><div class="hist-vital-v ${clsFor('hr', r.hr)}">${r.hr ?? '--'}</div><div class="hist-vital-l">心率 次/分</div></div>
+        </div>
+        <div style="font-size:12.5px;color:var(--text2);line-height:1.7">${formatRecordAdvice(r.advice)}</div>
+        <div class="hist-trend">
+          ${trendBlock(r, sorted, idx)}
+        </div>
+        ${locked ? `<div class="hist-lock" style="margin:14px 0 0"><span>🔒</span><span>此档案于 ${escapeHtml(r.savedAt)} 生成并<strong>自动封存</strong>。系统不提供修改或删除入口，如需更正请等待次日重新归档，形成可追溯的连续记录。</span></div>` : ''}
+      </div>
+    </div>`;
+            }).join('');
+        }
+        function trendBlock(r, sorted, idx) {
+            // 与上次对比
+            const prev = sorted[idx + 1];
+            const diff = (name, unit) => {
+                if (!prev || r[name] === undefined || prev[name] === undefined || prev[name] === null) return '<span style="color:var(--text3)">暂无上期数据</span>';
+                const d = +(r[name] - prev[name]).toFixed(1);
+                const sign = d > 0 ? '+' : '';
+                const color = d > 0 ? 'var(--danger)' : d < 0 ? 'var(--success)' : 'var(--text3)';
+                return `<span style="color:${color};font-weight:700">${sign}${d} ${unit}</span>`;
+            };
+            return `<div>BMI 变化<br><b>${prev ? diff('bmi', '') : '首次记录'}</b></div>
+          <div>血压变化<br><b>${prev ? diff('sbp', '') + ' / ' + diff('dbp', '') : '首次记录'}</b></div>
+          <div>血糖变化<br><b>${prev ? diff('glucose', '') : '首次记录'}</b></div>`;
+        }
+        function nextOpenText() {
+            const d = new Date(); d.setDate(d.getDate() + 1);
+            return d.getMonth() + 1 + '月' + d.getDate() + '日 00:00 之后';
+        }
+        function toggleHist(head) {
+            const card = head.closest('.hist-card');
+            card.classList.toggle('open');
+            head.setAttribute('aria-expanded', String(card.classList.contains('open')));
+        }
+
+        // ─── 键盘与初始化 ─────────────────────────────────────────
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') { closeAuth(); closeNotif(); const um = document.getElementById('userMenu'); if (um) um.classList.remove('show'); }
+            const control = e.target.closest('[role="button"], [role="tab"]');
+            if (control && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); control.click(); }
+        });
+        document.getElementById('authMask').addEventListener('click', e => { if (e.target === e.currentTarget) closeAuth() });
+        document.getElementById('notifMask').addEventListener('click', e => { if (e.target === e.currentTarget) closeNotif() });
+        document.querySelectorAll('.feat-card, .cat-card').forEach(control => {
+            control.setAttribute('role', 'button');
+            control.tabIndex = 0;
+        });
+        initSplash();
+        renderKb(kbData);
+        loadChatHistory();
+        const activeUser = currentUser();
+        if (activeUser) loadRecordsFor(activeUser);
+        restoreHealthSummary();
+        renderHistory();
+        syncUserUI();
+    </script>
+</body>
+
+</html>
