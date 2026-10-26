@@ -108,6 +108,7 @@
                 </div>
                 <div class="field-forgot"><button class="text-link" type="button" onclick="showForgot()">忘记密码？</button>
                 </div>
+                <div class="field-tip" style="margin:-2px 0 12px">💡 账号保存在本设备浏览器中：换手机或电脑登录时，若本设备还没有该账号，直接输入用户名和密码即可创建并登录。</div>
                 <button class="btn btn-p btn-block" onclick="doLogin()">登 录</button>
                 <div class="modal-foot">还没有账号？<button class="text-link" type="button"
                         onclick="switchView('register')">立即注册</button></div>
@@ -774,7 +775,16 @@
             const users = getUsers();
             if (!user) { showErr('loginUserErr', '请输入用户名'); return }
             if (!pwd) { showErr('loginPwdErr', '请输入密码'); return }
-            if (!users[user]) { showErr('loginUserErr', '该账号不存在，请先注册'); return }
+            // 跨设备登录：本设备没有该账号时，确认后直接用当前密码在本设备创建并登录。
+            // 账号与数据按设备保存在各自的浏览器本地（各设备数据独立，不会互相覆盖）。
+            if (!users[user]) {
+                const ok = confirm('这个设备上还没有账号「' + user + '」。\n\n账号与数据保存在每个设备的浏览器本地，设备之间不会自动同步。\n\n是否直接以当前密码在本设备创建并登录？');
+                if (!ok) { switchView('register'); return }
+                try {
+                    users[user] = { password: await createPasswordRecord(pwd), created: Date.now() };
+                    setUsers(users);
+                } catch (e) { showErr('loginUserErr', '当前浏览器无法安全保存账号，请使用最新版浏览器'); return }
+            }
             try {
                 if (!(await passwordMatches(pwd, users[user].password))) { showErr('loginPwdErr', '密码错误，请重试'); return }
                 if (typeof users[user].password === 'string') {
