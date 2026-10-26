@@ -56,18 +56,13 @@
             </div>
             <div class="sp-divider"></div>
             <div class="sp-stat">
-                <div class="sp-stat-v">12</div>
-                <div class="sp-stat-l">项健康管理工具</div>
+                <div class="sp-stat-v" id="spStatTools">0</div>
+                <div class="sp-stat-l">大核心功能</div>
             </div>
             <div class="sp-divider"></div>
             <div class="sp-stat">
-                <div class="sp-stat-v">24</div>
-                <div class="sp-stat-l">小时在线陪伴</div>
-            </div>
-            <div class="sp-divider"></div>
-            <div class="sp-stat">
-                <div class="sp-stat-v">0</div>
-                <div class="sp-stat-l">上传到服务器</div>
+                <div class="sp-stat-v" id="spStatDaily">0</div>
+                <div class="sp-stat-l">今日新增科普</div>
             </div>
             <div class="sp-divider"></div>
             <div class="sp-stat">
@@ -214,6 +209,38 @@
         </div>
     </div>
 
+    <!-- 云同步设置 -->
+    <div class="modal-mask" id="syncMask" role="dialog" aria-modal="true" aria-label="云同步设置">
+        <div class="modal">
+            <button class="modal-close" type="button" onclick="closeSync()" aria-label="关闭云同步设置">✕</button>
+            <div class="modal-title">☁️ 云同步</div>
+            <div class="modal-sub">手机和电脑登录同一账号，健康数据自动保持一致（数据存在你自己的 GitHub 私密 Gist 里）</div>
+            <div class="field">
+                <label class="field-label" for="syncToken">GitHub 令牌（只需 gist 权限）</label>
+                <div class="field-box">
+                    <span class="fi">🔑</span>
+                    <input class="with-eye" id="syncToken" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+                    <button class="fi fi-eye" type="button" onclick="togglePwd(this,'syncToken')" title="显示"
+                        aria-label="显示">👁️</button>
+                </div>
+                <div class="field-tip">获取方法：github.com → Settings → Developer settings → Personal access tokens → Tokens (classic) → 勾选 <code>gist</code> 权限即可。令牌只保存在本设备浏览器，只用于读写你自己的 Gist。</div>
+            </div>
+            <div class="field">
+                <label class="field-label" for="syncSpace">同步空间名称（所有设备填一样的即可）</label>
+                <div class="field-box">
+                    <span class="fi">🏷️</span>
+                    <input id="syncSpace" type="text" placeholder="我的健康档案" value="我的健康档案">
+                </div>
+            </div>
+            <div class="sync-status" id="syncStatus"></div>
+            <div class="sync-actions">
+                <button class="btn btn-p" style="flex:1;justify-content:center" onclick="saveSyncCfg()">💾 保存并开启</button>
+                <button class="btn btn-g" style="flex:1;justify-content:center" onclick="syncNow(true)">🔄 立即同步</button>
+                <button class="btn btn-g" onclick="disableSync()">关闭</button>
+            </div>
+        </div>
+    </div>
+
     <nav class="sidebar" id="sidebar">
         <div class="s-logo">
             <div class="s-logo-icon">⚕️</div>
@@ -241,6 +268,7 @@
             </div>
             <div class="u-menu" id="userMenu">
                 <button type="button" class="u-menu-item" onclick="userCardAct('notif')">🔔 消息中心</button>
+                <button type="button" class="u-menu-item" onclick="userCardAct('sync')">☁️ 云同步</button>
                 <button type="button" class="u-menu-item danger" onclick="userCardAct('logout')">🚪 退出登录</button>
             </div>
         </div>
@@ -758,7 +786,7 @@
             if (pwd.length < 6) { showErr('regPwdErr', '密码至少 6 位'); return }
             if (pwd !== pwd2) { showErr('regPwd2Err', '两次输入的密码不一致'); return }
             try {
-                users[user] = { password: await createPasswordRecord(pwd), created: Date.now() };
+                users[user] = { password: await createPasswordRecord(pwd), created: Date.now(), updatedAt: Date.now() };
                 setUsers(users);
             } catch (e) { showErr('regPwdErr', '当前浏览器无法安全保存密码，请使用最新版浏览器'); return }
             setSession({ username: user });
@@ -768,20 +796,25 @@
             syncUserUI();
             closeAuth();
             showSec('home');
+            if (getSyncCfg()) { syncNow(false); }
             alert('🎉 注册成功，欢迎使用 MediAI！');
         }
         async function doLogin() {
             const user = elVal('loginUser'), pwd = document.getElementById('loginPwd').value;
-            const users = getUsers();
+            let users = getUsers();
             if (!user) { showErr('loginUserErr', '请输入用户名'); return }
             if (!pwd) { showErr('loginPwdErr', '请输入密码'); return }
-            // 跨设备登录：本设备没有该账号时，确认后直接用当前密码在本设备创建并登录。
-            // 账号与数据按设备保存在各自的浏览器本地（各设备数据独立，不会互相覆盖）。
+            // 配置了云同步时，先拉取云端账号表（跨设备登录能直接找到账号）
+            if (getSyncCfg()) {
+                try { await pullSync(); } catch (e) { console.warn('[MediAI] 登录前同步失败：', e); }
+                users = getUsers();
+            }
+            // 跨设备登录：本设备没有该账号时，确认后直接用当前密码在本设备创建并登录（随后自动同步到云端）。
             if (!users[user]) {
-                const ok = confirm('这个设备上还没有账号「' + user + '」。\n\n账号与数据保存在每个设备的浏览器本地，设备之间不会自动同步。\n\n是否直接以当前密码在本设备创建并登录？');
+                const ok = confirm('这个设备上还没有账号「' + user + '」。\n\n' + (getSyncCfg() ? '已开启云同步：确认后会在本设备创建账号，并自动与云端保持一致。' : '账号与数据保存在每个设备的浏览器本地，设备之间不会自动同步。') + '\n\n是否直接以当前密码在本设备创建并登录？');
                 if (!ok) { switchView('register'); return }
                 try {
-                    users[user] = { password: await createPasswordRecord(pwd), created: Date.now() };
+                    users[user] = { password: await createPasswordRecord(pwd), created: Date.now(), updatedAt: Date.now() };
                     setUsers(users);
                 } catch (e) { showErr('loginUserErr', '当前浏览器无法安全保存账号，请使用最新版浏览器'); return }
             }
@@ -799,6 +832,8 @@
             syncUserUI();
             closeAuth();
             if (pendingAction) { pendingAction(); pendingAction = null }
+            // 登录成功后把本机最新状态推到云端
+            if (getSyncCfg()) { syncNow(false); }
         }
         function doLogout() {
             if (!confirm('确定要退出当前账号吗？')) return;
@@ -830,7 +865,7 @@
             if (u) {
                 document.getElementById('uName').textContent = u;
                 document.getElementById('uAv').textContent = u.charAt(0).toUpperCase();
-                document.getElementById('uRole').textContent = '已登录 · 数据已同步';
+                document.getElementById('uRole').textContent = getSyncCfg() ? '已登录 · ☁️ 云同步已开启' : '已登录 · 数据仅存本机';
             } else {
                 document.getElementById('uName').textContent = '游客模式';
                 document.getElementById('uAv').textContent = '游';
@@ -853,6 +888,7 @@
             const menu = document.getElementById('userMenu');
             if (menu) menu.classList.remove('show');
             if (act === 'notif') openNotif();
+            else if (act === 'sync') openSync();
             else doLogout();
         }
         // 点击页面其他位置时收起账号菜单
@@ -861,6 +897,185 @@
             const menu = document.getElementById('userMenu');
             if (menu && foot && !foot.contains(e.target)) menu.classList.remove('show');
         });
+
+        // ─── 云同步（GitHub 私密 Gist） ──────────────────────────
+        const SYNC_CFG_KEY = 'mediai-sync-cfg';
+        const SYNC_DESC = 'MediAI云同步空间';
+
+        function getSyncCfg() { try { return JSON.parse(localStorage.getItem(SYNC_CFG_KEY)) || null } catch (e) { return null } }
+        function setSyncCfg(cfg) { cfg ? localStorage.setItem(SYNC_CFG_KEY, JSON.stringify(cfg)) : localStorage.removeItem(SYNC_CFG_KEY) }
+        function openSync() {
+            const cfg = getSyncCfg() || {};
+            document.getElementById('syncToken').value = cfg.token || '';
+            document.getElementById('syncSpace').value = cfg.space || '我的健康档案';
+            const st = document.getElementById('syncStatus');
+            if (st) { st.textContent = ''; st.className = 'sync-status'; }
+            document.getElementById('syncMask').classList.add('show');
+        }
+        function closeSync() { document.getElementById('syncMask').classList.remove('show'); }
+        function syncStatus(msg, ok) {
+            const el = document.getElementById('syncStatus');
+            if (!el) return;
+            el.textContent = msg;
+            el.className = 'sync-status' + (ok === false ? ' bad' : ok === true ? ' good' : '');
+        }
+
+        function gistApi(cfg, method, path, body) {
+            return fetch('https://api.github.com' + path, {
+                method,
+                headers: {
+                    'Authorization': 'Bearer ' + cfg.token,
+                    'Accept': 'application/vnd.github+json',
+                    'Content-Type': 'application/json'
+                },
+                body: body ? JSON.stringify(body) : undefined
+            }).then(r => {
+                if (r.status === 204) return null;
+                return r.json().then(d => {
+                    if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + (d && d.message || ''));
+                    return d;
+                });
+            });
+        }
+
+        // 找到（或创建）属于该同步空间的 Gist
+        async function findOrCreateGist(cfg) {
+            if (cfg.gistId) {
+                try { await gistApi(cfg, 'GET', '/gists/' + cfg.gistId); return cfg.gistId; }
+                catch (e) { cfg.gistId = null; }
+            }
+            const desc = SYNC_DESC + '·' + cfg.space;
+            const list = await gistApi(cfg, 'GET', '/gists?per_page=100');
+            const mine = (list || []).find(g => (g.description || '') === desc);
+            if (mine) { cfg.gistId = mine.id; setSyncCfg(cfg); return mine.id; }
+            const created = await gistApi(cfg, 'POST', '/gists', {
+                description: desc,
+                public: false,
+                files: { 'mediAI-sync.json': { content: JSON.stringify({ v: 1, users: {}, data: {} }) } }
+            });
+            cfg.gistId = created.id;
+            setSyncCfg(cfg);
+            return created.id;
+        }
+
+        // 汇总本机全部账号与健康数据
+        function buildSyncPayload() {
+            const users = getUsers();
+            const su = {};
+            Object.keys(users).forEach(name => {
+                const r = users[name];
+                su[name] = { password: r.password, created: r.created, updatedAt: r.updatedAt || r.created || 0 };
+            });
+            const data = {};
+            Object.keys(users).forEach(name => {
+                let records = [], bp = [];
+                try { records = JSON.parse(localStorage.getItem(HREC_KEY + '_' + name)) || [] } catch (e) { }
+                try { bp = JSON.parse(localStorage.getItem(BP_HISTORY_KEY + '_' + name)) || [] } catch (e) { }
+                data[name] = {
+                    records, bp,
+                    updatedAt: ((records[records.length - 1] || {}).updatedAt) || (su[name] ? su[name].updatedAt : 0)
+                };
+            });
+            return { v: 1, users: su, data };
+        }
+
+        // 把远端数据合并到本机（updatedAt 新者胜）
+        function mergeSyncPayload(payload) {
+            if (!payload || typeof payload !== 'object') return false;
+            let changed = false;
+            const users = getUsers();
+            const remUsers = payload.users || {};
+            Object.keys(remUsers).forEach(name => {
+                const local = users[name];
+                const rem = remUsers[name];
+                if (!local || ((rem.updatedAt || 0) > (local.updatedAt || local.created || 0))) {
+                    users[name] = { password: rem.password, created: rem.created, updatedAt: rem.updatedAt };
+                    changed = true;
+                }
+            });
+            if (changed) setUsers(users);
+            const remData = payload.data || {};
+            Object.keys(remData).forEach(name => {
+                const rd = remData[name];
+                let localRecords = [];
+                try { localRecords = JSON.parse(localStorage.getItem(HREC_KEY + '_' + name)) || [] } catch (e) { }
+                const localT = (localRecords[localRecords.length - 1] || {}).updatedAt || 0;
+                if ((rd.updatedAt || 0) > localT) {
+                    localStorage.setItem(HREC_KEY + '_' + name, JSON.stringify(rd.records || []));
+                    localStorage.setItem(BP_HISTORY_KEY + '_' + name, JSON.stringify(rd.bp || []));
+                    changed = true;
+                }
+            });
+            return changed;
+        }
+
+        async function pushSync() {
+            const cfg = getSyncCfg();
+            if (!cfg || !cfg.token) throw new Error('未配置云同步');
+            const gistId = await findOrCreateGist(cfg);
+            await gistApi(cfg, 'PATCH', '/gists/' + gistId, {
+                files: { 'mediAI-sync.json': { content: JSON.stringify(buildSyncPayload()) } }
+            });
+        }
+        async function pullSync() {
+            const cfg = getSyncCfg();
+            if (!cfg || !cfg.token) throw new Error('未配置云同步');
+            const gistId = await findOrCreateGist(cfg);
+            const gist = await gistApi(cfg, 'GET', '/gists/' + gistId);
+            const f = gist.files && gist.files['mediAI-sync.json'];
+            if (!f || !f.content) return false;
+            let payload;
+            try { payload = JSON.parse(f.content); } catch (e) { return false; }
+            return mergeSyncPayload(payload);
+        }
+        function refreshAfterSync() {
+            const u = currentUser();
+            if (u) {
+                recordsByUser = {};
+                loadRecordsFor(u);
+                restoreHealthSummary();
+                renderHistory();
+            }
+            syncUserUI();
+        }
+        // 同步一轮：先拉取云端合并到本机，再把合并后的最新状态推上去（防止覆盖其他设备的数据）
+        async function syncNow(showStatus) {
+            const cfg = getSyncCfg();
+            if (!cfg || !cfg.token) { openSync(); return }
+            if (showStatus) syncStatus('⏳ 正在同步...');
+            try {
+                const changed = await pullSync();
+                await pushSync();
+                if (changed) refreshAfterSync();
+                if (showStatus) syncStatus(changed ? '✅ 同步完成，已合并云端最新数据' : '✅ 同步完成，数据已一致', true);
+            } catch (e) {
+                console.warn('[MediAI] 云同步失败：', e);
+                if (showStatus) syncStatus('❌ 同步失败：' + e.message, false);
+            }
+        }
+        async function saveSyncCfg() {
+            const token = document.getElementById('syncToken').value.trim();
+            const space = document.getElementById('syncSpace').value.trim() || '我的健康档案';
+            if (!token) { alert('请填写 GitHub 令牌（gist 权限）'); return }
+            setSyncCfg({ token, space, gistId: null });
+            syncStatus('⏳ 正在验证令牌并创建同步空间...');
+            try {
+                await pullSync();
+                await pushSync();
+                refreshAfterSync();
+                syncStatus('✅ 云同步已开启！以后登录与录入数据都会自动同步。', true);
+                setTimeout(closeSync, 900);
+            } catch (e) {
+                syncStatus('❌ 开启失败：' + e.message + '（请确认令牌正确且勾选了 gist 权限）', false);
+            }
+        }
+        function disableSync() {
+            if (!confirm('确定关闭云同步吗？本机数据不会删除，只是不再自动同步。')) return;
+            setSyncCfg(null);
+            closeSync();
+            syncUserUI();
+            alert('☁️ 云同步已关闭');
+        }
 
         // ─── 消息中心（通知） ─────────────────────────────────────
         const NOTIF_PREFIX = 'mediai-notifs_';
@@ -1888,6 +2103,13 @@
                 if (bpHistory.length > 7) bpHistory.shift();
                 persistBpHistory();
             }
+            // 更新账号同步时间戳，并把新数据推送到云端
+            const syncUser = currentUser();
+            if (syncUser) {
+                const syncUsers = getUsers();
+                if (syncUsers[syncUser]) { syncUsers[syncUser].updatedAt = Date.now(); setUsers(syncUsers); }
+                if (getSyncCfg()) { syncNow(false); }
+            }
             // 展示
             renderHealthSummary(healthRecords[healthRecords.length - 1]);
             renderHistory();
@@ -2399,7 +2621,9 @@
             countUp('spStatKb', kbData.length, 1400);
             countUp('spStatNews', newsPool.length, 1400);
             countUp('spStatCats', new Set(kbData.map(k => k.cat)).size, 1400);
-            countUp('spStatMeasures', kbData.reduce((s, k) => s + (k.measures ? k.measures.length : 0), 0), 1400);
+            countUp('spStatMeasures', kbData.reduce((s, k) => s + (k.detail && k.detail.measures ? k.detail.measures.length : 0), 0), 1400);
+            countUp('spStatTools', Object.keys(titles).length, 1400);
+            countUp('spStatDaily', pickDailyNews().length, 1400);
             // 同一会话内只看一次开场页
             let seen = false;
             try { seen = sessionStorage.getItem(SP_KEY) === '1' } catch (e) { }
@@ -2490,7 +2714,8 @@
                 key: todayKey(),
                 savedAt: new Date().toLocaleString('zh', { hour: '2-digit', minute: '2-digit' }),
                 height: d.height, weight: d.weight, bmi: d.bmi === null ? null : +d.bmi.toFixed(1), sbp: d.sbp, dbp: d.dbp, glucose: d.glucose, hr: d.hr,
-                score, advice
+                score, advice,
+                updatedAt: Date.now()
             };
         }
         function todayRecord() { return healthRecords.find(r => r.key === todayKey()) || null }
@@ -2633,12 +2858,13 @@
 
         // ─── 键盘与初始化 ─────────────────────────────────────────
         document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') { closeAuth(); closeNotif(); const um = document.getElementById('userMenu'); if (um) um.classList.remove('show'); }
+            if (e.key === 'Escape') { closeAuth(); closeNotif(); closeSync(); const um = document.getElementById('userMenu'); if (um) um.classList.remove('show'); }
             const control = e.target.closest('[role="button"], [role="tab"]');
             if (control && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); control.click(); }
         });
         document.getElementById('authMask').addEventListener('click', e => { if (e.target === e.currentTarget) closeAuth() });
         document.getElementById('notifMask').addEventListener('click', e => { if (e.target === e.currentTarget) closeNotif() });
+        document.getElementById('syncMask').addEventListener('click', e => { if (e.target === e.currentTarget) closeSync() });
         document.querySelectorAll('.feat-card, .cat-card').forEach(control => {
             control.setAttribute('role', 'button');
             control.tabIndex = 0;
@@ -2651,6 +2877,8 @@
         restoreHealthSummary();
         renderHistory();
         syncUserUI();
+        // 已配置云同步时，启动后自动拉取云端最新数据
+        if (getSyncCfg()) { syncNow(false); }
     </script>
 </body>
 

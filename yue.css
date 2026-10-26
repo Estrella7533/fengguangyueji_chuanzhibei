@@ -1277,6 +1277,34 @@ body {
     padding: 22px 10px
 }
 
+/* ── 云同步 ── */
+.sync-status {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--text2);
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 9px 12px;
+    margin: 4px 0 12px;
+    min-height: 18px;
+    word-break: break-all
+}
+
+.sync-status.good {
+    background: #f0fdf4;
+    color: #15803d
+}
+
+.sync-status.bad {
+    background: #fef2f2;
+    color: #b91c1c
+}
+
+.sync-actions {
+    display: flex;
+    gap: 8px
+}
+
 .divider {
     display: flex;
     align-items: center;
