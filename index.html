@@ -280,6 +280,7 @@
         <div class="nav-item" data-sec="kb"><span class="nav-icon">📚</span>医疗知识库</div>
         <div class="s-sect">工具</div>
         <div class="nav-item" data-sec="bmi"><span class="nav-icon">⚖️</span>BMI 计算器</div>
+        <div class="nav-item" data-sec="guide"><span class="nav-icon">📍</span>慧医导诊</div>
         <div class="nav-item" data-sec="news"><span class="nav-icon">📰</span>科普资讯<span class="nav-badge"
                 id="newsBadge">每日更新</span></div>
         <div class="s-foot" id="userFoot">
@@ -317,6 +318,8 @@
                 <div class="tb-sub" id="tb-sub">欢迎使用 MediAI 智能医疗平台</div>
             </div>
             <div class="tb-right">
+                <button class="btn btn-g" id="locPill" onclick="openLocPicker()" title="定位 / 更换位置">📍 <span
+                        id="locPillName">德州市德城区</span> ▾</button>
                 <button class="btn btn-g" id="notifBtn" onclick="openNotif()">🔔 通知<span class="notif-badge"
                         id="notifBadge" style="display:none"></span></button>
                 <button class="btn btn-p" onclick="requireAuth(()=>showSec('chat'))">💬 开始问诊</button>
@@ -387,6 +390,11 @@
                         <div class="feat-icon" style="background:#fef3c7">🔬</div>
                         <div class="feat-title">医疗知识库</div>
                         <div class="feat-desc">涵盖心血管、糖尿病、呼吸系统等常见疾病的专业知识，通俗易懂，随时查阅。</div>
+                    </div>
+                    <div class="feat-card" onclick="showSec('guide')">
+                        <div class="feat-icon" style="background:#e0e7ff">📍</div>
+                        <div class="feat-title">慧医导诊</div>
+                        <div class="feat-desc">按症状和身体部位推荐德州合适的医院，查看三甲/二甲/基层名单，一键跳转高德、百度地图导航前往。</div>
                     </div>
                 </div>
             </section>
@@ -525,19 +533,17 @@
                 <div class="bmi-tabs" id="bmiTabs" role="tablist" aria-label="BMI 分析内容">
                     <div class="bmi-tab active" data-btab="calc" role="tab" tabindex="0" aria-controls="bmi-calc"
                         aria-selected="true" onclick="switchBmiTab(this,'calc')">🧮 计算与分析</div>
-                    <div class="bmi-tab" data-btab="weight" role="tab" tabindex="-1" aria-controls="bmi-weight"
-                        aria-selected="false" onclick="switchBmiTab(this,'weight')">🎯 理想体重</div>
                     <div class="bmi-tab" data-btab="risk" role="tab" tabindex="-1" aria-controls="bmi-risk"
                         aria-selected="false" onclick="switchBmiTab(this,'risk')">⚠️ 健康风险</div>
                     <div class="bmi-tab" data-btab="plan" role="tab" tabindex="-1" aria-controls="bmi-plan"
                         aria-selected="false" onclick="switchBmiTab(this,'plan')">📋 减重计划</div>
                 </div>
 
-                <!-- 计算与分析 -->
+                <!-- 计算与分析（身高/体重/年龄/性别 + 全部身体评估卡片） -->
                 <div class="bmi-panel" id="bmi-calc">
                     <div class="g2">
                         <div class="card">
-                            <div class="sec-title" style="margin-top:0">📐 输入身高体重</div>
+                            <div class="sec-title" style="margin-top:0">📐 输入身体数据</div>
                             <div class="input-row">
                                 <div class="form-group"><label class="form-label" for="b-height">身高 (cm)</label><input
                                         class="form-input" id="b-height" type="number" min="50" max="250" step="0.1"
@@ -546,8 +552,19 @@
                                         class="form-input" id="b-weight" type="number" min="2" max="500" step="0.1"
                                         inputmode="decimal" placeholder="65"></div>
                             </div>
+                            <div class="input-row">
+                                <div class="form-group"><label class="form-label" for="b-age">年龄 (岁)</label><input
+                                        class="form-input" id="b-age" type="number" min="10" max="100" step="1"
+                                        inputmode="numeric" placeholder="19"></div>
+                                <div class="form-group"><label class="form-label" for="b-sex">性别</label>
+                                    <select class="form-input" id="b-sex">
+                                        <option value="female">女</option>
+                                        <option value="male">男</option>
+                                    </select>
+                                </div>
+                            </div>
                             <button class="btn btn-p" style="width:100%;justify-content:center;padding:10px"
-                                onclick="calcBmi()">🧮 计算 BMI</button>
+                                onclick="calcBmi()">🧮 计算身体评估</button>
                             <div class="bmi-result" id="bmiCalcResult" style="display:none">
                                 <div class="bmi-val" id="bmiCalcVal"></div>
                                 <div class="bmi-cat" id="bmiCalcCat"></div>
@@ -565,7 +582,19 @@
                             </div>
                             <p style="font-size:12px;color:var(--text3);line-height:1.6">BMI
                                 是评估体重状况的常用指标，但不能区分脂肪与肌肉。运动员、孕妇及未成年人应结合腰围、体脂率等综合判断。</p>
+                            <img src="https://aka.doubaocdn.com/l/6Px1vJAGY7" alt="BMI 身体成分示意图"
+                                style="width:100%;border-radius:12px;margin-top:10px;display:block">
                         </div>
+                    </div>
+                    <div class="card" style="margin-top:14px">
+                        <div class="sec-title" style="margin-top:0">🎯 身体成分综合评估（估算参考）</div>
+                        <p style="font-size:13px;color:var(--text2);line-height:1.7">
+                            系统按通用公式（Deurenberg 体脂率、Mifflin-St Jeor 基础代谢等）估算各项身体成分。
+                            本结果为估算参考，不等于体脂秤实测值；点任意卡片查看大字数值、进度条、结论与小百科。
+                        </p>
+                        <div id="bcGrid" class="bc-grid"></div>
+                        <img src="https://aka.doubaocdn.com/l/3eqcVlMkmC" alt="身体成分：肌肉、骨骼、脂肪对比示意图"
+                            style="width:100%;max-width:420px;display:block;margin:14px auto 0;border-radius:12px">
                     </div>
                     <div class="bmi-idea" id="bmiIdea" style="display:none">
                         <span class="ic" id="bmiIdeaIc">💡</span>
@@ -573,38 +602,14 @@
                     </div>
                 </div>
 
-                <!-- 理想体重 -->
-                <div class="bmi-panel" id="bmi-weight" style="display:none">
-                    <div class="card">
-                        <div class="sec-title" style="margin-top:0">🎯 你的理想体重区间</div>
-                        <p style="font-size:13px;color:var(--text2);line-height:1.7">系统根据你输入的身高，按亚太地区标准（Broca
-                            改良公式）给出理想体重范围，并对比你当前的体重差距。</p>
-                        <div class="bmi-range-row" style="margin-top:16px">
-                            <div class="bmi-range" style="grid-column:span 2"><b id="wRange">—</b>理想体重区间 (kg)</div>
-                            <div class="bmi-range"><b id="wNow">—</b>当前体重</div>
-                            <div class="bmi-range"><b id="wDiff">—</b>与理想差</div>
-                        </div>
-                        <div class="hist-progress">
-                            <div style="display:flex;justify-content:space-between;font-size:12.5px"><span
-                                    style="color:var(--text2)" id="wProgressTxt">请输入身高体重查看对比</span><span
-                                    class="hist-progress-val" id="wProgressVal">0%</span></div>
-                            <div class="hist-progress-bar">
-                                <div class="hist-progress-fill" id="wProgressBar" style="width:0%"></div>
-                            </div>
-                        </div>
-                        <table class="ideal-table">
-                            <thead>
-                                <tr>
-                                    <th>评估项目</th>
-                                    <th>标准值</th>
-                                    <th>你的数据</th>
-                                    <th>结论</th>
-                                </tr>
-                            </thead>
-                            <tbody id="wTable"></tbody>
-                        </table>
+                <!-- 指标详情弹窗 -->
+                <div class="modal-mask" id="bcMask" role="dialog" aria-modal="true" onclick="if(event.target===this)closeBc()">
+                    <div class="modal" style="max-width:560px">
+                        <button class="modal-close" type="button" onclick="closeBc()" aria-label="关闭">✕</button>
+                        <div id="bcDetail"></div>
                     </div>
                 </div>
+
 
                 <!-- 健康风险 -->
                 <div class="bmi-panel" id="bmi-risk" style="display:none">
@@ -613,21 +618,27 @@
                         <p style="font-size:13px;color:var(--text2);line-height:1.7">BMI 越高，多种慢性疾病的发生风险随之上升。下图展示相对风险倍数（以
                             BMI 18.5–23.9 为基准 = 1 倍），数据参考《中国居民肥胖防治专家共识》。</p>
                         <div class="risk-bars" id="riskBars"></div>
+                        <img src="https://aka.doubaocdn.com/l/ZOmPY1Ol94" alt="骨骼肌与内脏脂肪位置示意图"
+                            style="width:100%;max-width:420px;display:block;margin:14px auto 0;border-radius:12px">
                         <div class="bmi-idea">
                             <span class="ic">🩺</span>
                             <div class="tx"><strong>风险不是命运</strong>即使 BMI 偏高，减重 5%–10% 即可显著改善血压、血糖和血脂水平。体重管理是最有效的"处方"之一。
                             </div>
                         </div>
+                        <div class="sec-title" style="margin-top:20px">🛡️ 风险应对与干预建议</div>
+                        <div id="riskAdvice" style="font-size:13px;color:var(--text2);line-height:1.9"></div>
                     </div>
                 </div>
 
                 <!-- 减重计划 -->
                 <div class="bmi-panel" id="bmi-plan" style="display:none">
                     <div class="card">
-                        <div class="sec-title" style="margin-top:0">📋 分阶段可执行计划</div>
-                        <p style="font-size:13px;color:var(--text2);line-height:1.7">以下计划按"每周减重
-                            0.5–1kg"的健康节奏制定，分三个阶段推进，避免极端节食造成肌肉流失和反弹。</p>
+                        <div class="sec-title" style="margin-top:0">📋 分阶段可执行计划（自动生成）</div>
+                        <p style="font-size:13px;color:var(--text2);line-height:1.7">依据国家卫健委《成人肥胖食养指南（2024 年版）》《体重管理指导原则（2024 年版）》，按"每周减
+                            0.5–1kg、6 个月减当前体重 5%–10%"的健康节奏自动生成，无需手动点击，填完数据即出。</p>
                         <div class="bmi-plan" id="bmiPlan"></div>
+                        <img src="https://aka.doubaocdn.com/l/MuGFodGpRN" alt="健康体重与内脏脂肪对比示意图"
+                            style="width:100%;max-width:420px;display:block;margin:14px auto 0;border-radius:12px">
                         <div class="bmi-idea">
                             <span class="ic">⏱️</span>
                             <div class="tx"><strong>估算你的达标时间</strong><span
@@ -653,6 +664,87 @@
                 </div>
                 <div id="newsResult"></div>
             </section>
+
+            <!-- 慧医导诊 -->
+            <section class="sec" id="sec-guide">
+                <div style="margin-bottom:20px">
+                    <h2 style="font-size:22px;font-weight:700">📍 慧医导诊</h2>
+                    <p style="font-size:13px;color:var(--text3);margin-top:4px">选择症状或身体部位，系统结合你的位置推荐德州合适的医院（越近越优先）；点击医院可一键跳转高德 / 百度地图查看公交、自驾路线与导航。</p>
+                </div>
+
+                <!-- 定位服务（外卖软件式：定位 / 切换位置，推荐随位置变化） -->
+                <div class="card" style="margin-bottom:16px">
+                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                        <div style="flex:1;min-width:230px">
+                            <div style="font-weight:700;font-size:15px">📍 我的位置</div>
+                            <p style="font-size:12.5px;color:var(--text2);margin-top:4px" id="guideLocText">当前位置：德州市德城区 —— 推荐结果会优先考虑离你更近的医院</p>
+                        </div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap">
+                            <button class="btn btn-p" onclick="relocateMe()">📡 重新定位</button>
+                            <button class="btn btn-g" onclick="openLocPicker()">🔄 切换位置</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 医院等级科普 -->
+                <div class="card" style="margin-bottom:16px">
+                    <div class="sec-title" style="margin-top:0">🏥 医院等级怎么分（三级六等）</div>
+                    <p style="font-size:13px;color:var(--text2);line-height:1.8">我国医院按《医院评审暂行办法》分为三级，每级再分甲、乙等，共 <strong>三级六等</strong>。级别越高，处理疑难重症的能力越强：</p>
+                    <div class="g3" style="margin-top:10px">
+                        <div class="bp-item" style="display:block;padding:12px;border:1px solid var(--border);border-radius:12px">
+                            <strong>三级（三甲 / 三乙）</strong>
+                            <p style="font-size:12.5px;color:var(--text2);margin-top:6px;line-height:1.7">床位 500 张以上，跨地区服务，解决危重、疑难病症，承担教学科研。<strong>三甲</strong>为同级最高，适合大病、复杂病、专科疑难问题。</p>
+                        </div>
+                        <div class="bp-item" style="display:block;padding:12px;border:1px solid var(--border);border-radius:12px">
+                            <strong>二级（二甲 / 二乙）</strong>
+                            <p style="font-size:12.5px;color:var(--text2);margin-top:6px;line-height:1.7">床位 100–499 张，地区性综合医院，接收一级转诊，处理常见多发病，适合普通住院、常规手术。</p>
+                        </div>
+                        <div class="bp-item" style="display:block;padding:12px;border:1px solid var(--border);border-radius:12px">
+                            <strong>一级（社区 / 卫生院）</strong>
+                            <p style="font-size:12.5px;color:var(--text2);margin-top:6px;line-height:1.7">床位 20–99 张，直接服务社区，看感冒、慢病取药、基础体检，解决不了会向上转诊。</p>
+                        </div>
+                    </div>
+                    <p style="font-size:12.5px;color:var(--text3);margin-top:10px;line-height:1.7">💡 小毛病先去社区/二甲省钱省时；重病、疑难病再去三甲；急诊无论大小先打 120。</p>
+                </div>
+
+                <!-- 症状/部位选择 -->
+                <div class="card" style="margin-bottom:16px">
+                    <div class="sec-title" style="margin-top:0">🩺 我哪里不舒服？</div>
+                    <div id="guideChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
+                </div>
+
+                <!-- 推荐结果 -->
+                <div id="guideResult"></div>
+
+                <!-- 全部医院列表 -->
+                <div class="card" style="margin-top:16px">
+                    <div class="sec-title" style="margin-top:0">🏨 德州医院名录（按等级分组 · 距你由近到远）</div>
+                    <div id="hospitalList"></div>
+                </div>
+            </section>
+
+            <!-- 位置选择弹窗（外卖软件式定位/改地址） -->
+            <div class="modal-mask" id="locMask" role="dialog" aria-modal="true"
+                onclick="if(event.target===this)closeLocPicker()">
+                <div class="modal" style="max-width:520px;max-height:86vh;overflow-y:auto">
+                    <button class="modal-close" type="button" onclick="closeLocPicker()" aria-label="关闭">✕</button>
+                    <div class="sec-title" style="margin-top:0">🗺️ 选择你的位置</div>
+                    <button class="btn btn-p" id="locGpsBtn" onclick="relocateMe(true)"
+                        style="width:100%">📡 使用我的当前位置（浏览器定位）</button>
+                    <p id="locGpsTip" style="font-size:12.5px;color:var(--text3);margin-top:8px;display:none"></p>
+                    <div class="sec-title" style="margin-top:16px">📍 德州市 · 县市区</div>
+                    <div id="locPreset1" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+                    <div class="sec-title" style="margin-top:16px">🌆 周边城市</div>
+                    <div id="locPreset2" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+                    <div class="sec-title" style="margin-top:16px">✏️ 自定义地址</div>
+                    <div style="display:flex;gap:8px;margin-bottom:6px">
+                        <input class="form-input" id="locCustomInput" placeholder="如：德城区三八中路 1766 号">
+                        <button class="btn btn-p" onclick="applyCustomLoc()">确认</button>
+                    </div>
+                    <p style="font-size:12px;color:var(--text3)">💡 自定义地址无法计算距离，推荐将按症状匹配度排序；选择上方地点可看到「距你多远」并按距离优先推荐。</p>
+                </div>
+            </div>
+
             <!-- Knowledge Base -->
             <section class="sec" id="sec-kb">
                 <div style="margin-bottom:20px">
@@ -1195,8 +1287,8 @@
         function closeSidebar() { document.getElementById('sidebar').classList.remove('open') }
 
         // ─── Navigation ───────────────────────────────────────────
-        const titles = { home: '首页总览', chat: 'AI 智能问诊', health: '健康档案', kb: '医疗知识库', bmi: 'BMI 计算器', news: '健康科普资讯' };
-        const subs = { home: '欢迎使用 MediAI 智能医疗平台', chat: '描述症状，AI 为您分析并给出建议', health: '记录和追踪您的健康数据', kb: '查询疾病、症状和用药知识', bmi: '快速计算身体质量指数', news: '每日更新 · 饮食健康 / 保健品 / 医学科普' };
+        const titles = { home: '首页总览', chat: 'AI 智能问诊', health: '健康档案', kb: '医疗知识库', bmi: 'BMI 计算器', guide: '慧医导诊', news: '健康科普资讯' };
+        const subs = { home: '欢迎使用 MediAI 智能医疗平台', chat: '描述症状，AI 为您分析并给出建议', health: '记录和追踪您的健康数据', kb: '查询疾病、症状和用药知识', bmi: '快速计算身体质量指数', guide: '按症状推荐医院 · 一键地图导航', news: '每日更新 · 饮食健康 / 保健品 / 医学科普' };
         function showSec(id) {
             if ((id === 'chat' || id === 'health') && !currentUser()) { openAuth('login'); return }
             document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
@@ -1218,6 +1310,7 @@
             if (id === 'health') setTimeout(() => { drawScore(healthScore); drawBpChart(); }, 50);
             if (id === 'kb') renderKb(kbData);
             if (id === 'news') { newsType = 'all'; renderNews(); }
+            if (id === 'guide') renderGuide();
         }
         document.querySelectorAll('.nav-item').forEach(n => {
             n.setAttribute('role', 'button');
@@ -1494,7 +1587,7 @@
                 }
             },
             {
-                title: '低盐饮食', cat: '饮食营养', tags: ['高血压', '饮食', '控盐'], desc: '每日食盐控制在5g以内，是高血��、心衰患者的基础治疗，也有助于预防脑卒中。',
+                title: '低盐饮食', cat: '饮食营养', tags: ['高血压', '饮食', '控盐'], desc: '每日食盐控制在5g以内，是高血  、心衰患者的基础治疗，也有助于预防脑卒中。',
                 detail: {
                     symptoms: ['适用于高血压、心衰、肾病、水肿人群'],
                     measures: ['使用限盐勺，每日＜5g盐（约一啤酒瓶盖）', '警惕隐形盐：酱油、味精、腌制品、挂面、零食', '多用醋、柠檬汁、葱姜蒜、香料调味', '购买包装食品看营养成分表，钠＜120mg/100g为低钠'],
@@ -1529,7 +1622,7 @@
                 title: '代糖与无糖饮料', cat: '饮食营养', tags: ['减肥', '血糖', '科普'], desc: '代糖（阿斯巴甜、三氯蔗糖等）几乎不产生热量，但长期大量摄入的健康影响仍存在争议。',
                 detail: {
                     symptoms: ['常用于无糖饮料、无糖食品作为甜味剂'],
-                    measures: ['不能因为"无糖"就无限量饮用', '部分人会出现腹胀、腹泻等不耐受反应', '糖尿病患���仍需计入总碳水摄入', '最健康的选择仍是白开水和无糖茶'],
+                    measures: ['不能因为"无糖"就无限量饮用', '部分人会出现腹胀、腹泻等不耐受反应', '糖尿病患   仍需计入总碳水摄入', '最健康的选择仍是白开水和无糖茶'],
                     danger: 'WHO建议应限制游离糖和代糖摄入，不要形成依赖甜味的条件反射'
                 }
             },
@@ -1559,7 +1652,7 @@
                 }
             },
             {
-                title: '服药与饮食禁忌', cat: '用药安全', tags: ['用药', '饮食', '相互作用'], desc: '很多药物与食物存在相互作用，服药时用温水送服，不��用牛奶、果汁、茶水送药。',
+                title: '服药与饮食禁忌', cat: '用药安全', tags: ['用药', '饮食', '相互作用'], desc: '很多药物与食物存在相互作用，服药时用温水送服，不  用牛奶、果汁、茶水送药。',
                 detail: {
                     symptoms: ['错误的送服方式会降低药效或增加副作用'],
                     measures: ['温水送服最安全，不要用牛奶、果汁、茶水', '钙铁剂不与茶叶、咖啡同服', '头孢类、甲硝唑服药期间及停药7天内禁酒', '华法林需稳定维生素K摄入（绿叶菜），避免大幅波动'],
@@ -2199,11 +2292,16 @@
         function calcBmi() {
             const ht = readOptionalNumber('b-height');
             const wt = readOptionalNumber('b-weight');
+            const age = readOptionalNumber('b-age');
             const box = document.getElementById('bmiCalcResult');
             const idea = document.getElementById('bmiIdea');
             if (ht === null || wt === null) { alert('请输入身高和体重'); box.style.display = 'none'; if (idea) idea.style.display = 'none'; return }
             if (!isInRange(ht, 50, 250) || !isInRange(wt, 2, 500)) { alert('请输入合理的身高（50–250cm）和体重（2–500kg）'); box.style.display = 'none'; if (idea) idea.style.display = 'none'; return }
+            if (age === null) { alert('请填写年龄（10–100 岁），用于估算体脂率、基础代谢等身体成分'); box.style.display = 'none'; if (idea) idea.style.display = 'none'; return }
+            if (!isInRange(age, 10, 100)) { alert('年龄请填 10–100 岁'); box.style.display = 'none'; if (idea) idea.style.display = 'none'; return }
             const bmi = +(wt / ((ht / 100) ** 2)).toFixed(1);
+            // 算出全部身体成分卡片（年龄/性别/身高/体重齐全才跑）
+            calcBodyComp();
             let cat = '', adv = '', ic = '💡', title = '';
             if (bmi < 18.5) { cat = '偏瘦'; adv = '你的 BMI 低于 18.5，提示可能存在营养摄入不足。建议优先增加优质蛋白（鸡蛋、鱼、豆制品）和复合碳水，配合力量训练增肌，而非单纯"多吃"。'; title = '偏瘦也需要重视'; ic = '🍳'; }
             else if (bmi < 24) { cat = '正常 ✅'; adv = '体型处于健康范围。BMI 正常不代表可以放松——腰围、体脂率、血压血糖同样重要，建议每年体检一次，把好习惯长期保持下去。'; title = '继续保持，但别松懈'; ic = '✅'; }
@@ -2219,9 +2317,8 @@
             let rid = 'r-normal';
             if (bmi < 18.5) rid = 'r-under'; else if (bmi < 24) rid = 'r-normal'; else if (bmi < 28) rid = 'r-over'; else rid = 'r-obese';
             document.getElementById(rid).classList.add('active');
-            // 同步填充其他标签页
-            fillWeight(ht, wt, bmi);
-            fillRisk(bmi);
+            // 同步填充其他标签页（自动，无需点击）
+            fillRisk(bmi, ht, wt);
             fillPlan(bmi, ht, wt);
         }
         function switchBmiTab(el, tab) {
@@ -2233,51 +2330,20 @@
             el.classList.add('active');
             el.setAttribute('aria-selected', 'true');
             el.tabIndex = 0;
-            ['calc', 'weight', 'risk', 'plan'].forEach(k => {
+            ['calc', 'risk', 'plan'].forEach(k => {
                 const p = document.getElementById('bmi-' + k);
                 if (p) p.style.display = (k === tab) ? 'block' : 'none';
             });
             // 没算过就先用示例值演示
-            const enteredHeight = readOptionalNumber('b-height'), enteredWeight = readOptionalNumber('b-weight');
+            const enteredHeight = readOptionalNumber('b-height'), enteredWeight = readOptionalNumber('b-weight'), enteredAge = readOptionalNumber('b-age');
             const ht = isInRange(enteredHeight, 50, 250) ? enteredHeight : 170;
             const wt = isInRange(enteredWeight, 2, 500) ? enteredWeight : 65;
             const bmi = +(wt / ((ht / 100) ** 2)).toFixed(1);
-            if (tab === 'weight') fillWeight(ht, wt, bmi);
-            if (tab === 'risk') fillRisk(bmi);
+            if (enteredAge !== null) calcBodyComp();
+            if (tab === 'risk') fillRisk(bmi, ht, wt);
             if (tab === 'plan') fillPlan(bmi, ht, wt);
         }
-        function fillWeight(ht, wt, bmi) {
-            const lo = +(ht - 100 - ((ht - 150) / 2.5)).toFixed(1);   // 改良 Broca 下限
-            const hi = +(lo * 1.1).toFixed(1);
-            const elR = document.getElementById('wRange');
-            if (elR) elR.textContent = lo + ' – ' + hi + ' kg';
-            const elN = document.getElementById('wNow');
-            if (elN) elN.textContent = wt || '--';
-            const diff = document.getElementById('wDiff');
-            if (diff) diff.textContent = wt ? (wt > hi ? '超 ' + (wt - hi).toFixed(1) : wt < lo ? '差 ' + (lo - wt).toFixed(1) : '已在区间内') + ' kg' : '--';
-            // 进度条
-            const pct = wt ? (Math.min(Math.max((wt / hi) * 100, 15), 100)) : 0;
-            const bar = document.getElementById('wProgressBar'), val = document.getElementById('wProgressVal'), txt = document.getElementById('wProgressTxt');
-            if (bar) setTimeout(() => bar.style.width = pct + '%', 50);
-            if (val) val.textContent = Math.round(pct) + '%';
-            if (txt) {
-                if (!wt) txt.textContent = '请输入身高体重查看对比';
-                else if (wt > hi) txt.textContent = '当前体重超过理想区间上限，减重到 ' + hi + ' kg 即达标';
-                else if (wt < lo) txt.textContent = '当前低于理想区间，需增重至 ' + lo + ' kg';
-                else txt.textContent = '当前体重已在理想区间内 ✅';
-            }
-            // 表格
-            const tb = document.getElementById('wTable');
-            if (!tb) return;
-            const rows = [
-                ['BMI 指数', bmi.toFixed(1), (bmi < 18.5 ? '偏瘦' : bmi < 24 ? '正常' : bmi < 28 ? '超重' : '肥胖')],
-                ['理想体重', lo + ' – ' + hi + ' kg', (wt && wt >= lo && wt <= hi) ? '达标 ✅' : '需调整'],
-                ['腰围（参考）', '男 < 85cm / 女 < 80cm', (bmi >= 24 ? '建议关注' : '当前参考值')],
-                ['体脂率参考', bmi < 18.5 ? '偏低' : bmi < 24 ? '男15-20%/女20-25%' : '偏高', '结合体脂秤评估']
-            ];
-            tb.innerHTML = rows.map(r => `<tr class="${r[2] === '达标 ✅' ? 'you' : ''}"><td>${r[0]}</td><td>${r[1]}</td><td>${wt || '--'}</td><td style="color:${r[2] === '达标 ✅' ? 'var(--success)' : r[2] === '需调整' ? 'var(--warning)' : 'var(--text3)'}">${r[2]}</td></tr>`).join('');
-        }
-        function fillRisk(bmi) {
+        function fillRisk(bmi, ht, wt) {
             const box = document.getElementById('riskBars');
             if (!box) return;
             // 相对风险倍数（示意，基于中国肥胖防治共识的定性描述量化）
@@ -2290,48 +2356,453 @@
                         : [['2 型糖尿病', 'var(--danger)', 100], ['高血压', 'var(--danger)', 90], ['脂肪肝', 'var(--danger)', 100], ['睡眠呼吸暂停', 'var(--danger)', 85], ['血脂异常', 'var(--danger)', 95]];
             box.innerHTML = data.map(([n, c, v]) => `<div class="risk-bar"><div style="display:flex;justify-content:space-between"><span>${n}</span><span class="rb-val">相对风险 ${v}%</span></div><div class="rb-track"><div class="rb-fill" style="width:0;background:${c}" data-w="${v}"></div></div></div>`).join('');
             setTimeout(() => box.querySelectorAll('.rb-fill').forEach(f => f.style.width = f.dataset.w + '%'), 60);
+            // ── 风险应对建议（依据国家卫健委《成人肥胖食养指南2024》《体重管理指导原则2024》） ──
+            const adv = document.getElementById('riskAdvice');
+            if (adv) {
+                let blocks;
+                if (bmi < 18.5) {
+                    blocks = [
+                        ['🍳 营养补充', '优先补足优质蛋白（鸡蛋、鱼虾、去皮鸡胸、豆制品、牛奶）与复合碳水（全谷物、薯类），三餐规律，避免节食；偏瘦者不宜剧烈有氧，应以力量训练增肌为主。'],
+                        ['🦴 骨骼保护', '体重过轻是骨质疏松的危险因素，每天保证 300ml 左右牛奶/酸奶、深绿叶菜与豆制品，配合负重运动（快走、哑铃），必要时查骨密度。'],
+                        ['🩺 定期体检', '排查消化吸收、甲状腺等问题；如长期乏力、月经量异常，建议到内科或营养科评估。']
+                    ];
+                } else if (bmi < 24) {
+                    blocks = [
+                        ['🥗 维持膳食', '食物多样，主食一半换成全谷物，每天蔬菜 300–500g、水果 200–350g，优先选瘦肉、鱼虾、低脂奶，少油少盐少添加糖。'],
+                        ['🏃 保持活动', '每周累计 150–300 分钟中等强度有氧（快走、骑车、游泳），每周 2–3 次抗阻训练，维持肌肉量与代谢。'],
+                        ['😴 规律作息', '每天睡够 7 小时、尽量 23 点前入睡，减少久坐，每小时起身活动 3–5 分钟，把好习惯长期保持。']
+                    ];
+                } else if (bmi < 28) {
+                    blocks = [
+                        ['🍽️ 控制能量', '每日能量较平时减少 500 kcal 左右（女性约 1200–1500、男性约 1500–1800 kcal），三大营养素供能比：碳水 50–60%、蛋白 15–20%、脂肪 20–30%，早中晚供能比约 3:4:3。'],
+                        ['🥦 吃对食物', '主食以全谷物为主（糙米、燕麦、玉米、红薯），足量新鲜蔬果；动物性食物选去皮鸡胸、鱼虾、瘦肉，喝低脂/脱脂奶；少油炸、少奶茶甜点、夜宵。'],
+                        ['🏃 运动干预', '每周 150–300 分钟中等强度有氧（快走、游泳、骑车，能说话但微喘），每周 2–3 次、每次 10–20 分钟抗阻训练（哑铃、俯卧撑、深蹲），每周运动消耗约 2000 kcal。'],
+                        ['🩺 监测指标', '定期测腰围（男 <85cm / 女 <80cm）、血压、血糖、血脂；减重目标 6 个月减当前体重 5%–10%，每周 0.5–1kg，不追求过快。']
+                    ];
+                } else {
+                    blocks = [
+                        ['🍽️ 限能量膳食', '建议在医生/营养师指导下，女性每日 1000–1200 kcal、男性 1200–1500 kcal 的限能量平衡膳食，蛋白质 15–20%、主食仍以全谷物为主，杜绝极端断食。'],
+                        ['🏃 循序渐进运动', '从每天快走 30 分钟起步，逐步达到每周 150–300 分钟中等强度有氧，配合每周 2–3 次抗阻训练；体重较大者先避免跑步跳跃以保护关节，可选游泳、椭圆机。'],
+                        ['🩺 就医评估', 'BMI≥28 建议到营养科/内分泌科评估代谢综合征、脂肪肝、睡眠呼吸暂停；如合并高血压、糖尿病，需在医生指导下配合药物，勿自行停药。'],
+                        ['⏱️ 合理目标', '6 个月减当前体重 5%–15%，每周 0.5–1kg；平台期属正常现象，增加活动量或微调能量摄入即可突破，切忌暴瘦导致肌肉流失与反弹。']
+                    ];
+                }
+                adv.innerHTML = blocks.map(([t, d]) =>
+                    `<div class="bp-item" style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+                       <span style="flex-shrink:0;font-size:18px">${t.split(' ')[0]}</span>
+                       <div><strong style="display:block;margin-bottom:3px">${t}</strong><span style="color:var(--text2)">${d}</span></div>
+                     </div>`).join('');
+            }
         }
+        // ─── 自动生成分阶段减重计划（依据卫健委 2024 食养/体重管理指南） ──
         function fillPlan(bmi, ht, wt) {
             const box = document.getElementById('bmiPlan');
+            const est = document.getElementById('planEstimate');
             if (!box) return;
-            if (bmi >= 24) {
-                const ideal = +((ht - 100 - ((ht - 150) / 2.5)) * 1.05).toFixed(1);
-                const drop = Math.max(0, +(wt - ideal).toFixed(1));
-                const weeks = Math.ceil(drop / 0.7);
-                const est = document.getElementById('planEstimate');
-                if (est) est.textContent = drop > 0 ? `按每周减重 0.5–0.7kg 的健康节奏，你大约需要 ${weeks} 周（约 ${(weeks / 4.3).toFixed(1)} 个月）就能回到理想区间。` : '当前已在理想区间内，重点是保持。';
-                box.innerHTML = `
-      <h5>🥇 第一阶段 · 第 1–2 周：先改习惯，不看秤</h5>
-      <div class="bp-item"><span class="n">1</span><span>戒掉含糖饮料和夜宵，三餐定时，每餐先吃蔬菜和蛋白再吃主食</span></div>
-      <div class="bp-item"><span class="n">2</span><span>每天步行 8000 步，从每周 3 次、每次 20 分钟有氧开始（快走、骑车、游泳）</span></div>
-      <div class="bp-item"><span class="n">3</span><span>保证 7 小时以上睡眠，睡眠不足会刺激食欲激素分泌</span></div>
-      <h5>🥈 第二阶段 · 第 3–8 周：量化管理</h5>
-      <div class="bp-item"><span class="n">4</span><span>每日摄入减少 300–500 kcal（不是不吃，而是替换：精白米换杂粮、油炸换蒸煮）</span></div>
-      <div class="bp-item"><span class="n">5</span><span>有氧运动提升到每周 150–250 分钟，加入每周 2 次力量训练增肌提高基础代谢</span></div>
-      <div class="bp-item"><span class="n">6</span><span>每周固定一天晨起空腹称重，记录趋势而不是纠结单日波动</span></div>
-      <h5>🥉 第三阶段 · 第 9 周起：巩固与防反弹</h5>
-      <div class="bp-item"><span class="n">7</span><span>达标后进入维持期，热量可逐步回调 10%–15%，但运动习惯要终身保留</span></div>
-      <div class="bp-item"><span class="n">8</span><span>每月做一次"反弹预警"自查：连续 2 周上涨超过 1kg 就及时干预</span></div>`;
-            } else if (bmi < 18.5) {
-                box.innerHTML = `
-      <h5>🍳 增重不是"放开吃"，而是"聪明吃"</h5>
-      <div class="bp-item"><span class="n">1</span><span>每天增加 300–500 kcal 热量盈余，优先来自坚果、牛油果、全脂奶、鸡蛋、鱼肉</span></div>
-      <div class="bp-item"><span class="n">2</span><span>少食多餐，避免一次吃太多导致消化不良，餐间加 2–3 次小食</span></div>
-      <div class="bp-item"><span class="n">3</span><span>配合每周 3 次力量训练（深蹲、硬拉、俯卧撑），让增加的体重变成肌肉而非脂肪</span></div>
-      <div class="bp-item"><span class="n">4</span><span>保证蛋白质摄入 1.2–1.6g/kg 体重，这是增肌的原料</span></div>
-      <div class="bp-item"><span class="n">5</span><span>如长期体重偏低，建议查一下甲状腺功能、血糖和消化道吸收情况</span></div>`;
-                const est = document.getElementById('planEstimate');
-                if (est) est.textContent = '偏瘦人群的重点不是减，而是"补得对"——用力量和蛋白把体重变成肌肉。';
-            } else {
-                box.innerHTML = `
-      <h5>✅ 体重达标，保持就是最好的计划</h5>
-      <div class="bp-item"><span class="n">1</span><span>每周 150 分钟中等强度有氧 + 2 次力量训练，这是公认的"最低有效剂量"</span></div>
-      <div class="bp-item"><span class="n">2</span><span>饮食遵循"餐盘法则"：一半蔬菜、四分之一蛋白、四分之一主食</span></div>
-      <div class="bp-item"><span class="n">3</span><span>每年做一次全面体检，重点关注血压、血糖、血脂、腰围的变化趋势</span></div>
-      <div class="bp-item"><span class="n">4</span><span>把好习惯写进日程而不是靠意志力，坚持 21 天就能形成惯性</span></div>`;
-                const est = document.getElementById('planEstimate');
-                if (est) est.textContent = '你不需要减重，真正有价值的是把现在的状态长期保持下去。';
+            if (bmi < 18.5) {
+                box.innerHTML = `<h5>当前为偏瘦，计划目标是健康增重增肌</h5>
+                    <div class="bp-item"><span class="n">1</span><span>每日在现有饮食基础上增加 300–500 kcal，加餐选坚果、牛奶、鸡蛋、红薯，避免空热量零食。</span></div>
+                    <div class="bp-item"><span class="n">2</span><span>每周 3 次力量训练（深蹲、俯卧撑、哑铃划船），每次 30–40 分钟，逐步增加负重。</span></div>
+                    <div class="bp-item"><span class="n">3</span><span>目标每月增重 0.5–1 kg，先把 BMI 拉回 18.5 以上，不以脂肪堆积为目的。</span></div>`;
+                if (est) est.textContent = '你目前 BMI 偏低，无需减重；以健康增重、增肌为目标即可。';
+                return;
             }
+            // 理想体重区间（身高-105 参考，上下浮动 10%）
+            const ideal = ht - 105;
+            const lo = +(ideal * 0.9).toFixed(1), hi = +(ideal * 1.1).toFixed(1);
+            let need = 0;
+            if (wt > hi) need = +(wt - hi).toFixed(1);
+            const target = need > 0 ? hi : wt;
+            const weeks = need > 0 ? Math.ceil(need / 0.75) : 0;
+            const kcalCut = bmi >= 28 ? 700 : 500;
+            box.innerHTML = `
+                <h5>第一阶段（第 1–4 周）· 建立习惯期</h5>
+                <div class="bp-item"><span class="n">1</span><span>每日减少约 ${kcalCut} kcal，三餐定时，主食一半换全谷物，戒含糖饮料、夜宵、油炸食品。</span></div>
+                <div class="bp-item"><span class="n">2</span><span>每天快走 30 分钟（约 6000–8000 步），每周 5 天；睡眠 7 小时以上，23 点前睡。</span></div>
+                <div class="bp-item"><span class="n">3</span><span>每天饮水 1500–2000 ml，记录饮食与体重，每周固定时间称重一次。</span></div>
+                <h5>第二阶段（第 5–12 周）· 稳步减脂期</h5>
+                <div class="bp-item"><span class="n">1</span><span>有氧提升到每周 150–300 分钟中等强度（快走/游泳/骑车），每周 2–3 次抗阻训练，每次 10–20 分钟。</span></div>
+                <div class="bp-item"><span class="n">2</span><span>蛋白质按 1.2–1.6 g/kg 体重摄入（鱼、虾、鸡胸、蛋、豆制品、低脂奶），保护肌肉、维持基础代谢。</span></div>
+                <div class="bp-item"><span class="n">3</span><span>每周减重 0.5–1 kg，每月 2–4 kg；进入平台期不要节食加码，增加活动量即可。</span></div>
+                <h5>第三阶段（第 13–24 周）· 维持塑形期</h5>
+                <div class="bp-item"><span class="n">1</span><span>达到目标体重后逐步把热量恢复到维持水平，避免反弹；保持每周运动量与抗阻训练。</span></div>
+                <div class="bp-item"><span class="n">2</span><span>定期监测腰围、血压、血糖、血脂，每 3 个月复测一次体成分。</span></div>
+                <div class="bp-item"><span class="n">3</span><span>把饮食运动变成长期生活方式，而不是短期"突击"，才能稳住成果。</span></div>`;
+            if (est) {
+                est.textContent = need > 0
+                    ? `按每周减 0.5–1 kg（约 0.75 kg/周）估算，从 ${wt} kg 减到理想区间上限 ${hi} kg 约需 ${weeks} 周（约 ${(weeks / 4.3).toFixed(1)} 个月）；目标区间 ${lo}–${hi} kg。`
+                    : `当前体重 ${wt} kg 已在理想区间 ${lo}–${hi} kg 内，保持现有习惯即可。`;
+            }
+        }
+        // ─── 身体成分多指标估算 ───────────────────────────
+        function bcNum(id){ const v=document.getElementById(id).value.trim(); return v===''?null:Number(v); }
+
+        function calcBodyComp(){
+            const h=bcNum('b-height'), w=bcNum('b-weight'), age=bcNum('b-age'), sex=document.getElementById('b-sex').value;
+            if(h==null||w==null||age==null) return;
+            if(h<50||h>250||w<2||w>500||age<10||age>100) return;
+
+            const bmi=+(w/((h/100)**2)).toFixed(1);
+            const bf=+(1.2*bmi+0.23*age-(sex==='male'?16.2:5.4)).toFixed(1);          // Deurenberg 体脂率
+            const fatKg=+(w*bf/100).toFixed(1);
+            const smmRate=+( (sex==='male'? (0.32*w+0.08*h-12):(0.28*w+0.06*h-8))/w*100 ).toFixed(1); // 骨骼肌率估算
+            const muscleKg=+(w*smmRate/100*1.25).toFixed(1);
+            const boneKg=+( (sex==='male'? 0.036*w+0.012*h : 0.031*w+0.010*h) ).toFixed(1);
+            const lean=+(w-fatKg).toFixed(1);
+            const bmr=Math.round(sex==='male'? 10*w+6.25*h-5*age+5 : 10*w+6.25*h-5*age-161); // Mifflin-St Jeor
+            const protein=+(lean*0.18/w*100).toFixed(1);
+            const water=+( (sex==='male'? 60:55) - (bf-20)*0.4 ).toFixed(1);
+            const visc=+(Math.max(1,(bmi-18)*0.7)).toFixed(1);
+            const baseBmr=Math.round(sex==='male'? 10*w+6.25*h-5*age+5 : 10*w+6.25*h-5*age-161);
+            const bodyAge=Math.max(10,Math.round(age+(bmr-baseBmr)/12));
+
+            const cards=[
+                {key:'bmi',name:'BMI',val:bmi,unit:'',min:15,max:35,
+                    intro:bmi<18.5?'体重偏轻，建议增加优质蛋白与主食，配合力量训练增肌。':bmi<24?'体型处于健康范围，请继续保持规律饮食与运动。':bmi<28?'体重超重，建议控制精制糖油、规律有氧，逐步回到健康区间。':'属于肥胖范畴，建议到营养/内分泌科做系统评估，分阶段管理体重。',
+                    wiki:'BMI=体重(kg)/身高(m)²，是评估体重状况的常用指标，但不能区分脂肪与肌肉。运动员、孕妇应结合腰围、体脂综合判断。'},
+                {key:'obese',name:'肥胖度',val:+(((bmi/22)-1)*100).toFixed(1),unit:'%',min:-30,max:80,
+                    intro:bmi<18.5?'消瘦区间，注意营养摄入。':bmi<24?'体重标准，继续保持。':bmi<28?'超重，建议控制饮食、增加运动。':'肥胖，建议系统减重管理。',
+                    wiki:'肥胖度=(实际BMI/标准BMI22-1)×100%，在标准±10%内为正常，正值表示超出标准体重比例。'},
+                {key:'fat',name:'体脂率',val:bf,unit:'%',min:8,max:45,
+                    intro:bf<(sex==='male'?10:18)?'体脂偏低，注意营养摄入，避免过度减脂。':bf<(sex==='male'?20:28)?'体脂处于健康区间，继续保持。':'体脂偏高，建议减少高油高糖食物并增加运动。',
+                    wiki:'体脂率是体内脂肪重量占体重的比例。减脂本质是减少脂肪，每周1-2斤属于健康速度，过快易流失水分和肌肉，导致代谢下降。'},
+                {key:'fatkg',name:'脂肪重量',val:fatKg,unit:'kg',min:0,max:150,
+                    intro:'当前脂肪重量约 '+fatKg+' kg（'+(fatKg*2).toFixed(1)+' 斤）。',
+                    wiki:'脂肪重量=体重×体脂率。相同体重下，肌肉多的人看起来更瘦、也更易维持体型。'},
+                {key:'smm',name:'骨骼肌率',val:smmRate,unit:'%',min:20,max:50,
+                    intro:smmRate>=30?'肌肉量充足，能增强力量、耐力并提高代谢。':'肌肉量一般，建议通过骑车、游泳、力量训练增肌，多摄入优质蛋白。',
+                    wiki:'同重量下脂肪体积约为肌肉的1.18倍，所以肌肉多的人更显瘦。脱水减重容易反弹，增肌才是长期保持体型的关键。'},
+                {key:'muscle',name:'肌肉重量',val:muscleKg,unit:'kg',min:0,max:150,
+                    intro:'肌肉量处于估算区间。增加肌肉能更快消耗热量，建议保持积极生活方式、均衡摄入蛋白质。',
+                    wiki:'肌肉是消耗热量的主力。训练后及时补充蛋白质有助于肌纤维增粗，建议多吃奶、蛋、鱼、豆制品。'},
+                {key:'bone',name:'骨量',val:boneKg,unit:'kg',min:1,max:20,
+                    intro:boneKg>=4.4?'骨量充足，骨骼健康，有助于预防骨质疏松。':'骨量一般，建议多摄入牛奶、豆制品、绿叶菜，配合负重运动增强骨密度。',
+                    wiki:'骨量支撑身体、保护内脏，随代谢不断更新。过瘦和运动不足会降低骨量，补钙首选天然食物。'},
+                {key:'bmr',name:'基础代谢',val:bmr,unit:'kcal',min:1000,max:2500,
+                    intro:bmr>=1400?'基础代谢良好，即使安静状态也能消耗较多能量。':'基础代谢偏低，节食、熬夜、缺乏运动都可能降低代谢，建议通过力量训练增加肌肉。',
+                    wiki:'基础代谢是静息状态下维持生命所需热量，肌肉量决定其高低。肌肉越多，日常消耗越大，越不容易发胖。'},
+                {key:'lean',name:'去脂体重',val:lean,unit:'kg',min:20,max:200,
+                    intro:'去脂体重（瘦体重）= 体重−脂肪，主要由肌肉、骨骼、水分构成，数值高说明身体强壮、体质好。',
+                    wiki:'运动员体重虽高但去脂体重大，并不属于肥胖。它反映除脂肪外的身体成分质量。'},
+                {key:'protein',name:'蛋白质',val:protein,unit:'%',min:10,max:30,
+                    intro:protein>=16?'蛋白质水平充足，有助于维持肌肉、免疫和生理功能。':'蛋白质不足，可能导致免疫力下降、肌肉无力，建议增加肉、鱼、豆类、坚果、乳制品。',
+                    wiki:'优先选择完全蛋白（鸡蛋、牛奶、鱼虾、大豆），动植物蛋白搭配互补。每餐蛋白控制在30-50g。'},
+                {key:'water',name:'水分率',val:water,unit:'%',min:40,max:70,
+                    intro:water>=49.5?'水分充足，有助于代谢、带走废物。':'身体含水量不足，请喝足水，多吃含水量丰富的蔬果。',
+                    wiki:'水分占身体很大比例，减脂不能一味脱水。健康减重减的是脂肪，而不是水分，否则容易反弹。'},
+                {key:'visc',name:'内脏脂肪',val:visc,unit:'级',min:1,max:30,
+                    intro:visc<=9?'内脏脂肪处于正常水平，请继续保持均衡饮食与适量运动。':'内脏脂肪偏高，请以标准体重为目标，限制热量并加强运动。',
+                    wiki:'内脏脂肪指数反映腹腔内脏脂肪堆积。标准1-9级，10-14级偏高，15级以上过多，与高血压、糖尿病、心脏病风险相关。'},
+                {key:'age',name:'身体年龄',val:bodyAge,unit:'岁',min:10,max:100,
+                    intro:bodyAge<=age?'身体状态比实际年龄年轻，继续保持！':'身体年龄偏大，别灰心，改善饮食、增加运动、保持好心情可以逐步改善。',
+                    wiki:'身体年龄以基础代谢为基础，综合体重、体脂、肌肉等判断身体真实状态，与身份证年龄可以不同。'},
+                {key:'height',name:'身高',val:h,unit:'cm',min:120,max:220,
+                    intro:'身高 '+h+' cm。成年后骨骼定型，可通过减重、矫正体态、穿搭获得视觉上的挺拔效果。',
+                    wiki:'身高由头骨、脊柱、下肢长骨发育决定。减重、矫正含胸驼背体态、高腰穿搭都能在视觉上显高。'},
+                {key:'realage',name:'实际年龄',val:age,unit:'岁',min:10,max:100,
+                    intro:'实际年龄 '+age+' 岁。自然年龄只是身份证数字，身体状态由基因、作息、饮食、运动等后天因素决定。',
+                    wiki:'自然年龄只会逐年增长，但睡眠、地中海式饮食、规律运动、乐观心态都能延缓生理衰老。'},
+            ];
+
+            const grid=document.getElementById('bcGrid');
+            grid.innerHTML=cards.map(c=>{
+                const pct=Math.min(100,Math.max(0,(c.val-c.min)/(c.max-c.min)*100));
+                return `<div class="bc-card" onclick="openBc('${c.key}')">
+      <div class="bc-name">${c.name}</div>
+      <div class="bc-val">${c.val}<span class="bc-unit"> ${c.unit}</span></div>
+      <div class="bc-bar"><i style="width:${pct}%"></i></div>
+    </div>`;
+            }).join('');
+            window._bc=cards;
+        }
+
+        function openBc(key){
+            const c=window._bc&&window._bc.find(x=>x.key===key);
+            if(!c)return;
+            const pct=Math.min(100,Math.max(0,(c.val-c.min)/(c.max-c.min)*100));
+            document.getElementById('bcDetail').innerHTML=`
+    <div class="modal-title">${c.name} <span style="font-size:13px;color:var(--text3);font-weight:400">估算参考</span></div>
+    <div style="font-size:40px;font-weight:800;color:var(--primary,#3b82f6);margin:10px 0">${c.val}<span style="font-size:16px"> ${c.unit}</span></div>
+    <div class="bc-bar" style="height:10px;margin:10px 0"><i style="width:${pct}%"></i></div>
+    <p style="font-size:14px;line-height:1.9;color:var(--text2)">${c.intro}</p>
+    <div class="divider" style="margin-top:18px">${c.name}小百科</div>
+    <p style="font-size:14px;line-height:1.9;color:var(--text2)">${c.wiki}</p>`;
+            document.getElementById('bcMask').classList.add('show');
+        }
+        function closeBc(){ document.getElementById('bcMask').classList.remove('show'); }
+
+        // ─── 慧医导诊：德州医院数据与推荐 ─────────────────────────
+        const hospitals = [
+            {
+                name: '山东大学齐鲁医院德州医院（中心院区）', level: '三甲', type: '综合',
+                addr: '德州市天衢新区尚德六路1号', tel: '0534-2120120 / 健康热线 2512345',
+                lng: 116.413680, lat: 37.436869,
+                good: ['心血管', '神经', '肿瘤', '疑难重症', '急诊危重症', '疑难病'],
+                note: '德州市唯一三甲综合医院，齐鲁医院合作共建，大病、复杂病首选。'
+            },
+            {
+                name: '山东大学齐鲁医院德州医院（新湖院区）', level: '三甲', type: '综合',
+                addr: '德州市德城区东方红西路1166号', tel: '0534-2637114',
+                lng: 116.306498, lat: 37.451512,
+                good: ['内科', '外科', '急诊', '常规住院', '综合检查'],
+                note: '老城区中心院区，交通便利，适合常见病与综合诊疗。'
+            },
+            {
+                name: '德州市中医院（东院区）', level: '三甲', type: '中医',
+                addr: '德州市天衢东路1165号', tel: '0534-2725100 / 7905121',
+                lng: 116.361340, lat: 37.454556,
+                good: ['中医调理', '骨伤', '康复', '慢病', '针灸推拿', '妇科调理'],
+                note: '三甲中医医院，适合中医调理、康复、骨伤与慢性病。'
+            },
+            {
+                name: '德州市第二人民医院', level: '三级', type: '综合（传染病/精神专科）',
+                addr: '德州市运河经济开发区纺织大街55号', tel: '0534-2488114 / 2488120',
+                lng: 116.273342, lat: 37.450483,
+                good: ['传染病', '精神心理', '结核', '感染性疾病'],
+                note: '以传染病、精神心理专科见长。'
+            },
+            {
+                name: '德州市妇幼保健院（东院区）', level: '三级', type: '妇幼专科',
+                addr: '德州市康博大道1368号', tel: '0534-2361881',
+                lng: 116.363185, lat: 37.455311,
+                good: ['妇科', '产科', '儿科', '备孕', '分娩', '产后'],
+                note: '妇女儿童专科，产检、分娩、儿科首选。'
+            },
+            {
+                name: '德州市立医院', level: '二甲', type: '综合',
+                addr: '德州市德城区三八中路1766号', tel: '0534-2638007 / 急诊 2638120',
+                lng: 116.293466, lat: 37.453822,
+                good: ['普通内科', '普通外科', '常见病', '门诊', '常规检查'],
+                note: '德城区二甲综合医院，离家近、看常见病方便。'
+            },
+            {
+                name: '德州市第七人民医院', level: '二甲', type: '综合',
+                addr: '德州市德城区东风中路738号', tel: '0534-2672293',
+                lng: 116.305800, lat: 37.450600,
+                good: ['常见病', '门诊', '基础体检', '康复'],
+                note: '东风中路二甲综合医院，适合日常小病与复查。'
+            },
+            {
+                name: '社区卫生服务中心 / 乡镇卫生院', level: '一级', type: '基层',
+                addr: '居住地所属社区卫生服务中心（就近选择）', tel: '咨询所在社区居委会',
+                lng: 116.302700, lat: 37.436200,
+                good: ['感冒发烧', '慢病取药', '量血压血糖', '基础体检', '疫苗'],
+                note: '就近首诊，慢病配药、基础体检，开转诊单。'
+            }
+        ];
+
+        const guideSymptoms = [
+            { key: 'emergency', label: '🚨 急诊危重症', match: ['急诊危重症'] },
+            { key: 'heart', label: '❤️ 胸痛胸闷心悸', match: ['心血管', '急诊危重症'] },
+            { key: 'brain', label: '🧠 头痛头晕中风', match: ['神经', '急诊危重症'] },
+            { key: 'fever', label: '🤒 发烧咳嗽感冒', match: ['常见病', '门诊', '普通内科'] },
+            { key: 'stomach', label: '🤢 胃痛腹痛消化', match: ['普通内科', '内科', '常见病'] },
+            { key: 'womb', label: '🤰 妇科/怀孕分娩', match: ['妇科', '产科', '备孕', '分娩'] },
+            { key: 'baby', label: '👶 孩子生病儿科', match: ['儿科'] },
+            { key: 'tcm', label: '🌿 中医调理康复', match: ['中医调理', '康复', '骨伤', '针灸推拿', '慢病'] },
+            { key: 'chronic', label: '💊 慢病长期管理', match: ['慢病', '基础体检', '量血压血糖'] },
+            { key: 'mental', label: '🧘 情绪睡眠心理', match: ['精神心理', '传染病'] }
+        ];
+
+        // ─── 定位服务：外卖软件式「定位 / 切换位置」 ──────────────
+        const LOC_KEY = 'mediai-guide-loc';
+        const guidePresets = [
+            { name: '德州市德城区', lng: 116.357, lat: 37.449 },
+            { name: '天衢新区', lng: 116.4137, lat: 37.4369 },
+            { name: '运河经济开发区', lng: 116.2733, lat: 37.4505 },
+            { name: '陵城区', lng: 116.5761, lat: 37.3357 },
+            { name: '禹城市', lng: 116.6387, lat: 36.9338 },
+            { name: '乐陵市', lng: 117.2317, lat: 37.7299 },
+            { name: '宁津县', lng: 116.8004, lat: 37.6523 },
+            { name: '齐河县', lng: 116.7601, lat: 36.795 },
+            { name: '临邑县', lng: 116.8667, lat: 37.1899 },
+            { name: '平原县', lng: 116.434, lat: 37.1653 },
+            { name: '武城县', lng: 116.0692, lat: 37.2133 },
+            { name: '夏津县', lng: 116.0017, lat: 36.9486 },
+            { name: '庆云县', lng: 117.3852, lat: 37.7753 }
+        ];
+        const guideCities = [
+            { name: '济南市', lng: 117.1201, lat: 36.6512 },
+            { name: '滨州市', lng: 117.9707, lat: 37.382 },
+            { name: '聊城市', lng: 115.9854, lat: 36.457 },
+            { name: '衡水市', lng: 115.6702, lat: 37.7389 }
+        ];
+        let guideLoc = loadGuideLoc();
+        let guidePicked = null;   // 当前选中的症状，位置变化时自动重算推荐
+
+        function loadGuideLoc() {
+            try {
+                const s = JSON.parse(localStorage.getItem(LOC_KEY));
+                if (s && s.name) return s;
+            } catch (e) { }
+            return { name: '德州市德城区', lng: 116.357, lat: 37.449, source: '默认' };
+        }
+        function initGuideLoc() {
+            const pill = document.getElementById('locPillName');
+            if (pill) pill.textContent = guideLoc.name;
+            const tip = document.getElementById('guideLocText');
+            if (tip) tip.textContent = locDesc();
+        }
+        function locDesc() {
+            return guideLoc.lng == null
+                ? '当前位置：' + guideLoc.name + '（自定义地址）—— 无法计算距离，推荐按症状匹配度排序'
+                : '当前位置：' + guideLoc.name + ' —— 推荐结果会优先考虑离你更近的医院';
+        }
+        function setGuideLoc(loc) {
+            guideLoc = loc;
+            try { localStorage.setItem(LOC_KEY, JSON.stringify(loc)); } catch (e) { }
+            initGuideLoc();
+            if (guidePicked) pickSymptom(guidePicked);   // 位置变了，医院推荐跟着变
+            renderHospitalList();
+        }
+        function distKm(a, b) {
+            const toRad = x => x * Math.PI / 180, R = 6371;
+            const dLat = toRad(b.lat - a.lat), dLng = toRad(b.lng - a.lng);
+            const s = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+            return R * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s));
+        }
+        function fmtDist(km) {
+            if (km == null) return '距离未知';
+            if (km < 1) return '约 ' + Math.round(km * 1000) + ' 米';
+            return '约 ' + km.toFixed(1) + ' 公里';
+        }
+        function distBonus(km) {
+            if (km == null) return 0;
+            if (km <= 2) return 30;
+            else if (km <= 5) return 25;
+            else if (km <= 10) return 20;
+            else if (km <= 20) return 12;
+            else if (km <= 40) return 6;
+            else if (km <= 80) return 2;
+            return 0;
+        }
+        function openLocPicker() {
+            document.getElementById('locPreset1').innerHTML = guidePresets.map(p =>
+                `<button class="btn btn-g" style="padding:6px 12px;font-size:12.5px" onclick="setGuideLoc({name:'${p.name}',lng:${p.lng},lat:${p.lat},source:'手动选择'});closeLocPicker()">${p.name}</button>`).join('');
+            document.getElementById('locPreset2').innerHTML = guideCities.map(p =>
+                `<button class="btn btn-g" style="padding:6px 12px;font-size:12.5px" onclick="setGuideLoc({name:'${p.name}',lng:${p.lng},lat:${p.lat},source:'手动选择'});closeLocPicker()">${p.name}</button>`).join('');
+            const tip = document.getElementById('locGpsTip'), btn = document.getElementById('locGpsBtn');
+            if (tip) tip.style.display = 'none';
+            if (btn) btn.disabled = false;
+            document.getElementById('locMask').classList.add('show');
+        }
+        function closeLocPicker() { document.getElementById('locMask').classList.remove('show'); }
+        function applyCustomLoc() {
+            const v = document.getElementById('locCustomInput').value.trim();
+            if (!v) { alert('请输入地址，如：德城区三八中路 1766 号'); return; }
+            setGuideLoc({ name: v, lng: null, lat: null, source: '自定义地址' });
+            closeLocPicker();
+        }
+        function relocateMe(fromPicker) {
+            const tip = document.getElementById('locGpsTip'), btn = document.getElementById('locGpsBtn');
+            if (!navigator.geolocation) {
+                alert('当前浏览器不支持定位，请点击下方地点手动选择');
+                return;
+            }
+            if (tip) { tip.style.display = 'block'; tip.textContent = '📡 正在定位中，请允许浏览器获取你的位置…'; }
+            if (btn) btn.disabled = true;
+            navigator.geolocation.getCurrentPosition(pos => {
+                const here = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                let nearest = null, nd = 1e9;
+                [...guidePresets, ...guideCities].forEach(p => {
+                    const d = distKm(here, p);
+                    if (d < nd) { nd = d; nearest = p; }
+                });
+                const name = nd < 15 ? nearest.name + '（附近）' : '我的当前位置';
+                setGuideLoc({ name: name, lng: here.lng, lat: here.lat, source: 'GPS 定位' });
+                if (tip) { tip.textContent = '✅ 定位成功：' + name; setTimeout(() => { tip.style.display = 'none'; }, 2000); }
+                if (fromPicker) closeLocPicker();
+            }, err => {
+                if (tip) {
+                    tip.textContent = '❌ 定位失败（' + (err && err.message ? err.message : '未知原因') + '），请点击下方地点手动选择';
+                    setTimeout(() => { tip.style.display = 'none'; }, 4000);
+                }
+                if (btn) btn.disabled = false;
+            }, { timeout: 10000, maximumAge: 600000 });
+        }
+
+        function amapUrl(h) {
+            const from = guideLoc.lng != null ? `&from=${guideLoc.lng},${guideLoc.lat},${encodeURIComponent(guideLoc.name)}` : '';
+            return `https://uri.amap.com/navigation?to=${h.lng},${h.lat},${encodeURIComponent(h.name)}&mode=car&policy=1&callnative=1${from}`;
+        }
+        function baiduUrl(h) {
+            return `https://api.map.baidu.com/direction?destination=latlng:${h.lat},${h.lng}|${encodeURIComponent(h.name)}&mode=transit&region=德州&output=html&src=mediAI`;
+        }
+        function amapPlace(h) {
+            return `https://uri.amap.com/marker?position=${h.lng},${h.lat}&name=${encodeURIComponent(h.name)}&callnative=1`;
+        }
+
+        function renderGuide() {
+            const chips = document.getElementById('guideChips');
+            chips.innerHTML = guideSymptoms.map(s =>
+                `<button class="btn btn-g" style="padding:7px 14px;font-size:13px" onclick="pickSymptom('${s.key}')">${s.label}</button>`).join('');
+            renderHospitalList();
+        }
+
+        function pickSymptom(key) {
+            const s = guideSymptoms.find(x => x.key === key);
+            if (!s) return;
+            guidePicked = key;
+            const scored = hospitals.map(h => {
+                let score = 0;
+                s.match.forEach(m => { if (h.good.includes(m)) score += 10; });
+                if (h.level === '三甲' && ['急诊危重症', '心血管', '神经', '肿瘤', '疑难重症', '疑难病'].some(m => s.match.includes(m))) score += 15;
+                if (h.level === '三甲' && s.match.includes('急诊危重症')) score += 20;
+                if (h.level === '一级' && ['感冒发烧', '慢病取药', '量血压血糖', '基础体检'].some(m => s.match.includes(m))) score += 12;
+                // 定位加成：离你越近越优先（位置改变时推荐自动变化）
+                if (guideLoc.lng != null) score += distBonus(distKm(guideLoc, h));
+                return { h, score };
+            }).filter(x => x.score > 0).sort((a, b) => b.score - a.score);
+
+            const box = document.getElementById('guideResult');
+            if (scored.length === 0) {
+                box.innerHTML = '<div class="card">暂无匹配，建议就近到社区或二甲医院先就诊，必要时由医生转诊三甲。</div>';
+                return;
+            }
+            const minKm = guideLoc.lng != null ? Math.min(...scored.map(x => distKm(guideLoc, x.h))) : null;
+            box.innerHTML = `<div class="card"><div class="sec-title" style="margin-top:0">✅ 推荐就医（按「匹配度 + 距离」排序）</div>
+                <p style="font-size:12.5px;color:var(--text3);margin-bottom:10px">已结合你的位置「${escapeHtml(guideLoc.name)}」排序，越近越优先；结果仅供参考，急诊请先拨打 120，具体以医院当日挂号情况为准。</p>
+                ${scored.slice(0, 4).map(x => hospitalCard(x.h, true, minKm != null && Math.abs(distKm(guideLoc, x.h) - minKm) < 0.001)).join('')}</div>`;
+        }
+
+        function hospitalCard(h, rec, nearest) {
+            const lvColor = h.level === '三甲' ? 'var(--danger)' : h.level === '二甲' ? 'var(--warning)' : 'var(--success)';
+            const km = guideLoc.lng != null ? distKm(guideLoc, h) : null;
+            const distLine = km == null
+                ? '<div style="font-size:12.5px;color:var(--text3);margin-top:2px">📍 距离未知（自定义地址，按匹配度推荐）</div>'
+                : `<div style="font-size:12.5px;color:var(--primary);margin-top:2px">📍 距你${fmtDist(km)}${km > 80 ? '（较远，建议先就近就医）' : ''}</div>`;
+            return `<div class="bp-item" style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)">
+                <div style="flex:1">
+                    <div style="font-weight:700;font-size:15px">${h.name} ${nearest ? '<span style="font-size:11px;color:var(--success)">🏆 离你最近</span>' : ''} ${rec ? '<span style="font-size:11px;color:var(--primary)">推荐</span>' : ''}</div>
+                    <div style="font-size:12.5px;color:var(--text2);margin:4px 0">
+                        <span style="color:${lvColor};font-weight:700">[${h.level}·${h.type}]</span>
+                        ${h.addr} · ☎ ${h.tel}
+                    </div>
+                    ${distLine}
+                    <div style="font-size:12.5px;color:var(--text3)">${h.note}</div>
+                    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+                        <a class="btn btn-p" style="padding:7px 14px;font-size:12.5px;text-decoration:none" href="${amapUrl(h)}" target="_blank">🧭 高德导航</a>
+                        <a class="btn btn-g" style="padding:7px 14px;font-size:12.5px;text-decoration:none" href="${baiduUrl(h)}" target="_blank">🗺️ 百度地图</a>
+                        <a class="btn btn-g" style="padding:7px 14px;font-size:12.5px;text-decoration:none" href="${amapPlace(h)}" target="_blank">📍 查看位置</a>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function renderHospitalList() {
+            const box = document.getElementById('hospitalList');
+            if (!box) return;
+            const groups = [
+                ['三甲 · 三级医院（疑难重症首选）', ['三甲', '三级']],
+                ['二甲医院（常见病、常规住院）', ['二甲']],
+                ['基层医疗机构（就近首诊）', ['一级']]
+            ];
+            box.innerHTML = groups.map(([title, lvSet]) => {
+                let list = hospitals.filter(h => lvSet.includes(h.level));
+                // 定位后：每组内按距离由近到远排序（外卖软件式体验）
+                if (guideLoc.lng != null) list = list.slice().sort((a, b) => distKm(guideLoc, a) - distKm(guideLoc, b));
+                return `<h5 style="margin:14px 0 6px;font-size:14px">${title}</h5>${list.map(h => hospitalCard(h, false)).join('')}`;
+            }).join('');
         }
 
         // ─── 科普资讯（每日新增） ────────────────────────────────
@@ -2514,7 +2985,7 @@
                 cat: '健康生活', catClass: 'c-life', title: '喝咖啡到底是好是坏？每天几杯算多', date: '每日新增', read: '4 分钟',
                 summary: '对大多数健康人而言，适量咖啡利大于弊，与降低2型糖尿病、帕金森、肝癌风险相关，但过量会心慌失眠。',
                 body: ['大量研究显示，每天3-4杯咖啡与全因死亡率下降、2型糖尿病和帕金森风险降低相关。',
-                    '问题在于添加物：一���大杯加了糖奶的连锁咖啡饮品，热量可超300大卡。',
+                    '问题在于添加物：一   大杯加了糖奶的连锁咖啡饮品，热量可超300大卡。',
                     '每天咖啡因摄入控制在400mg以内（约3-4杯黑咖啡）通常安全。'],
                 points: ['尽量喝黑咖啡，少加糖奶', '下午2点后避免，以免影响睡眠', '心慌、焦虑、胃食管反流者应减量或停用'],
                 warn: '孕妇建议每日咖啡因＜200mg；骨质疏松、心律失常患者需遵医嘱限制。'
@@ -2545,6 +3016,58 @@
             const rest = newsPool.filter((_, i) => !dailyIds.includes(i));
             return { daily, dailyIds, rest };
         }
+
+        // ── 科普配图：联网每日随机图，按日期轮换（每天都不一样）+ 多级降级 ──
+        const NEWS_UNSPLASH = [
+            'photo-1512621776951-a57141f2eefd', 'photo-1546069901-ba9599a7e63c', 'photo-1498837167922-ddd27525d352',
+            'photo-1506126613408-eca07ce68773', 'photo-1540420773420-3366772f4999', 'photo-1504674900247-0877df9cc836',
+            'photo-1466637574441-749b8f19452f', 'photo-1490645935967-10de6ba17061', 'photo-1494390248081-4e521a5940db',
+            'photo-1517836357463-d25dfeac3438', 'photo-1518611012118-696072aa579a', 'photo-1505576399279-565b52d4ac71',
+            'photo-1545205597-3d9d02c29597', 'photo-1571019613454-1cb2f99b2d8b', 'photo-1511688878353-3a2f5be94cd7',
+            'photo-1505751172876-fa1923c5c528', 'photo-1441974231531-c6227db76b6e', 'photo-1506905925346-21bda4d32df4',
+            'photo-1447752875215-b2761acb3c5d', 'photo-1470071459604-3b5ec3a7fe05', 'photo-1472214103451-9374bd1c798e',
+            'photo-1501854140801-50d01698950b', 'photo-1433086966358-54859d0ed716', 'photo-1475924156734-496f6cac6ec1',
+            'photo-1497250681960-ef046c08a56e', 'photo-1485955900006-10f4d324d411', 'photo-1500530855697-b586d89ba3ee',
+            'photo-1538805060514-97d9cc17730c', 'photo-1444491741275-3747c53c99b4', 'photo-1502904550040-7534597429ae',
+            'photo-1552693673-1bf958298935', 'photo-1584515933487-779824d29309', 'photo-1524758631624-e2822e304c36',
+            'photo-1544367567-0f2fcb009e0b'
+        ].map(id => 'https://images.unsplash.com/' + id + '?w=640&h=360&fit=crop&q=70&auto=format');
+        // 备用：Bing 每日壁纸（国内可访问），按日期轮换
+        const NEWS_BING = [
+            'https://www.bing.com/th?id=OHR.GilaCliff_ZH-CN2393001519_1920x1080.jpg&w=640&h=360&c=4',
+            'https://www.bing.com/th?id=OHR.FirstFrost_ZH-CN2219029557_1920x1080.jpg&w=640&h=360&c=4',
+            'https://www.bing.com/th?id=OHR.BlueHK_ZH-CN1382345392_1920x1080.jpg&w=640&h=360&c=4',
+            'https://www.bing.com/th?id=OHR.AbrahamCanada_ZH-CN0344365912_1920x1080.jpg&w=640&h=360&c=4',
+            'https://www.bing.com/th?id=OHR.NorthWindow_ZH-CN6734579353_1920x1080.jpg&w=640&h=360&c=4',
+            'https://www.bing.com/th?id=OHR.Atlantica_ZH-CN6593995386_1920x1080.jpg&w=640&h=360&c=4',
+            'https://www.bing.com/th?id=OHR.RoseIsland_ZH-CN6477140814_1920x1080.jpg&w=640&h=360&c=4',
+            'https://www.bing.com/th?id=OHR.TrianaSpain_ZH-CN6329291776_1920x1080.jpg&w=640&h=360&c=4'
+        ];
+        function newsDayNo() { return Math.floor(Date.now() / 86400000); }
+        function newsCoverSrc(idx, step) {
+            const d = newsDayNo();
+            if (step === 0) return NEWS_UNSPLASH[(d + idx) % NEWS_UNSPLASH.length];
+            if (step === 1) return 'https://api.vvhan.com/api/bing?type=img';
+            if (step === 2) return NEWS_BING[(d + idx) % NEWS_BING.length];
+            return newsCoverSvg(idx);
+        }
+        function newsCoverFail(el) {
+            const idx = parseInt(el.dataset.idx || '0', 10);
+            const step = (parseInt(el.dataset.step || '0', 10) + 1);
+            if (step > 3) return;
+            el.dataset.step = String(step);
+            el.src = newsCoverSrc(idx, step);
+        }
+        // 完全离线时的占位封面：日期做种子，配色/图案同样每天不一样
+        function newsCoverSvg(idx) {
+            const d = newsDayNo();
+            const pals = [['#ff9a8b', '#ff6a88'], ['#a8edea', '#fed6e3'], ['#d4fc79', '#96e6a1'], ['#84fab0', '#8fd3f4'], ['#fbc2eb', '#a6c1ee'], ['#f6d365', '#fda085'], ['#e0c3fc', '#8ec5fc']];
+            const ems = ['🍎', '🥦', '💊', '🧠', '🏥', '🌿', '🍵', '💪', '🌙', '🥗'];
+            const p = pals[(d + idx) % pals.length], em = ems[(d + idx) % ems.length];
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p[0]}"/><stop offset="1" stop-color="${p[1]}"/></linearGradient></defs><rect width="640" height="360" fill="url(#g)"/><circle cx="540" cy="70" r="95" fill="rgba(255,255,255,.16)"/><circle cx="90" cy="310" r="70" fill="rgba(255,255,255,.12)"/><text x="320" y="205" font-size="110" text-anchor="middle">${em}</text><text x="320" y="315" font-size="24" text-anchor="middle" fill="rgba(255,255,255,.92)" font-family="sans-serif">每日配图 · 离线占位</text></svg>`;
+            return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        }
+
         function renderNews() {
             const { daily, rest } = getNewsList();
             const list = newsType === 'all' ? newsPool : newsPool.filter(n => n.cat === newsType);
@@ -2559,6 +3082,11 @@
                 el.innerHTML = `
       <div class="kb-back" role="button" tabindex="0" onclick="openNews=null;renderNews()">← 返回资讯列表</div>
       <div class="news-detail">
+        <div class="news-cover-wrap" style="margin-bottom:14px">
+          <img class="news-cover news-cover-lg" data-idx="${openNews}" data-step="0" loading="lazy" alt="科普资讯配图"
+               src="${newsCoverSrc(openNews, 0)}" onerror="newsCoverFail(this)">
+          <span class="news-cover-tag">📷 每日配图 · ${dStr}</span>
+        </div>
         <div class="news-head">
           <span class="news-cat ${n.catClass}">${n.cat}</span>
           <span class="news-date">${n.date} · ${n.read}阅读</span>
@@ -2575,6 +3103,11 @@
                 const realIdx = newsPool.indexOf(n);
                 const isNew = daily.some(d => d === n);
                 return `<div class="news-card" role="button" tabindex="0" onclick="openNews=${realIdx};renderNews()">
+      <div class="news-cover-wrap">
+        <img class="news-cover" data-idx="${realIdx}" data-step="0" loading="lazy" alt="科普资讯配图"
+             src="${newsCoverSrc(realIdx, 0)}" onerror="newsCoverFail(this)">
+        <span class="news-cover-tag">📷 每日配图 · ${dStr}</span>
+      </div>
       <div class="news-head">
         <span class="news-cat ${n.catClass}">${n.cat}</span>
         ${isNew ? '<span class="news-cat c-sci">今日新增</span>' : ''}
@@ -2884,7 +3417,7 @@
 
         // ─── 键盘与初始化 ─────────────────────────────────────────
         document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') { closeAuth(); closeNotif(); closeSync(); const um = document.getElementById('userMenu'); if (um) um.classList.remove('show'); }
+            if (e.key === 'Escape') { closeAuth(); closeNotif(); closeSync(); closeLocPicker(); const um = document.getElementById('userMenu'); if (um) um.classList.remove('show'); }
             const control = e.target.closest('[role="button"], [role="tab"]');
             if (control && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); control.click(); }
         });
@@ -2896,6 +3429,7 @@
             control.tabIndex = 0;
         });
         initSplash();
+        initGuideLoc();
         renderKb(kbData);
         loadChatHistory();
         const activeUser = currentUser();

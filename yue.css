@@ -1450,6 +1450,38 @@ body {
     gap: 12px
 }
 
+.news-cover-wrap {
+    position: relative;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--surface2)
+}
+
+.news-cover {
+    width: 100%;
+    height: 168px;
+    object-fit: cover;
+    display: block;
+    transition: opacity .3s ease
+}
+
+.news-cover-lg {
+    height: 230px
+}
+
+.news-cover-tag {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    background: rgba(15, 23, 42, .55);
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 99px;
+    backdrop-filter: blur(4px)
+}
+
 .news-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -2630,3 +2662,23 @@ select:focus-visible,
         transition-duration: .01ms !important
     }
 }
+/* 身体成分指标卡片 */
+.bc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin-top:16px; }
+.bc-card { background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:14px; cursor:pointer; transition:.18s; }
+.bc-card:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(15,23,42,.08); border-color:var(--primary,#3b82f6); }
+.bc-card .bc-name { font-size:13px; color:var(--text2); }
+.bc-card .bc-val { font-size:22px; font-weight:800; margin:6px 0 2px; color:var(--primary,#3b82f6); }
+.bc-card .bc-unit { font-size:12px; color:var(--text3); }
+.bc-bar { height:6px; border-radius:99px; background:#e2e8f0; margin-top:10px; overflow:hidden; }
+.bc-bar > i { display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,#22c55e,#84cc16); width:0; transition:.4s; }
+
+/* 慧医导诊 */
+.guide-chip { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:99px; background:var(--surface2); border:1px solid var(--border); font-size:13px; cursor:pointer; transition:.15s; }
+.guide-chip:hover, .guide-chip.active { background:var(--primary,#3b82f6); color:#fff; border-color:transparent; }
+.hospital-card { border:1px solid var(--border); border-radius:14px; padding:16px; margin-top:12px; background:#fff; }
+.hospital-card .h-name { font-size:16px; font-weight:700; }
+.hospital-card .h-meta { font-size:12.5px; color:var(--text2); margin:6px 0; line-height:1.7; }
+.hospital-card .h-note { font-size:12.5px; color:var(--text3); line-height:1.7; }
+.hospital-card .h-btns { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.hospital-card .h-btns a { padding:7px 14px; font-size:12.5px; border-radius:10px; text-decoration:none; }
+.lv-tag { display:inline-block; padding:2px 8px; border-radius:6px; font-size:11px; font-weight:700; margin-right:6px; }
