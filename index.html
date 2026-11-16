@@ -3024,20 +3024,19 @@
             if (!s) return;
             guidePicked = key;
             const set = activeHospitalSet();   // 当前位置对应的医院库
-            const scored = set.list.map(h => {
+            // 先算纯症状匹配分，无任何专科匹配时走"综合医院兜底推荐"
+            const matched = set.list.map(h => {
                 let score = 0;
                 s.match.forEach(m => { if (h.good.includes(m)) score += 10; });
                 if ((h.level === '三甲' || h.level === '国际知名') && ['急诊危重症', '心血管', '神经', '肿瘤', '疑难重症', '疑难病'].some(m => s.match.includes(m))) score += 15;
                 if (h.level === '三甲' && s.match.includes('急诊危重症')) score += 20;
                 if (h.level === '一级' && ['感冒发烧', '慢病取药', '量血压血糖', '基础体检'].some(m => s.match.includes(m))) score += 12;
-                // 定位加成：离你越近越优先（位置改变时推荐自动变化）
-                if (guideLoc.lng != null) score += distBonus(distKm(guideLoc, h));
                 return { h, score };
-            }).filter(x => x.score > 0).sort((a, b) => b.score - a.score);
+            }).filter(x => x.score > 0);
 
             const box = document.getElementById('guideResult');
-            if (scored.length === 0) {
-                // 当地暂无专科匹配时，退而推荐当地综合实力较强的医院（按距离）
+            if (matched.length === 0) {
+                // 当地暂无专科匹配时，退而推荐当地综合实力较强的医院（按等级 + 距离）
                 let list = set.list.slice().sort((a, b) => {
                     const lv = l => l === '三甲' || l === '国际知名' ? 2 : l === '三级' ? 1 : 0;
                     if (lv(b.level) !== lv(a.level)) return lv(b.level) - lv(a.level);
@@ -3049,6 +3048,11 @@
                 ${list.map(x => hospitalCard(x, false)).join('')}</div>`;
                 return;
             }
+            // 匹配分 + 定位加成：离你越近越优先（位置改变时推荐自动变化）
+            const scored = matched.map(x => ({
+                h: x.h,
+                score: x.score + (guideLoc.lng != null ? distBonus(distKm(guideLoc, x.h)) : 0)
+            })).sort((a, b) => b.score - a.score);
             const minKm = guideLoc.lng != null ? Math.min(...scored.map(x => distKm(guideLoc, x.h))) : null;
             const fallbackNote = set.fallback
                 ? `<div class="notice" style="margin-bottom:10px">📍 你在「${escapeHtml(guideLoc.name)}」，该地点暂无收录医院数据，以下展示德州市医院供参考。</div>`
