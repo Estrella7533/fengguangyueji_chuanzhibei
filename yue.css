@@ -1450,6 +1450,34 @@ body {
     gap: 12px
 }
 
+.news-cal-day {
+    aspect-ratio: 1;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: var(--surface2);
+    font-size: 12.5px;
+    cursor: pointer;
+    color: var(--text);
+    transition: all var(--tr)
+}
+
+.news-cal-day:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary)
+}
+
+.news-cal-today {
+    border-color: var(--primary);
+    color: var(--primary);
+    font-weight: 700
+}
+
+.news-cal-sel {
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700
+}
+
 .news-cover-wrap {
     position: relative;
     margin-bottom: 10px;
