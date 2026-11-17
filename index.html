@@ -131,7 +131,8 @@
                 </div>
                 <div class="field-forgot"><button class="text-link" type="button" onclick="showForgot()">忘记密码？</button>
                 </div>
-                <div class="field-tip" style="margin:-2px 0 12px">💡 账号保存在本设备浏览器中：换手机或电脑登录时，若本设备还没有该账号，直接输入用户名和密码即可创建并登录。</div>
+                <div class="field-tip" style="margin:-2px 0 12px">💡
+                    账号保存在本设备浏览器中：换手机或电脑登录时，若本设备还没有该账号，直接输入用户名和密码即可创建并登录。</div>
                 <button class="btn btn-p btn-block" onclick="doLogin()">登 录</button>
                 <div class="modal-foot">还没有账号？<button class="text-link" type="button"
                         onclick="switchView('register')">立即注册</button></div>
@@ -247,11 +248,13 @@
                 <label class="field-label" for="syncToken">GitHub 令牌（只需 gist 权限）</label>
                 <div class="field-box">
                     <span class="fi">🔑</span>
-                    <input class="with-eye" id="syncToken" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+                    <input class="with-eye" id="syncToken" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                        autocomplete="off">
                     <button class="fi fi-eye" type="button" onclick="togglePwd(this,'syncToken')" title="显示"
                         aria-label="显示">👁️</button>
                 </div>
-                <div class="field-tip">获取方法：github.com → Settings → Developer settings → Personal access tokens → Tokens (classic) → 勾选 <code>gist</code> 权限即可。令牌只保存在本设备浏览器，只用于读写你自己的 Gist。</div>
+                <div class="field-tip">获取方法：github.com → Settings → Developer settings → Personal access tokens → Tokens
+                    (classic) → 勾选 <code>gist</code> 权限即可。令牌只保存在本设备浏览器，只用于读写你自己的 Gist。</div>
             </div>
             <div class="field">
                 <label class="field-label" for="syncSpace">同步空间名称（所有设备填一样的即可）</label>
@@ -262,9 +265,45 @@
             </div>
             <div class="sync-status" id="syncStatus"></div>
             <div class="sync-actions">
-                <button class="btn btn-p" style="flex:1;justify-content:center" onclick="saveSyncCfg()">💾 保存并开启</button>
+                <button class="btn btn-p" style="flex:1;justify-content:center" onclick="saveSyncCfg()">💾
+                    保存并开启</button>
                 <button class="btn btn-g" style="flex:1;justify-content:center" onclick="syncNow(true)">🔄 立即同步</button>
                 <button class="btn btn-g" onclick="disableSync()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI 模型设置（可选，接入大模型） -->
+    <div class="modal-mask" id="aiMask" role="dialog" aria-modal="true"
+        onclick="if(event.target===this)closeAiCfg()">
+        <div class="modal">
+            <button class="modal-close" type="button" onclick="closeAiCfg()" aria-label="关闭">✕</button>
+            <div class="modal-title">🤖 AI 模型设置（可选）</div>
+            <div class="modal-sub">接入 DeepSeek 等大模型后，四个智能体的回答更自然、更懂上下文；未配置时使用内置本地科普引擎（无需联网、随时可用）。</div>
+            <div class="field">
+                <label class="field-label" for="aiKey">API Key（仅保存在本设备浏览器）</label>
+                <div class="field-box">
+                    <span class="fi">🔑</span>
+                    <input class="with-eye" id="aiKey" type="password" placeholder="sk-..." autocomplete="off">
+                    <button class="fi fi-eye" type="button" onclick="togglePwd(this,'aiKey')" title="显示"
+                        aria-label="显示">👁️</button>
+                </div>
+                <div class="field-tip">获取：platform.deepseek.com → API Keys。密钥只保存在本机浏览器，不会上传到仓库或服务器。</div>
+            </div>
+            <div class="field">
+                <label class="field-label" for="aiModel">模型名称</label>
+                <div class="field-box"><span class="fi">🧩</span><input id="aiModel" type="text" placeholder="deepseek-chat">
+                </div>
+            </div>
+            <div class="field">
+                <label class="field-label" for="aiBase">API 地址（OpenAI 兼容格式）</label>
+                <div class="field-box"><span class="fi">🌐</span><input id="aiBase" type="text"
+                        placeholder="https://api.deepseek.com/chat/completions"></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:6px">
+                <button class="btn btn-p" style="flex:1;justify-content:center" onclick="saveAiCfg()">💾 保存并启用</button>
+                <button class="btn btn-g" style="flex:1;justify-content:center"
+                    onclick="document.getElementById('aiKey').value='';document.getElementById('aiModel').value='';document.getElementById('aiBase').value='';saveAiCfg()">关闭大模型</button>
             </div>
         </div>
     </div>
@@ -281,23 +320,22 @@
         <div class="nav-item" data-sec="health"><span class="nav-icon">❤️</span>健康档案</div>
         <div class="nav-item" data-sec="kb"><span class="nav-icon">📚</span>医疗知识库</div>
         <div class="s-sect">AI 智能体</div>
-        <div class="nav-item" data-sec="nutri"><span class="nav-icon">🥗</span>AI 营养分析师<span
-                class="nav-badge">饮食</span></div>
-        <div class="nav-item" data-sec="mind"><span class="nav-icon">🧠</span>心理健康对话<span
-                class="nav-badge">暖心</span></div>
-        <div class="nav-item" data-sec="sport"><span class="nav-icon">🏃</span>智能运动指导师<span
-                class="nav-badge">运动</span></div>
+        <div class="nav-item" data-sec="nutri"><span class="nav-icon">🥗</span>AI 营养分析师<span class="nav-badge">饮食</span>
+        </div>
+        <div class="nav-item" data-sec="mind"><span class="nav-icon">🧠</span>心理健康对话<span class="nav-badge">暖心</span>
+        </div>
+        <div class="nav-item" data-sec="sport"><span class="nav-icon">🏃</span>智能运动指导师<span class="nav-badge">运动</span>
+        </div>
         <div class="s-sect">工具</div>
         <div class="nav-item" data-sec="bmi"><span class="nav-icon">⚖️</span>BMI 计算器</div>
         <div class="nav-item" data-sec="guide"><span class="nav-icon">📍</span>慧医导诊</div>
         <div class="nav-item" data-sec="news"><span class="nav-icon">📰</span>科普资讯<span class="nav-badge"
                 id="newsBadge">每日更新</span></div>
         <div class="s-sect">数据</div>
-        <div class="nav-item" data-sec="qrsync"><span class="nav-icon">📲</span>设备同步<span
-                class="nav-badge">手机↔电脑</span></div>
+        <div class="nav-item" data-sec="qrsync"><span class="nav-icon">📲</span>设备同步<span class="nav-badge">手机↔电脑</span>
+        </div>
         <div class="s-foot" id="userFoot">
-            <div class="u-card" id="userCard" role="button" tabindex="0" title="账号操作"
-                onclick="userCardClick()">
+            <div class="u-card" id="userCard" role="button" tabindex="0" title="账号操作" onclick="userCardClick()">
                 <div class="u-av" id="uAv">游</div>
                 <div class="u-info">
                     <div class="u-name" id="uName">游客模式</div>
@@ -308,6 +346,7 @@
             <div class="u-menu" id="userMenu">
                 <button type="button" class="u-menu-item" onclick="userCardAct('notif')">🔔 消息中心</button>
                 <button type="button" class="u-menu-item" onclick="userCardAct('sync')">☁️ 云同步</button>
+                <button type="button" class="u-menu-item" onclick="userCardAct('ai')">🤖 AI 模型设置</button>
                 <button type="button" class="u-menu-item danger" onclick="userCardAct('logout')">🚪 退出登录</button>
             </div>
         </div>
@@ -418,7 +457,8 @@
                         <span class="chat-mode-text" id="chatModeText">AI 家庭医生 · 在线</span>
                         <span class="chat-mode-sub" id="chatModeSub">身体难受随时问，AI 家庭医生为您分析并给出建议</span>
                         <div class="chat-session-tools">
-                            <select class="chat-session-select" id="chatSessions" aria-label="历史对话" onchange="switchSession(this.value)"></select>
+                            <select class="chat-session-select" id="chatSessions" aria-label="历史对话"
+                                onchange="switchSession(this.value)"></select>
                             <button class="chat-new-btn" type="button" onclick="newChatSession()">➕ 新对话</button>
                         </div>
                     </div>
@@ -620,7 +660,8 @@
                 </div>
 
                 <!-- 指标详情弹窗 -->
-                <div class="modal-mask" id="bcMask" role="dialog" aria-modal="true" onclick="if(event.target===this)closeBc()">
+                <div class="modal-mask" id="bcMask" role="dialog" aria-modal="true"
+                    onclick="if(event.target===this)closeBc()">
                     <div class="modal" style="max-width:560px">
                         <button class="modal-close" type="button" onclick="closeBc()" aria-label="关闭">✕</button>
                         <div id="bcDetail"></div>
@@ -651,7 +692,8 @@
                 <div class="bmi-panel" id="bmi-plan" style="display:none">
                     <div class="card">
                         <div class="sec-title" style="margin-top:0">📋 分阶段可执行计划（自动生成）</div>
-                        <p style="font-size:13px;color:var(--text2);line-height:1.7">依据国家卫健委《成人肥胖食养指南（2024 年版）》《体重管理指导原则（2024 年版）》，按"每周减
+                        <p style="font-size:13px;color:var(--text2);line-height:1.7">依据国家卫健委《成人肥胖食养指南（2024
+                            年版）》《体重管理指导原则（2024 年版）》，按"每周减
                             0.5–1kg、6 个月减当前体重 5%–10%"的健康节奏自动生成，无需手动点击，填完数据即出。</p>
                         <div class="bmi-plan" id="bmiPlan"></div>
                         <img src="https://aka.doubaocdn.com/l/MuGFodGpRN" alt="健康体重与内脏脂肪对比示意图"
@@ -684,16 +726,21 @@
                     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
                         <button class="btn btn-g" id="newsCalToggle" onclick="toggleNewsCal()">📅 往日资讯日历</button>
                         <span id="newsSelInfo" style="font-size:12.5px;color:var(--text2);font-weight:700"></span>
-                        <button class="btn btn-p" id="newsTodayBtn" onclick="selectNewsDate(null)" style="display:none">↩️ 回到今天</button>
+                        <button class="btn btn-p" id="newsTodayBtn" onclick="selectNewsDate(null)"
+                            style="display:none">↩️ 回到今天</button>
                     </div>
                     <div id="newsCalBox" style="display:none;margin-top:12px">
                         <div style="display:flex;align-items:center;gap:8px;max-width:340px;margin-bottom:8px">
-                            <button class="btn btn-g" id="newsCalPrev" style="padding:4px 10px;font-size:13px" onclick="newsCalShift(-1)">◀</button>
+                            <button class="btn btn-g" id="newsCalPrev" style="padding:4px 10px;font-size:13px"
+                                onclick="newsCalShift(-1)">◀</button>
                             <strong id="newsCalTitle" style="flex:1;text-align:center">2026年11月</strong>
-                            <button class="btn btn-g" id="newsCalNext" style="padding:4px 10px;font-size:13px" onclick="newsCalShift(1)">▶</button>
+                            <button class="btn btn-g" id="newsCalNext" style="padding:4px 10px;font-size:13px"
+                                onclick="newsCalShift(1)">▶</button>
                         </div>
-                        <div id="newsCalGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:340px"></div>
-                        <p style="font-size:11.5px;color:var(--text3);margin-top:8px">💡 可查询近 3 个月（90 天）内的每日科普资讯：点击日期查看当天新增内容，⭕ 为今天，实心为已选日期。</p>
+                        <div id="newsCalGrid"
+                            style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:340px"></div>
+                        <p style="font-size:11.5px;color:var(--text3);margin-top:8px">💡 可查询近 3 个月（90
+                            天）内的每日科普资讯：点击日期查看当天新增内容，⭕ 为今天，实心为已选日期。</p>
                     </div>
                 </div>
                 <div id="newsResult"></div>
@@ -703,7 +750,8 @@
             <section class="sec" id="sec-guide">
                 <div style="margin-bottom:20px">
                     <h2 style="font-size:22px;font-weight:700">慧医导诊</h2>
-                    <p style="font-size:13px;color:var(--text3);margin-top:4px">先定位 / 切换位置（支持德州各县市区、全国 35 城与 9 个国家），再选择症状，系统推荐当地合适的医院（越近越优先）；点击医院可一键跳转高德 / 百度地图导航。</p>
+                    <p style="font-size:13px;color:var(--text3);margin-top:4px">先定位 / 切换位置（支持德州各县市区、全国 35 城与 9
+                        个国家），再选择症状，系统推荐当地合适的医院（越近越优先）；点击医院可一键跳转高德 / 百度地图导航。</p>
                 </div>
 
                 <!-- 定位服务（外卖软件式：定位 / 切换位置，推荐随位置变化） -->
@@ -711,7 +759,8 @@
                     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
                         <div style="flex:1;min-width:230px">
                             <div style="font-weight:700;font-size:15px">📍 我的位置</div>
-                            <p style="font-size:12.5px;color:var(--text2);margin-top:4px" id="guideLocText">当前位置：德州市德城区 —— 推荐结果会优先考虑离你更近的医院</p>
+                            <p style="font-size:12.5px;color:var(--text2);margin-top:4px" id="guideLocText">当前位置：德州市德城区
+                                —— 推荐结果会优先考虑离你更近的医院</p>
                         </div>
                         <div style="display:flex;gap:8px;flex-wrap:wrap">
                             <button class="btn btn-p" onclick="relocateMe()">📡 重新定位</button>
@@ -723,22 +772,30 @@
                 <!-- 医院等级科普 -->
                 <div class="card" style="margin-bottom:16px">
                     <div class="sec-title" style="margin-top:0">🏥 医院等级怎么分（三级六等）</div>
-                    <p style="font-size:13px;color:var(--text2);line-height:1.8">我国医院按《医院评审暂行办法》分为三级，每级再分甲、乙等，共 <strong>三级六等</strong>。级别越高，处理疑难重症的能力越强：</p>
+                    <p style="font-size:13px;color:var(--text2);line-height:1.8">我国医院按《医院评审暂行办法》分为三级，每级再分甲、乙等，共
+                        <strong>三级六等</strong>。级别越高，处理疑难重症的能力越强：</p>
                     <div class="g3" style="margin-top:10px">
-                        <div class="bp-item" style="display:block;padding:12px;border:1px solid var(--border);border-radius:12px">
+                        <div class="bp-item"
+                            style="display:block;padding:12px;border:1px solid var(--border);border-radius:12px">
                             <strong>三级（三甲 / 三乙）</strong>
-                            <p style="font-size:12.5px;color:var(--text2);margin-top:6px;line-height:1.7">床位 500 张以上，跨地区服务，解决危重、疑难病症，承担教学科研。<strong>三甲</strong>为同级最高，适合大病、复杂病、专科疑难问题。</p>
+                            <p style="font-size:12.5px;color:var(--text2);margin-top:6px;line-height:1.7">床位 500
+                                张以上，跨地区服务，解决危重、疑难病症，承担教学科研。<strong>三甲</strong>为同级最高，适合大病、复杂病、专科疑难问题。</p>
                         </div>
-                        <div class="bp-item" style="display:block;padding:12px;border:1px solid var(--border);border-radius:12px">
+                        <div class="bp-item"
+                            style="display:block;padding:12px;border:1px solid var(--border);border-radius:12px">
                             <strong>二级（二甲 / 二乙）</strong>
-                            <p style="font-size:12.5px;color:var(--text2);margin-top:6px;line-height:1.7">床位 100–499 张，地区性综合医院，接收一级转诊，处理常见多发病，适合普通住院、常规手术。</p>
+                            <p style="font-size:12.5px;color:var(--text2);margin-top:6px;line-height:1.7">床位 100–499
+                                张，地区性综合医院，接收一级转诊，处理常见多发病，适合普通住院、常规手术。</p>
                         </div>
-                        <div class="bp-item" style="display:block;padding:12px;border:1px solid var(--border);border-radius:12px">
+                        <div class="bp-item"
+                            style="display:block;padding:12px;border:1px solid var(--border);border-radius:12px">
                             <strong>一级（社区 / 卫生院）</strong>
-                            <p style="font-size:12.5px;color:var(--text2);margin-top:6px;line-height:1.7">床位 20–99 张，直接服务社区，看感冒、慢病取药、基础体检，解决不了会向上转诊。</p>
+                            <p style="font-size:12.5px;color:var(--text2);margin-top:6px;line-height:1.7">床位 20–99
+                                张，直接服务社区，看感冒、慢病取药、基础体检，解决不了会向上转诊。</p>
                         </div>
                     </div>
-                    <p style="font-size:12.5px;color:var(--text3);margin-top:10px;line-height:1.7">💡 小毛病先去社区/二甲省钱省时；重病、疑难病再去三甲；急诊无论大小先打 120。选择海外国家时展示「国际知名」医院（参考 Newsweek 世界最佳医院等排名），供出国就医参考。</p>
+                    <p style="font-size:12.5px;color:var(--text3);margin-top:10px;line-height:1.7">💡
+                        小毛病先去社区/二甲省钱省时；重病、疑难病再去三甲；急诊无论大小先打 120。选择海外国家时展示「国际知名」医院（参考 Newsweek 世界最佳医院等排名），供出国就医参考。</p>
                 </div>
 
                 <!-- 症状/部位选择 -->
@@ -763,8 +820,8 @@
                 <div class="modal" style="max-width:520px;max-height:86vh;overflow-y:auto">
                     <button class="modal-close" type="button" onclick="closeLocPicker()" aria-label="关闭">✕</button>
                     <div class="sec-title" style="margin-top:0">🗺️ 选择你的位置</div>
-                    <button class="btn btn-p" id="locGpsBtn" onclick="relocateMe(true)"
-                        style="width:100%">📡 使用我的当前位置（浏览器定位）</button>
+                    <button class="btn btn-p" id="locGpsBtn" onclick="relocateMe(true)" style="width:100%">📡
+                        使用我的当前位置（浏览器定位）</button>
                     <p id="locGpsTip" style="font-size:12.5px;color:var(--text3);margin-top:8px;display:none"></p>
                     <div class="sec-title" style="margin-top:16px">📍 德州市 · 县市区</div>
                     <div id="locPreset1" style="display:flex;flex-wrap:wrap;gap:8px"></div>
@@ -777,12 +834,14 @@
                         <input class="form-input" id="locCustomInput" placeholder="如：德城区三八中路 1766 号">
                         <button class="btn btn-p" onclick="applyCustomLoc()">确认</button>
                     </div>
-                    <p style="font-size:12px;color:var(--text3)">💡 自定义地址会智能识别其中的城市/国家（如"济南市历下区…"），自动切换当地医院库并计算距离；未识别到的地址按症状匹配度推荐。</p>
+                    <p style="font-size:12px;color:var(--text3)">💡
+                        自定义地址会智能识别其中的城市/国家（如"济南市历下区…"），自动切换当地医院库并计算距离；未识别到的地址按症状匹配度推荐。</p>
                 </div>
             </div>
 
             <!-- 建议咨询医生弹窗（非诊断性提示） -->
-            <div class="modal-mask" id="docMask" role="dialog" aria-modal="true" onclick="if(event.target===this)closeDocAdvice()">
+            <div class="modal-mask" id="docMask" role="dialog" aria-modal="true"
+                onclick="if(event.target===this)closeDocAdvice()">
                 <div class="modal" style="max-width:480px;max-height:86vh;overflow-y:auto">
                     <button class="modal-close" type="button" onclick="closeDocAdvice()" aria-label="关闭">✕</button>
                     <div class="sec-title" style="margin-top:0">🩺 建议咨询医生</div>
@@ -791,29 +850,38 @@
             </div>
 
             <!-- 设备同步弹窗（手机 ↔ 电脑） -->
-            <div class="modal-mask" id="qrMask" role="dialog" aria-modal="true" onclick="if(event.target===this)closeQrSync()">
+            <div class="modal-mask" id="qrMask" role="dialog" aria-modal="true"
+                onclick="if(event.target===this)closeQrSync()">
                 <div class="modal" style="max-width:560px;max-height:88vh;overflow-y:auto">
                     <button class="modal-close" type="button" onclick="closeQrSync()" aria-label="关闭">✕</button>
                     <div class="sec-title" style="margin-top:0">📲 设备同步（手机 ↔ 电脑）</div>
-                    <p style="font-size:12.5px;color:var(--text3);margin-bottom:14px">健康数据只在本机浏览器保存。通过「同步码文件 / 同步码文本」，可以把本机的健康档案传到另一台设备（手机或电脑），无需登录账号，也无需联网。</p>
+                    <p style="font-size:12.5px;color:var(--text3);margin-bottom:14px">健康数据只在本机浏览器保存。通过「同步码文件 /
+                        同步码文本」，可以把本机的健康档案传到另一台设备（手机或电脑），无需登录账号，也无需联网。</p>
                     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
                         <button class="btn btn-p" id="qrGenTab" onclick="qrSwitchMode('gen')">⬇️ 生成同步码</button>
                         <button class="btn btn-g" id="qrScanTab" onclick="qrSwitchMode('scan')">📥 导入同步码</button>
                     </div>
                     <div id="qrGenBox">
                         <p style="font-size:12px;color:var(--text3);margin-bottom:10px">把本机健康档案打包成同步码，任选一种方式发到另一台设备：</p>
-                        <button class="btn btn-p" style="width:100%" onclick="qrDownloadCode()">💾 下载同步码文件（.txt）</button>
-                        <button class="btn btn-p" style="width:100%;margin-top:8px" onclick="qrCopyCode()">📋 复制同步码文本</button>
-                        <p style="font-size:11.5px;color:var(--text3);margin-top:10px">💡 同步码文件可通过微信、QQ、U盘等任意方式传输，在对方设备用「📥 导入同步码 → 选择文件」即可恢复；复制文本则粘贴到对方设备的输入框里导入。</p>
+                        <button class="btn btn-p" style="width:100%" onclick="qrDownloadCode()">💾
+                            下载同步码文件（.txt）</button>
+                        <button class="btn btn-p" style="width:100%;margin-top:8px" onclick="qrCopyCode()">📋
+                            复制同步码文本</button>
+                        <p style="font-size:11.5px;color:var(--text3);margin-top:10px">💡
+                            同步码文件可通过微信、QQ、U盘等任意方式传输，在对方设备用「📥 导入同步码 → 选择文件」即可恢复；复制文本则粘贴到对方设备的输入框里导入。</p>
                     </div>
                     <div id="qrScanBox" style="display:none">
-                        <button class="btn btn-p" style="width:100%" onclick="document.getElementById('qrFileInput').click()">📂 选择同步码文件导入</button>
-                        <input type="file" id="qrFileInput" accept=".txt,text/plain" style="display:none" onchange="qrImportFile(this)">
+                        <button class="btn btn-p" style="width:100%"
+                            onclick="document.getElementById('qrFileInput').click()">📂 选择同步码文件导入</button>
+                        <input type="file" id="qrFileInput" accept=".txt,text/plain" style="display:none"
+                            onchange="qrImportFile(this)">
                         <div class="sec-title" style="margin-top:16px">✏️ 或粘贴同步码文本</div>
                         <textarea class="form-input" id="qrManualInput" rows="4" style="width:100%;resize:vertical"
                             placeholder="粘贴对方的同步码文本（MXS开头）"></textarea>
-                        <button class="btn btn-p" style="width:100%;margin-top:8px" onclick="qrManualImport()">📥 导入同步码数据</button>
-                        <p style="font-size:11.5px;color:var(--text3);margin-top:8px">🔒 全程本地处理，不上传任何服务器。导入采用「去重合并、新数据优先」，不会重复。</p>
+                        <button class="btn btn-p" style="width:100%;margin-top:8px" onclick="qrManualImport()">📥
+                            导入同步码数据</button>
+                        <p style="font-size:11.5px;color:var(--text3);margin-top:8px">🔒
+                            全程本地处理，不上传任何服务器。导入采用「去重合并、新数据优先」，不会重复。</p>
                     </div>
                 </div>
             </div>
@@ -1080,6 +1148,7 @@
             if (menu) menu.classList.remove('show');
             if (act === 'notif') openNotif();
             else if (act === 'sync') openSync();
+            else if (act === 'ai') openAiCfg();
             else doLogout();
         }
         // 点击页面其他位置时收起账号菜单
@@ -2577,6 +2646,8 @@
 
         // 切换智能体：换人格、欢迎语、快捷提问，并恢复各自的对话记录
         function switchAgent(id) {
+            if (id === 'chat') id = 'doctor';   // 导航 section 名与智能体键名映射
+            if (!AGENTS[id]) return;
             if (id === activeAgent) return;
             activeAgent = id;
             isBusy = false;
@@ -2585,6 +2656,7 @@
         }
         function updateAgentUI() {
             const agent = AGENTS[activeAgent];
+            if (!agent) return;
             const w = document.getElementById('chatWelcome');
             if (w) w.innerHTML = agent.welcome(currentUser());
             const mt = document.getElementById('chatModeText');
@@ -2668,8 +2740,37 @@
             renderAgentChat();
         }
 
-        function sendMsg() {
-            if (!currentUser()) { openAuth('login'); return }
+        // ─── 大模型接入（可选）：配置密钥后四个智能体优先调用大模型 ──
+        function getAiCfg() {
+            try { return JSON.parse(localStorage.getItem('mediai-ai-cfg')) || null; } catch (e) { return null; }
+        }
+        function openAiCfg() {
+            const cfg = getAiCfg();
+            if (cfg) {
+                document.getElementById('aiKey').value = cfg.key || '';
+                document.getElementById('aiModel').value = cfg.model || '';
+                document.getElementById('aiBase').value = cfg.base || '';
+            }
+            document.getElementById('aiMask').classList.add('show');
+        }
+        function closeAiCfg() { document.getElementById('aiMask').classList.remove('show'); }
+        function saveAiCfg() {
+            const key = document.getElementById('aiKey').value.trim();
+            const model = document.getElementById('aiModel').value.trim() || 'deepseek-chat';
+            const base = document.getElementById('aiBase').value.trim() || 'https://api.deepseek.com/chat/completions';
+            try {
+                if (key && key !== '你的_API_KEY' && key.length >= 10) localStorage.setItem('mediai-ai-cfg', JSON.stringify({ key: key, model: model, base: base }));
+                else localStorage.removeItem('mediai-ai-cfg');
+            } catch (e) { }
+            closeAiCfg();
+            alert(key && key !== '你的_API_KEY' && key.length >= 10
+                ? '✅ 大模型已启用（' + model + '）\n四个智能体将优先调用大模型回答；网络或调用异常时自动回退本地科普引擎。\n密钥仅保存在本设备浏览器。'
+                : '已关闭大模型，四个智能体使用内置本地科普引擎（无需联网）。');
+        }
+
+        async function sendMsg() {
+            if (!currentUser()) { openAuth('login'); return; }
+            if (!AGENTS[activeAgent]) return;
             if (isBusy) return;
             const inp = document.getElementById('chatInput');
             const msg = inp.value.trim();
@@ -2687,9 +2788,9 @@
 
             isBusy = true; showTyping();
 
+            // 打字机：15ms/字，点击气泡立即显示全文
             const finishWith = (text) => {
                 hideTyping();
-                // 打字机快速逐段"说"出来，点击气泡可立即显示全文
                 const { wrap, bubble } = addMsg('', 'ai');
                 bubble.classList.add('typing-active');
                 bubble.title = '点击直接查看全文';
@@ -2715,45 +2816,57 @@
                     }
                 };
                 bubble.addEventListener('click', finish);
-                let typed = 0;
-                const tick = () => {
-                    if (finished) return;
-                    if (typed >= text.length) { finish(); return; }
-                    // 每次 3 个字，回复更干脆；句号处稍作停顿，像真人呼吸
-                    let chunk = '';
-                    while (chunk.length < 3 && typed < text.length) { chunk += text.charAt(typed); typed++; }
-                    chunk.split('\n').forEach((line, i) => {
-                        if (i) bubble.appendChild(document.createElement('br'));
-                        if (line) bubble.appendChild(document.createTextNode(line));
-                    });
-                    if (activeAgent === agentAtSend) document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
-                    const lastCh = text.charAt(typed - 1);
-                    setTimeout(tick, lastCh === '。' || lastCh === '！' || lastCh === '？' ? 55 : 9);
-                };
-                tick();
+                let i = 0;
+                const timer = setInterval(() => {
+                    if (finished) { clearInterval(timer); return; }
+                    if (i < text.length) {
+                        const ch = text.charAt(i);
+                        if (ch === '\n') bubble.appendChild(document.createElement('br'));
+                        else bubble.appendChild(document.createTextNode(ch));
+                        i++;
+                        if (activeAgent === agentAtSend) document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
+                    } else { clearInterval(timer); finish(); }
+                }, 15);
             };
 
-            // 稍作"思考"后回答
-            const reply = AGENTS[activeAgent].reply(msg);
+            // ① 已配置大模型密钥 → 调用大模型（带上智能体人格、会话上下文与健康档案）
+            const cfg = getAiCfg();
+            const keyOk = !!(cfg && cfg.key && cfg.key !== '你的_API_KEY' && cfg.key.length >= 10);
+            if (keyOk) {
+                const agent = AGENTS[agentAtSend];
+                const profile = latestHealthRecord();
+                const profileText = profile
+                    ? '用户健康档案（最近记录）：' + JSON.stringify({ bmi: profile.bmi, sbp: profile.sbp, dbp: profile.dbp, glucose: profile.glucose, hr: profile.hr })
+                    : '用户暂无健康档案。';
+                const history = sess.msgs.slice(-8).map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content }));
+                try {
+                    const response = await fetch(cfg.base, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.key },
+                        body: JSON.stringify({
+                            model: cfg.model,
+                            messages: [
+                                { role: 'system', content: '你是 MediAI 智慧医疗平台的「' + agent.name + '」，是医学科普助手。内容仅供基础健康知识科普，不提供任何临床诊断或处方建议，请提示用户如有身体不适及时就医、听从专业医生意见。回答请结合用户健康档案、语气温暖有同理心，结尾用提问引导用户继续交流。' + profileText },
+                                ...history
+                            ],
+                            temperature: 0.7
+                        })
+                    });
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    const data = await response.json();
+                    const aiReply = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : '';
+                    if (aiReply && aiReply.trim()) { finishWith(aiReply.trim()); return; }
+                    throw new Error('empty reply');
+                } catch (err) {
+                    // 大模型调用失败（网络/CORS/密钥错误）→ 自动回退本地科普引擎，保证始终有回答
+                    console.warn('大模型调用失败，已回退本地引擎：', err && err.message);
+                    finishWith(AGENTS[agentAtSend].reply(msg));
+                    return;
+                }
+            }
+            // ② 未配置密钥 → 内置本地科普引擎
+            const reply = AGENTS[agentAtSend].reply(msg);
             setTimeout(() => finishWith(reply), 250 + Math.random() * 350);
-        }
-
-        function sendHint(el) { document.getElementById('chatInput').value = el.textContent; sendMsg(); }
-        function handleKey(e) {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
-            const t = e.target; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 120) + 'px';
-        }
-
-        // 清空当前会话（历史会话保留，长期记忆保留）
-        function clearChat() {
-            if (!confirm('确定清空当前会话的聊天内容吗？（历史会话与长期记忆会保留）')) return;
-            const s = curSession();
-            s.msgs = [];
-            s.title = '新对话';
-            s.updatedAt = Date.now();
-            agentTopic[activeAgent] = null;
-            persistAgentSessions();
-            renderAgentChat();
         }
 
         // ─── Health ───────────────────────────────────────────────
@@ -3010,92 +3123,122 @@
             }
         }
         // ─── 身体成分多指标估算 ───────────────────────────
-        function bcNum(id){ const v=document.getElementById(id).value.trim(); return v===''?null:Number(v); }
+        function bcNum(id) { const v = document.getElementById(id).value.trim(); return v === '' ? null : Number(v); }
 
-        function calcBodyComp(){
-            const h=bcNum('b-height'), w=bcNum('b-weight'), age=bcNum('b-age'), sex=document.getElementById('b-sex').value;
-            if(h==null||w==null||age==null) return;
-            if(h<50||h>250||w<2||w>500||age<10||age>100) return;
+        function calcBodyComp() {
+            const h = bcNum('b-height'), w = bcNum('b-weight'), age = bcNum('b-age'), sex = document.getElementById('b-sex').value;
+            if (h == null || w == null || age == null) return;
+            if (h < 50 || h > 250 || w < 2 || w > 500 || age < 10 || age > 100) return;
 
-            const bmi=+(w/((h/100)**2)).toFixed(1);
-            const bf=+(1.2*bmi+0.23*age-(sex==='male'?16.2:5.4)).toFixed(1);          // Deurenberg 体脂率
-            const fatKg=+(w*bf/100).toFixed(1);
-            const smmRate=+( (sex==='male'? (0.32*w+0.08*h-12):(0.28*w+0.06*h-8))/w*100 ).toFixed(1); // 骨骼肌率估算
-            const muscleKg=+(w*smmRate/100*1.25).toFixed(1);
-            const boneKg=+( (sex==='male'? 0.036*w+0.012*h : 0.031*w+0.010*h) ).toFixed(1);
-            const lean=+(w-fatKg).toFixed(1);
-            const bmr=Math.round(sex==='male'? 10*w+6.25*h-5*age+5 : 10*w+6.25*h-5*age-161); // Mifflin-St Jeor
-            const protein=+(lean*0.18/w*100).toFixed(1);
-            const water=+( (sex==='male'? 60:55) - (bf-20)*0.4 ).toFixed(1);
-            const visc=+(Math.max(1,(bmi-18)*0.7)).toFixed(1);
-            const baseBmr=Math.round(sex==='male'? 10*w+6.25*h-5*age+5 : 10*w+6.25*h-5*age-161);
-            const bodyAge=Math.max(10,Math.round(age+(bmr-baseBmr)/12));
+            const bmi = +(w / ((h / 100) ** 2)).toFixed(1);
+            const bf = +(1.2 * bmi + 0.23 * age - (sex === 'male' ? 16.2 : 5.4)).toFixed(1);          // Deurenberg 体脂率
+            const fatKg = +(w * bf / 100).toFixed(1);
+            const smmRate = +((sex === 'male' ? (0.32 * w + 0.08 * h - 12) : (0.28 * w + 0.06 * h - 8)) / w * 100).toFixed(1); // 骨骼肌率估算
+            const muscleKg = +(w * smmRate / 100 * 1.25).toFixed(1);
+            const boneKg = +((sex === 'male' ? 0.036 * w + 0.012 * h : 0.031 * w + 0.010 * h)).toFixed(1);
+            const lean = +(w - fatKg).toFixed(1);
+            const bmr = Math.round(sex === 'male' ? 10 * w + 6.25 * h - 5 * age + 5 : 10 * w + 6.25 * h - 5 * age - 161); // Mifflin-St Jeor
+            const protein = +(lean * 0.18 / w * 100).toFixed(1);
+            const water = +((sex === 'male' ? 60 : 55) - (bf - 20) * 0.4).toFixed(1);
+            const visc = +(Math.max(1, (bmi - 18) * 0.7)).toFixed(1);
+            const baseBmr = Math.round(sex === 'male' ? 10 * w + 6.25 * h - 5 * age + 5 : 10 * w + 6.25 * h - 5 * age - 161);
+            const bodyAge = Math.max(10, Math.round(age + (bmr - baseBmr) / 12));
 
-            const cards=[
-                {key:'bmi',name:'BMI',val:bmi,unit:'',min:15,max:35,
-                    intro:bmi<18.5?'体重偏轻，建议增加优质蛋白与主食，配合力量训练增肌。':bmi<24?'体型处于健康范围，请继续保持规律饮食与运动。':bmi<28?'体重超重，建议控制精制糖油、规律有氧，逐步回到健康区间。':'属于肥胖范畴，建议到营养/内分泌科做系统评估，分阶段管理体重。',
-                    wiki:'BMI=体重(kg)/身高(m)²，是评估体重状况的常用指标，但不能区分脂肪与肌肉。运动员、孕妇应结合腰围、体脂综合判断。'},
-                {key:'obese',name:'肥胖度',val:+(((bmi/22)-1)*100).toFixed(1),unit:'%',min:-30,max:80,
-                    intro:bmi<18.5?'消瘦区间，注意营养摄入。':bmi<24?'体重标准，继续保持。':bmi<28?'超重，建议控制饮食、增加运动。':'肥胖，建议系统减重管理。',
-                    wiki:'肥胖度=(实际BMI/标准BMI22-1)×100%，在标准±10%内为正常，正值表示超出标准体重比例。'},
-                {key:'fat',name:'体脂率',val:bf,unit:'%',min:8,max:45,
-                    intro:bf<(sex==='male'?10:18)?'体脂偏低，注意营养摄入，避免过度减脂。':bf<(sex==='male'?20:28)?'体脂处于健康区间，继续保持。':'体脂偏高，建议减少高油高糖食物并增加运动。',
-                    wiki:'体脂率是体内脂肪重量占体重的比例。减脂本质是减少脂肪，每周1-2斤属于健康速度，过快易流失水分和肌肉，导致代谢下降。'},
-                {key:'fatkg',name:'脂肪重量',val:fatKg,unit:'kg',min:0,max:150,
-                    intro:'当前脂肪重量约 '+fatKg+' kg（'+(fatKg*2).toFixed(1)+' 斤）。',
-                    wiki:'脂肪重量=体重×体脂率。相同体重下，肌肉多的人看起来更瘦、也更易维持体型。'},
-                {key:'smm',name:'骨骼肌率',val:smmRate,unit:'%',min:20,max:50,
-                    intro:smmRate>=30?'肌肉量充足，能增强力量、耐力并提高代谢。':'肌肉量一般，建议通过骑车、游泳、力量训练增肌，多摄入优质蛋白。',
-                    wiki:'同重量下脂肪体积约为肌肉的1.18倍，所以肌肉多的人更显瘦。脱水减重容易反弹，增肌才是长期保持体型的关键。'},
-                {key:'muscle',name:'肌肉重量',val:muscleKg,unit:'kg',min:0,max:150,
-                    intro:'肌肉量处于估算区间。增加肌肉能更快消耗热量，建议保持积极生活方式、均衡摄入蛋白质。',
-                    wiki:'肌肉是消耗热量的主力。训练后及时补充蛋白质有助于肌纤维增粗，建议多吃奶、蛋、鱼、豆制品。'},
-                {key:'bone',name:'骨量',val:boneKg,unit:'kg',min:1,max:20,
-                    intro:boneKg>=4.4?'骨量充足，骨骼健康，有助于预防骨质疏松。':'骨量一般，建议多摄入牛奶、豆制品、绿叶菜，配合负重运动增强骨密度。',
-                    wiki:'骨量支撑身体、保护内脏，随代谢不断更新。过瘦和运动不足会降低骨量，补钙首选天然食物。'},
-                {key:'bmr',name:'基础代谢',val:bmr,unit:'kcal',min:1000,max:2500,
-                    intro:bmr>=1400?'基础代谢良好，即使安静状态也能消耗较多能量。':'基础代谢偏低，节食、熬夜、缺乏运动都可能降低代谢，建议通过力量训练增加肌肉。',
-                    wiki:'基础代谢是静息状态下维持生命所需热量，肌肉量决定其高低。肌肉越多，日常消耗越大，越不容易发胖。'},
-                {key:'lean',name:'去脂体重',val:lean,unit:'kg',min:20,max:200,
-                    intro:'去脂体重（瘦体重）= 体重−脂肪，主要由肌肉、骨骼、水分构成，数值高说明身体强壮、体质好。',
-                    wiki:'运动员体重虽高但去脂体重大，并不属于肥胖。它反映除脂肪外的身体成分质量。'},
-                {key:'protein',name:'蛋白质',val:protein,unit:'%',min:10,max:30,
-                    intro:protein>=16?'蛋白质水平充足，有助于维持肌肉、免疫和生理功能。':'蛋白质不足，可能导致免疫力下降、肌肉无力，建议增加肉、鱼、豆类、坚果、乳制品。',
-                    wiki:'优先选择完全蛋白（鸡蛋、牛奶、鱼虾、大豆），动植物蛋白搭配互补。每餐蛋白控制在30-50g。'},
-                {key:'water',name:'水分率',val:water,unit:'%',min:40,max:70,
-                    intro:water>=49.5?'水分充足，有助于代谢、带走废物。':'身体含水量不足，请喝足水，多吃含水量丰富的蔬果。',
-                    wiki:'水分占身体很大比例，减脂不能一味脱水。健康减重减的是脂肪，而不是水分，否则容易反弹。'},
-                {key:'visc',name:'内脏脂肪',val:visc,unit:'级',min:1,max:30,
-                    intro:visc<=9?'内脏脂肪处于正常水平，请继续保持均衡饮食与适量运动。':'内脏脂肪偏高，请以标准体重为目标，限制热量并加强运动。',
-                    wiki:'内脏脂肪指数反映腹腔内脏脂肪堆积。标准1-9级，10-14级偏高，15级以上过多，与高血压、糖尿病、心脏病风险相关。'},
-                {key:'age',name:'身体年龄',val:bodyAge,unit:'岁',min:10,max:100,
-                    intro:bodyAge<=age?'身体状态比实际年龄年轻，继续保持！':'身体年龄偏大，别灰心，改善饮食、增加运动、保持好心情可以逐步改善。',
-                    wiki:'身体年龄以基础代谢为基础，综合体重、体脂、肌肉等判断身体真实状态，与身份证年龄可以不同。'},
-                {key:'height',name:'身高',val:h,unit:'cm',min:120,max:220,
-                    intro:'身高 '+h+' cm。成年后骨骼定型，可通过减重、矫正体态、穿搭获得视觉上的挺拔效果。',
-                    wiki:'身高由头骨、脊柱、下肢长骨发育决定。减重、矫正含胸驼背体态、高腰穿搭都能在视觉上显高。'},
-                {key:'realage',name:'实际年龄',val:age,unit:'岁',min:10,max:100,
-                    intro:'实际年龄 '+age+' 岁。自然年龄只是身份证数字，身体状态由基因、作息、饮食、运动等后天因素决定。',
-                    wiki:'自然年龄只会逐年增长，但睡眠、地中海式饮食、规律运动、乐观心态都能延缓生理衰老。'},
+            const cards = [
+                {
+                    key: 'bmi', name: 'BMI', val: bmi, unit: '', min: 15, max: 35,
+                    intro: bmi < 18.5 ? '体重偏轻，建议增加优质蛋白与主食，配合力量训练增肌。' : bmi < 24 ? '体型处于健康范围，请继续保持规律饮食与运动。' : bmi < 28 ? '体重超重，建议控制精制糖油、规律有氧，逐步回到健康区间。' : '属于肥胖范畴，建议到营养/内分泌科做系统评估，分阶段管理体重。',
+                    wiki: 'BMI=体重(kg)/身高(m)²，是评估体重状况的常用指标，但不能区分脂肪与肌肉。运动员、孕妇应结合腰围、体脂综合判断。'
+                },
+                {
+                    key: 'obese', name: '肥胖度', val: +(((bmi / 22) - 1) * 100).toFixed(1), unit: '%', min: -30, max: 80,
+                    intro: bmi < 18.5 ? '消瘦区间，注意营养摄入。' : bmi < 24 ? '体重标准，继续保持。' : bmi < 28 ? '超重，建议控制饮食、增加运动。' : '肥胖，建议系统减重管理。',
+                    wiki: '肥胖度=(实际BMI/标准BMI22-1)×100%，在标准±10%内为正常，正值表示超出标准体重比例。'
+                },
+                {
+                    key: 'fat', name: '体脂率', val: bf, unit: '%', min: 8, max: 45,
+                    intro: bf < (sex === 'male' ? 10 : 18) ? '体脂偏低，注意营养摄入，避免过度减脂。' : bf < (sex === 'male' ? 20 : 28) ? '体脂处于健康区间，继续保持。' : '体脂偏高，建议减少高油高糖食物并增加运动。',
+                    wiki: '体脂率是体内脂肪重量占体重的比例。减脂本质是减少脂肪，每周1-2斤属于健康速度，过快易流失水分和肌肉，导致代谢下降。'
+                },
+                {
+                    key: 'fatkg', name: '脂肪重量', val: fatKg, unit: 'kg', min: 0, max: 150,
+                    intro: '当前脂肪重量约 ' + fatKg + ' kg（' + (fatKg * 2).toFixed(1) + ' 斤）。',
+                    wiki: '脂肪重量=体重×体脂率。相同体重下，肌肉多的人看起来更瘦、也更易维持体型。'
+                },
+                {
+                    key: 'smm', name: '骨骼肌率', val: smmRate, unit: '%', min: 20, max: 50,
+                    intro: smmRate >= 30 ? '肌肉量充足，能增强力量、耐力并提高代谢。' : '肌肉量一般，建议通过骑车、游泳、力量训练增肌，多摄入优质蛋白。',
+                    wiki: '同重量下脂肪体积约为肌肉的1.18倍，所以肌肉多的人更显瘦。脱水减重容易反弹，增肌才是长期保持体型的关键。'
+                },
+                {
+                    key: 'muscle', name: '肌肉重量', val: muscleKg, unit: 'kg', min: 0, max: 150,
+                    intro: '肌肉量处于估算区间。增加肌肉能更快消耗热量，建议保持积极生活方式、均衡摄入蛋白质。',
+                    wiki: '肌肉是消耗热量的主力。训练后及时补充蛋白质有助于肌纤维增粗，建议多吃奶、蛋、鱼、豆制品。'
+                },
+                {
+                    key: 'bone', name: '骨量', val: boneKg, unit: 'kg', min: 1, max: 20,
+                    intro: boneKg >= 4.4 ? '骨量充足，骨骼健康，有助于预防骨质疏松。' : '骨量一般，建议多摄入牛奶、豆制品、绿叶菜，配合负重运动增强骨密度。',
+                    wiki: '骨量支撑身体、保护内脏，随代谢不断更新。过瘦和运动不足会降低骨量，补钙首选天然食物。'
+                },
+                {
+                    key: 'bmr', name: '基础代谢', val: bmr, unit: 'kcal', min: 1000, max: 2500,
+                    intro: bmr >= 1400 ? '基础代谢良好，即使安静状态也能消耗较多能量。' : '基础代谢偏低，节食、熬夜、缺乏运动都可能降低代谢，建议通过力量训练增加肌肉。',
+                    wiki: '基础代谢是静息状态下维持生命所需热量，肌肉量决定其高低。肌肉越多，日常消耗越大，越不容易发胖。'
+                },
+                {
+                    key: 'lean', name: '去脂体重', val: lean, unit: 'kg', min: 20, max: 200,
+                    intro: '去脂体重（瘦体重）= 体重−脂肪，主要由肌肉、骨骼、水分构成，数值高说明身体强壮、体质好。',
+                    wiki: '运动员体重虽高但去脂体重大，并不属于肥胖。它反映除脂肪外的身体成分质量。'
+                },
+                {
+                    key: 'protein', name: '蛋白质', val: protein, unit: '%', min: 10, max: 30,
+                    intro: protein >= 16 ? '蛋白质水平充足，有助于维持肌肉、免疫和生理功能。' : '蛋白质不足，可能导致免疫力下降、肌肉无力，建议增加肉、鱼、豆类、坚果、乳制品。',
+                    wiki: '优先选择完全蛋白（鸡蛋、牛奶、鱼虾、大豆），动植物蛋白搭配互补。每餐蛋白控制在30-50g。'
+                },
+                {
+                    key: 'water', name: '水分率', val: water, unit: '%', min: 40, max: 70,
+                    intro: water >= 49.5 ? '水分充足，有助于代谢、带走废物。' : '身体含水量不足，请喝足水，多吃含水量丰富的蔬果。',
+                    wiki: '水分占身体很大比例，减脂不能一味脱水。健康减重减的是脂肪，而不是水分，否则容易反弹。'
+                },
+                {
+                    key: 'visc', name: '内脏脂肪', val: visc, unit: '级', min: 1, max: 30,
+                    intro: visc <= 9 ? '内脏脂肪处于正常水平，请继续保持均衡饮食与适量运动。' : '内脏脂肪偏高，请以标准体重为目标，限制热量并加强运动。',
+                    wiki: '内脏脂肪指数反映腹腔内脏脂肪堆积。标准1-9级，10-14级偏高，15级以上过多，与高血压、糖尿病、心脏病风险相关。'
+                },
+                {
+                    key: 'age', name: '身体年龄', val: bodyAge, unit: '岁', min: 10, max: 100,
+                    intro: bodyAge <= age ? '身体状态比实际年龄年轻，继续保持！' : '身体年龄偏大，别灰心，改善饮食、增加运动、保持好心情可以逐步改善。',
+                    wiki: '身体年龄以基础代谢为基础，综合体重、体脂、肌肉等判断身体真实状态，与身份证年龄可以不同。'
+                },
+                {
+                    key: 'height', name: '身高', val: h, unit: 'cm', min: 120, max: 220,
+                    intro: '身高 ' + h + ' cm。成年后骨骼定型，可通过减重、矫正体态、穿搭获得视觉上的挺拔效果。',
+                    wiki: '身高由头骨、脊柱、下肢长骨发育决定。减重、矫正含胸驼背体态、高腰穿搭都能在视觉上显高。'
+                },
+                {
+                    key: 'realage', name: '实际年龄', val: age, unit: '岁', min: 10, max: 100,
+                    intro: '实际年龄 ' + age + ' 岁。自然年龄只是身份证数字，身体状态由基因、作息、饮食、运动等后天因素决定。',
+                    wiki: '自然年龄只会逐年增长，但睡眠、地中海式饮食、规律运动、乐观心态都能延缓生理衰老。'
+                },
             ];
 
-            const grid=document.getElementById('bcGrid');
-            grid.innerHTML=cards.map(c=>{
-                const pct=Math.min(100,Math.max(0,(c.val-c.min)/(c.max-c.min)*100));
+            const grid = document.getElementById('bcGrid');
+            grid.innerHTML = cards.map(c => {
+                const pct = Math.min(100, Math.max(0, (c.val - c.min) / (c.max - c.min) * 100));
                 return `<div class="bc-card" onclick="openBc('${c.key}')">
       <div class="bc-name">${c.name}</div>
       <div class="bc-val">${c.val}<span class="bc-unit"> ${c.unit}</span></div>
       <div class="bc-bar"><i style="width:${pct}%"></i></div>
     </div>`;
             }).join('');
-            window._bc=cards;
+            window._bc = cards;
         }
 
-        function openBc(key){
-            const c=window._bc&&window._bc.find(x=>x.key===key);
-            if(!c)return;
-            const pct=Math.min(100,Math.max(0,(c.val-c.min)/(c.max-c.min)*100));
-            document.getElementById('bcDetail').innerHTML=`
+        function openBc(key) {
+            const c = window._bc && window._bc.find(x => x.key === key);
+            if (!c) return;
+            const pct = Math.min(100, Math.max(0, (c.val - c.min) / (c.max - c.min) * 100));
+            document.getElementById('bcDetail').innerHTML = `
     <div class="modal-title">${c.name} <span style="font-size:13px;color:var(--text3);font-weight:400">估算参考</span></div>
     <div style="font-size:40px;font-weight:800;color:var(--primary,#3b82f6);margin:10px 0">${c.val}<span style="font-size:16px"> ${c.unit}</span></div>
     <div class="bc-bar" style="height:10px;margin:10px 0"><i style="width:${pct}%"></i></div>
@@ -3104,7 +3247,7 @@
     <p style="font-size:14px;line-height:1.9;color:var(--text2)">${c.wiki}</p>`;
             document.getElementById('bcMask').classList.add('show');
         }
-        function closeBc(){ document.getElementById('bcMask').classList.remove('show'); }
+        function closeBc() { document.getElementById('bcMask').classList.remove('show'); }
 
         // ─── 慧医导诊：德州医院数据与推荐 ─────────────────────────
         const hospitals = [
@@ -5078,7 +5221,7 @@ ${bpImg ? '<h2>📈 血压趋势图</h2><img src="' + bpImg + '">' : ''}
         }
         // ─── 键盘与初始化 ─────────────────────────────────────────
         document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') { closeAuth(); closeNotif(); closeSync(); closeLocPicker(); closeDocAdvice(); closeQrSync(); const um = document.getElementById('userMenu'); if (um) um.classList.remove('show'); }
+            if (e.key === 'Escape') { closeAuth(); closeNotif(); closeSync(); closeLocPicker(); closeDocAdvice(); closeQrSync(); closeAiCfg(); const um = document.getElementById('userMenu'); if (um) um.classList.remove('show'); }
             const control = e.target.closest('[role="button"], [role="tab"]');
             if (control && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); control.click(); }
         });
