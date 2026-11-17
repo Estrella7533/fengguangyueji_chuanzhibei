@@ -276,7 +276,7 @@
         </div>
         <div class="s-sect">主要功能</div>
         <div class="nav-item active" data-sec="home"><span class="nav-icon">🏠</span>首页总览</div>
-        <div class="nav-item" data-sec="chat"><span class="nav-icon">💬</span>智能问诊<span class="nav-badge">在线</span>
+        <div class="nav-item" data-sec="chat"><span class="nav-icon">🩺</span>AI 家庭医生<span class="nav-badge">在线</span>
         </div>
         <div class="nav-item" data-sec="health"><span class="nav-icon">❤️</span>健康档案</div>
         <div class="nav-item" data-sec="kb"><span class="nav-icon">📚</span>医疗知识库</div>
@@ -334,7 +334,7 @@
                         id="locPillName">德州市德城区</span> ▾</button>
                 <button class="btn btn-g" id="notifBtn" onclick="openNotif()">🔔 通知<span class="notif-badge"
                         id="notifBadge" style="display:none"></span></button>
-                <button class="btn btn-p" onclick="requireAuth(()=>showSec('chat'))">💬 开始问诊</button>
+                <button class="btn btn-p" onclick="requireAuth(()=>showSec('chat'))">🩺 开始问诊</button>
                 <button class="btn btn-g" id="pcAuthBtn" onclick="openAuth('login')">🔑 登录 / 注册</button>
                 <button class="btn btn-g" id="pcLogoutBtn" onclick="doLogout()" style="display:none">退出</button>
             </div>
@@ -390,7 +390,7 @@
                 <div class="g3">
                     <div class="feat-card" onclick="requireAuth(()=>showSec('chat'))">
                         <div class="feat-icon" style="background:#e0f2fe">🩺</div>
-                        <div class="feat-title">智能问诊</div>
+                        <div class="feat-title">AI 家庭医生</div>
                         <div class="feat-desc">描述您的症状，AI 为您分析可能的病因并给出就医建议，支持多轮对话，随时追问。</div>
                     </div>
                     <div class="feat-card" onclick="requireAuth(()=>showSec('health'))">
@@ -415,8 +415,8 @@
                 <div class="chat-sec">
                     <div class="chat-mode-bar" id="chatModeBar">
                         <span class="chat-mode-dot" id="chatModeDot">●</span>
-                        <span class="chat-mode-text" id="chatModeText">智能问诊 · 在线</span>
-                        <span class="chat-mode-sub" id="chatModeSub">描述症状，系统为您分析并给出建议</span>
+                        <span class="chat-mode-text" id="chatModeText">AI 家庭医生 · 在线</span>
+                        <span class="chat-mode-sub" id="chatModeSub">身体难受随时问，AI 家庭医生为您分析并给出建议</span>
                     </div>
                     <div class="chat-body" id="chatBody">
                         <div class="msg ai">
@@ -1297,7 +1297,7 @@
             const dayNum = parseInt(dayKey.replace(/-/g, ''), 10);
             const tip = NOTIF_TIPS[dayNum % NOTIF_TIPS.length];
             list.push({ id: 'tip', icon: '💡', title: '今日健康小贴士 · ' + tip[0], text: tip[1], sec: 'home' });
-            list.push({ id: 'doctor', icon: '💬', title: '智能问诊在线', text: '描述您的症状，随时获得分析与建议。', sec: 'chat' });
+            list.push({ id: 'doctor', icon: '🩺', title: 'AI 家庭医生在线', text: '身体难受？描述您的症状，随时获得分析与建议。', sec: 'chat' });
             return list;
         }
 
@@ -1355,8 +1355,8 @@
         function closeSidebar() { document.getElementById('sidebar').classList.remove('open') }
 
         // ─── Navigation ───────────────────────────────────────────
-        const titles = { home: '首页总览', chat: '智能问诊', health: '健康档案', kb: '医疗知识库', bmi: 'BMI 计算器', guide: '慧医导诊', news: '健康科普资讯', nutri: 'AI 营养分析师', mind: '心理健康对话', sport: '智能运动指导师' };
-        const subs = { home: '欢迎使用 MediAI 智能医疗平台', chat: '描述症状，AI 为您分析并给出建议', health: '记录和追踪您的健康数据', kb: '查询疾病、症状和用药知识', bmi: '快速计算身体质量指数', guide: '按症状推荐医院 · 一键地图导航', news: '每日更新 · 饮食健康 / 保健品 / 医学科普', nutri: '一日三餐 · 热量营养 · 减脂增肌饮食方案', mind: '情绪倾诉 · 压力疏导 · 睡眠改善 · 心理陪伴', sport: '运动计划 · 动作指导 · 损伤预防 · 体能提升' };
+        const titles = { home: '首页总览', chat: 'AI 家庭医生', health: '健康档案', kb: '医疗知识库', bmi: 'BMI 计算器', guide: '慧医导诊', news: '健康科普资讯', nutri: 'AI 营养分析师', mind: '心理健康对话', sport: '智能运动指导师' };
+        const subs = { home: '欢迎使用 MediAI 智能医疗平台', chat: '身体难受随时问，AI 家庭医生为您分析并给出建议', health: '记录和追踪您的健康数据', kb: '查询疾病、症状和用药知识', bmi: '快速计算身体质量指数', guide: '按症状推荐医院 · 一键地图导航', news: '每日更新 · 饮食健康 / 保健品 / 医学科普', nutri: '一日三餐 · 热量营养 · 减脂增肌饮食方案', mind: '情绪倾诉 · 压力疏导 · 睡眠改善 · 心理陪伴', sport: '运动计划 · 动作指导 · 损伤预防 · 体能提升' };
         const CHAT_SECTIONS = ['chat', 'nutri', 'mind', 'sport'];
         function showSec(id) {
             if (id === 'qrsync') { openQrSync(); return }
@@ -2056,9 +2056,9 @@
         }
 
         const smallTalk = [
-            { keys: ['你好', '您好', 'hi', 'hello', '在吗'], reply: '你好，我是 MediAI 智能问诊。请描述您的不适，我会为您分析并给出建议。' },
+            { keys: ['你好', '您好', 'hi', 'hello', '在吗'], reply: '你好，我是 MediAI 的 AI 家庭医生。请描述您的不适，我会为您分析并给出建议。' },
             { keys: ['谢谢', '感谢', '辛苦'], reply: '不客气。有需要随时联系。' },
-            { keys: ['你是谁', '你叫什么', '你能做什么', '你会什么', '介绍一下'], reply: '我是 MediAI 智能问诊助手，可以为您提供：\n① 常见症状分析（头痛、发烧、咳嗽等）\n② 12 大类常见疾病科普知识\n③ 居家处理建议与就医指引\n\n本系统仅供参考，不构成医疗诊断。' },
+            { keys: ['你是谁', '你叫什么', '你能做什么', '你会什么', '介绍一下'], reply: '我是 MediAI 的 AI 家庭医生，可以为您提供：\n① 常见症状分析（头痛、发烧、咳嗽等）\n② 12 大类常见疾病科普知识\n③ 居家处理建议与就医指引\n\n本系统仅供参考，不构成医疗诊断。' },
             { keys: ['再见', '拜拜', '晚安', '先这样'], reply: '再见，祝您健康。' },
         ];
         const FOLLOW_KEYS = ['还有', '然后', '继续', '别的', '其他', '注意什么', '怎么办'];
@@ -2392,12 +2392,12 @@
         // ─── 智能体定义（人格、欢迎语、快捷提问、回复引擎） ────────
         const AGENTS = {
             doctor: {
-                icon: '🤖', name: '智能问诊 · 在线', sub: '描述症状，系统为您分析并给出建议',
+                icon: '🩺', name: 'AI 家庭医生 · 在线', sub: '身体难受随时问，AI 家庭医生为您分析并给出建议',
                 placeholder: '请描述您的症状，例如：头痛、发烧、咳嗽...',
                 hints: ['头痛头晕', '发烧咳嗽', '胃痛恶心', '心悸胸闷', '失眠焦虑', '腰背疼痛'],
                 welcome: u => {
                     const hello = u ? '你好，<strong>' + escapeHtml(u) + '</strong>！' : '你好！';
-                    return hello + '欢迎使用 <strong>MediAI</strong> 智能问诊。请描述您的不适（症状、持续时间、程度等），系统将为您梳理可能的原因、提供居家处理建议，并提示需要就医的情况。<br><br>也可以点击下方快捷症状快速开始。<br><br>⚠️ 本系统仅供参考，不构成医疗诊断，如症状严重请及时就医。';
+                    return hello + '欢迎使用 <strong>MediAI</strong> 的 AI 家庭医生。请描述您的不适（症状、持续时间、程度等），医生将为您梳理可能的原因、提供居家处理建议，并提示需要就医的情况。<br><br>也可以点击下方快捷症状快速开始。<br><br>⚠️ 本系统仅供参考，不构成医疗诊断，如症状严重请及时就医。';
                 },
                 reply: msg => getLocalReply(msg)
             },
@@ -4686,9 +4686,9 @@
         <div><div style="font-weight:700;font-size:13px;color:#b91c1c">${escapeHtml(it.name)}</div>
         <div style="font-size:12.5px;color:var(--text2);margin-top:2px">${escapeHtml(it.text)}</div></div>
       </div>`).join('')}
-      <p style="font-size:12px;color:var(--text3);margin-top:10px">📌 是否需要进一步检查或调整，请携带记录咨询医生。你也可以先到「AI 智能问诊」描述你的情况。</p>
+      <p style="font-size:12px;color:var(--text3);margin-top:10px">📌 是否需要进一步检查或调整，请携带记录咨询医生。你也可以先到「AI 家庭医生」描述你的情况。</p>
       <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn btn-p" onclick="closeDocAdvice();requireAuth(()=>showSec('chat'))">💬 去 AI 问诊</button>
+        <button class="btn btn-p" onclick="closeDocAdvice();requireAuth(()=>showSec('chat'))">🩺 咨询 AI 家庭医生</button>
         <button class="btn btn-g" onclick="closeDocAdvice()">关闭</button>
       </div>`;
             document.getElementById('docMask').classList.add('show');
