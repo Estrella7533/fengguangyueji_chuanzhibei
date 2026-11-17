@@ -4655,29 +4655,29 @@ ${bpImg ? '<h2>📈 血压趋势图</h2><img src="' + bpImg + '">' : ''}
             renderHistory();
             alert('✅ 同步完成：已导入 ' + data.records.length + ' 条健康记录（去重合并，新数据优先）。');
         }
-        // ─── 二维码组件按需加载：本地缓存 → 多 CDN 依次兜底 ────────
+        // ─── 二维码组件按需加载：本地文件优先 → 多 CDN 依次兜底 ────────
         // 说明：二维码生成（QRCode）与扫码（jsQR）两个组件按需加载。
-        // 顺序：① 上次成功时缓存在本机的源码 → ② 国内 CDN（BootCDN / staticfile）
-        // → ③ 国际 CDN（unpkg / jsDelivr / cdnjs）。任一源成功后自动缓存，下次离线也能用。
+        // 顺序：① 仓库自带的本地文件（lib/，不依赖网络）→ ② 上次成功时缓存在本机的源码
+        // → ③ CDN 依次兜底（unpkg → BootCDN → staticfile → cdnjs → jsDelivr）。
+        // 任一源成功后自动缓存到本机，下次更快、更稳。
         const qrLibDefs = {
             qrcode: {
                 check: () => !!(window.QRCode && window.QRCode.CorrectLevel),
                 srcs: [
+                    'lib/qrcode.min.js',
+                    'https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js',
                     'https://cdn.bootcdn.net/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
                     'https://cdn.staticfile.net/qrcodejs/1.0.0/qrcode.min.js',
-                    'https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js',
-                    'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js',
-                    'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
+                    'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
+                    'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js'
                 ]
             },
             jsqr: {
                 check: () => !!window.jsQR,
                 srcs: [
-                    'https://cdn.bootcdn.net/ajax/libs/jsqr/1.4.0/jsQR.min.js',
-                    'https://cdn.staticfile.net/jsqr/1.4.0/jsQR.min.js',
+                    'lib/jsQR.min.js',
                     'https://unpkg.com/jsqr@1.4.0/dist/jsQR.js',
-                    'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js',
-                    'https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js'
+                    'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js'
                 ]
             }
         };
