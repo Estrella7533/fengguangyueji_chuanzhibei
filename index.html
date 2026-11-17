@@ -40,10 +40,22 @@
     <!-- 动态开场页 -->
     <div class="splash" id="splash">
         <div class="sp-hero">
-            <div class="sp-logo">MediAI</div>
-            <div class="sp-title">智慧医疗<br><span class="sp-title-line2">健康管理平台</span></div>
-            <div class="sp-tagline">AI 问诊 · 健康档案 · 智能导诊 · 每日科普 —— 数据全程本地保存，隐私安全可控。
+            <div class="sp-blobs" aria-hidden="true">
+                <span class="sp-blob b1"></span>
+                <span class="sp-blob b2"></span>
+                <span class="sp-blob b3"></span>
             </div>
+            <div class="sp-floats" aria-hidden="true">
+                <span class="sp-float f1">🩺</span>
+                <span class="sp-float f2">❤️</span>
+                <span class="sp-float f3">🌿</span>
+                <span class="sp-float f4">💊</span>
+                <span class="sp-float f5">☀️</span>
+            </div>
+            <div class="sp-hello">👋 你好，欢迎来到 MediAI</div>
+            <div class="sp-logo"><span class="sp-logo-ico">❤️</span>MediAI</div>
+            <div class="sp-title">智慧医疗<br><span class="sp-title-line2">健康管理平台</span></div>
+            <div class="sp-tagline">你的 AI 家庭医生：症状分析 · 健康档案 · 智能导诊 · 每日科普。<br>像家人一样，陪你记录健康、解答疑问 —— 数据全程本地保存，隐私安全可控。</div>
             <div class="sp-typing"><span id="spTypewriter">正在加载</span><span class="cur"></span></div>
             <div class="sp-cta">
                 <button class="sp-btn" onclick="enterApp()">进入平台 →</button>
@@ -4507,7 +4519,16 @@ ${bpImg ? '<h2>📈 血压趋势图</h2><img src="' + bpImg + '">' : ''}
             for (let i = 0; i < n; i++) qrChunks.push('MXS|' + (i + 1) + '|' + n + '|' + payload.slice(i * chunkMax, (i + 1) * chunkMax));
             qrChunkIdx = 0;
             document.getElementById('qrCanvasWrap').style.display = 'block';
-            qrShowChunk(0);
+            const box = document.getElementById('qrCanvasBox');
+            box.innerHTML = '<div style="padding:20px;font-size:12.5px;color:var(--text2)">⏳ 正在准备二维码组件…</div>';
+            // 等待二维码组件就绪（未加载时自动加载，加载失败给出重试提示）
+            qrEnsureLib('qrcode').then(ok => {
+                if (!ok) {
+                    box.innerHTML = '<div style="padding:14px;border:1px dashed var(--border);border-radius:10px;font-size:12px;color:var(--text2);line-height:1.8">二维码组件加载失败（可能网络不通）。<br>可先使用「复制同步码文本」方式同步，或检查网络后 <button type="button" class="text-link" onclick="qrGenerate()">重试</button>。</div>';
+                    return;
+                }
+                qrShowChunk(0);
+            });
         }
         function qrShowChunk(dir) {
             qrChunkIdx = Math.min(qrChunks.length - 1, Math.max(0, qrChunkIdx + dir));
@@ -4534,38 +4555,41 @@ ${bpImg ? '<h2>📈 血压趋势图</h2><img src="' + bpImg + '">' : ''}
         }
         function qrStartScan() {
             if (qrScanning) { qrStopScan(); return; }
-            if (!window.jsQR) { alert('扫码组件未能加载。请使用「手动输入同步码」方式导入。'); return; }
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert('当前环境无法调用摄像头（需要 HTTPS 或 localhost）。请使用「手动输入同步码」方式。');
-                return;
-            }
-            const video = document.getElementById('qrVideo');
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }).then(stream => {
-                qrStream = stream;
-                video.srcObject = stream;
-                document.getElementById('qrVideoWrap').style.display = 'block';
-                document.getElementById('qrScanBtn').textContent = '⏹ 停止扫码';
-                qrScanning = true;
-                qrRcvChunks = {}; qrRcvTotal = 0;
-                qrSetScanTip('正在识别…');
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d', { willReadFrequently: true });
-                const tick = () => {
-                    if (!qrScanning) return;
-                    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-                        ctx.drawImage(video, 0, 0);
-                        try {
-                            const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                            const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
-                            if (code && code.data) qrHandleChunk(code.data);
-                        } catch (e) { }
-                    }
+            // 等待扫码组件就绪（未加载时自动加载）
+            qrEnsureLib('jsqr').then(ok => {
+                if (!ok) { alert('扫码组件加载失败（可能网络不通）。请使用「手动输入同步码」方式导入。'); return; }
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert('当前环境无法调用摄像头（需要 HTTPS 或 localhost）。请使用「手动输入同步码」方式。');
+                    return;
+                }
+                const video = document.getElementById('qrVideo');
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }).then(stream => {
+                    qrStream = stream;
+                    video.srcObject = stream;
+                    document.getElementById('qrVideoWrap').style.display = 'block';
+                    document.getElementById('qrScanBtn').textContent = '⏹ 停止扫码';
+                    qrScanning = true;
+                    qrRcvChunks = {}; qrRcvTotal = 0;
+                    qrSetScanTip('正在识别…');
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                    const tick = () => {
+                        if (!qrScanning) return;
+                        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                            ctx.drawImage(video, 0, 0);
+                            try {
+                                const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                                const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
+                                if (code && code.data) qrHandleChunk(code.data);
+                            } catch (e) { }
+                        }
+                        requestAnimationFrame(tick);
+                    };
                     requestAnimationFrame(tick);
-                };
-                requestAnimationFrame(tick);
-            }).catch(err => {
-                alert('无法打开摄像头：' + (err && err.message ? err.message : '请检查权限或改用「手动输入同步码」'));
+                }).catch(err => {
+                    alert('无法打开摄像头：' + (err && err.message ? err.message : '请检查权限或改用「手动输入同步码」'));
+                });
             });
         }
         function qrStopScan() {
@@ -4631,17 +4655,88 @@ ${bpImg ? '<h2>📈 血压趋势图</h2><img src="' + bpImg + '">' : ''}
             renderHistory();
             alert('✅ 同步完成：已导入 ' + data.records.length + ' 条健康记录（去重合并，新数据优先）。');
         }
-        function loadQrLibs() {
-            const libs = [
-                'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js',
-                'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js'
-            ];
-            libs.forEach(src => {
+        // ─── 二维码组件按需加载：本地缓存 → 多 CDN 依次兜底 ────────
+        // 说明：二维码生成（QRCode）与扫码（jsQR）两个组件按需加载。
+        // 顺序：① 上次成功时缓存在本机的源码 → ② 国内 CDN（BootCDN / staticfile）
+        // → ③ 国际 CDN（unpkg / jsDelivr / cdnjs）。任一源成功后自动缓存，下次离线也能用。
+        const qrLibDefs = {
+            qrcode: {
+                check: () => !!(window.QRCode && window.QRCode.CorrectLevel),
+                srcs: [
+                    'https://cdn.bootcdn.net/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
+                    'https://cdn.staticfile.net/qrcodejs/1.0.0/qrcode.min.js',
+                    'https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js',
+                    'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js',
+                    'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
+                ]
+            },
+            jsqr: {
+                check: () => !!window.jsQR,
+                srcs: [
+                    'https://cdn.bootcdn.net/ajax/libs/jsqr/1.4.0/jsQR.min.js',
+                    'https://cdn.staticfile.net/jsqr/1.4.0/jsQR.min.js',
+                    'https://unpkg.com/jsqr@1.4.0/dist/jsQR.js',
+                    'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js',
+                    'https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js'
+                ]
+            }
+        };
+        const qrLoadState = {};
+        function qrTryCached(name, def) {
+            let cached = null;
+            try { cached = localStorage.getItem('mediai-lib-' + name); } catch (e) { }
+            if (!cached) return false;
+            try {
+                (0, eval)(cached);
+                if (def.check()) return true;
+            } catch (e) { }
+            try { localStorage.removeItem('mediai-lib-' + name); } catch (e) { }
+            return false;
+        }
+        function qrLoadFromCdns(name, def, i) {
+            if (i >= def.srcs.length) return Promise.resolve(false);
+            const src = def.srcs[i];
+            return new Promise(resolve => {
+                let settled = false;
+                let timer = null;
+                const done = loaded => {
+                    if (settled) return;
+                    settled = true;
+                    if (timer) clearTimeout(timer);
+                    s.onload = s.onerror = null;
+                    try { s.remove(); } catch (e) { }
+                    if (loaded && def.check()) {
+                        // 成功后把源码抓下来存到本机，下次离线或 CDN 不通也能直接使用
+                        try {
+                            fetch(src).then(r => r.text()).then(txt => { try { localStorage.setItem('mediai-lib-' + name, txt); } catch (e) { } }).catch(() => { });
+                        } catch (e) { }
+                        resolve(true);
+                    } else {
+                        resolve(qrLoadFromCdns(name, def, i + 1));
+                    }
+                };
                 const s = document.createElement('script');
                 s.src = src;
                 s.async = true;
+                s.onload = () => done(true);
+                s.onerror = () => done(false);
+                timer = setTimeout(() => done(false), 9000); // 超时 9 秒换下一个源
                 document.head.appendChild(s);
             });
+        }
+        function qrEnsureLib(name) {
+            const def = qrLibDefs[name];
+            if (def.check()) return Promise.resolve(true);
+            if (qrLoadState[name]) return qrLoadState[name];
+            qrLoadState[name] = qrTryCached(name, def)
+                ? Promise.resolve(true)
+                : qrLoadFromCdns(name, def, 0);
+            return qrLoadState[name];
+        }
+        function loadQrLibs() {
+            // 页面启动时预热加载（不阻塞页面），进入扫码同步时即点即用
+            qrEnsureLib('qrcode');
+            qrEnsureLib('jsqr');
         }
 
         // ─── 键盘与初始化 ─────────────────────────────────────────
