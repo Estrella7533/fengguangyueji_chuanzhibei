@@ -417,6 +417,10 @@
                         <span class="chat-mode-dot" id="chatModeDot">●</span>
                         <span class="chat-mode-text" id="chatModeText">AI 家庭医生 · 在线</span>
                         <span class="chat-mode-sub" id="chatModeSub">身体难受随时问，AI 家庭医生为您分析并给出建议</span>
+                        <div class="chat-session-tools">
+                            <select class="chat-session-select" id="chatSessions" aria-label="历史对话" onchange="switchSession(this.value)"></select>
+                            <button class="chat-new-btn" type="button" onclick="newChatSession()">➕ 新对话</button>
+                        </div>
                     </div>
                     <div class="chat-body" id="chatBody">
                         <div class="msg ai">
@@ -1890,12 +1894,21 @@
         // 兜底：没命中知识库时，先共情 + 温和引导，避免机械复读反问
         const defaultReply = '谢谢你愿意和我说这些，不管是身体上的不舒服，还是心里觉得累，我都愿意听。\n\n要帮你分析得更贴合你的情况，能再多告诉我一点吗？比如是哪里不舒服、有多久了、有没有发烧头晕这些伴随情况、最近饮食睡眠怎么样。\n\n你先说最难受的那一点，我们从它开始慢慢梳理，好吗？❤️';
 
-        // 多轮对话历史：每个智能体独立记忆，互不干扰
+        // 多轮对话历史：每个智能体可开多个会话（新对话），全部自动保存
         let activeAgent = 'doctor';
-        const agentHist = { doctor: [], nutri: [], mind: [], sport: [] };
-        const AGENT_HIST_KEYS = { doctor: CHAT_HISTORY_KEY, nutri: 'mediai-nutri-history', mind: 'mediai-mind-history', sport: 'mediai-sport-history' };
-        const agentTopic = { doctor: null, nutri: null, mind: null, sport: null }; // 每个智能体的“当前话题”，支持多轮深入
-        function curHist() { return agentHist[activeAgent] || (agentHist[activeAgent] = []); }
+        const agentSessions = { doctor: [], nutri: [], mind: [], sport: [] };   // {id,title,msgs,updatedAt}[]
+        const agentCurSession = { doctor: null, nutri: null, mind: null, sport: null };
+        const SESSION_KEYS = { doctor: 'mediai-sessions-doctor', nutri: 'mediai-sessions-nutri', mind: 'mediai-sessions-mind', sport: 'mediai-sessions-sport' };
+        const LEGACY_KEYS = { doctor: CHAT_HISTORY_KEY, nutri: 'mediai-nutri-history', mind: 'mediai-mind-history', sport: 'mediai-sport-history' };
+        const MEM_KEYS = { nutri: 'mediai-nutri-memory', mind: 'mediai-mind-memory', sport: 'mediai-sport-memory' };
+        const agentTopic = { doctor: null, nutri: null, mind: null, sport: null }; // 每个智能体“当前会话的话题”，支持多轮深入
+        function newSessionObj() { return { id: 's' + Date.now() + Math.floor(Math.random() * 1e4), title: '新对话', msgs: [], updatedAt: Date.now() }; }
+        function curSession() {
+            let s = agentSessions[activeAgent].find(x => x.id === agentCurSession[activeAgent]);
+            if (!s) { s = newSessionObj(); agentSessions[activeAgent].unshift(s); agentCurSession[activeAgent] = s.id; persistAgentSessions(); }
+            return s;
+        }
+        function curHist() { return curSession().msgs; }
         let isBusy = false;
 
         // 问诊欢迎语（随登录状态个性化）
@@ -2181,13 +2194,36 @@
 
         // ─── 多智能体框架：共享聊天界面，各自独立记忆与人格 ────────
         function loadAgentHistories() {
-            Object.keys(agentHist).forEach(k => {
-                try { agentHist[k] = JSON.parse(localStorage.getItem(AGENT_HIST_KEYS[k])) || []; }
-                catch (e) { agentHist[k] = []; }
+            Object.keys(agentSessions).forEach(k => {
+                let arr = [];
+                try { arr = JSON.parse(localStorage.getItem(SESSION_KEYS[k])) || []; } catch (e) { arr = []; }
+                if (!Array.isArray(arr)) arr = [];
+                // 迁移旧版单会话历史（不丢用户之前的聊天）
+                try {
+                    const legacy = JSON.parse(localStorage.getItem(LEGACY_KEYS[k])) || [];
+                    if (legacy.length) {
+                        arr.unshift({ id: 'legacy-' + Date.now(), title: '历史对话', msgs: legacy.slice(-40), updatedAt: Date.now() });
+                        localStorage.removeItem(LEGACY_KEYS[k]);
+                    }
+                } catch (e) { }
+                agentSessions[k] = arr.slice(-20);
+                if (agentSessions[k].length) agentCurSession[k] = agentSessions[k][0].id;
             });
         }
-        function persistCurHist() {
-            try { localStorage.setItem(AGENT_HIST_KEYS[activeAgent], JSON.stringify(curHist().slice(-40))); } catch (e) { }
+        function persistAgentSessions(agent) {
+            const k = agent || activeAgent;
+            try { localStorage.setItem(SESSION_KEYS[k], JSON.stringify(agentSessions[k].slice(-20))); } catch (e) { }
+        }
+        // 长期记忆（目标/水平/话题），跨会话、跨刷新保留
+        function loadAgentMemories() {
+            Object.keys(MEM_KEYS).forEach(k => {
+                try { const m = JSON.parse(localStorage.getItem(MEM_KEYS[k])); if (m) Object.assign(k === 'nutri' ? nutriCtx : k === 'mind' ? mindCtx : sportCtx, m); } catch (e) { }
+            });
+        }
+        function persistAgentMemories() {
+            try { localStorage.setItem(MEM_KEYS.nutri, JSON.stringify(nutriCtx)); } catch (e) { }
+            try { localStorage.setItem(MEM_KEYS.mind, JSON.stringify(mindCtx)); } catch (e) { }
+            try { localStorage.setItem(MEM_KEYS.sport, JSON.stringify(sportCtx)); } catch (e) { }
         }
 
         // 三个智能体的“长期记忆”上下文（跨多轮对话持续生效）
@@ -2234,6 +2270,16 @@
             { keys: ['喝水', '饮水', '补水'], body: '每天 1500-2000ml 水（约 7-8 杯），少量多次。餐前一杯水能帮助控制食量；运动后按出汗量补。别等渴了才喝，尿液淡黄色说明喝够了。' }
         ];
         const NUTRI_CONT = ['然后', '还有', '继续', '再讲讲', '接着说', '为什么', '怎么办'];
+        // 结合用户健康档案的个性化提醒（血压/血糖/BMI）
+        function nutriHealthNotes() {
+            const r = latestHealthRecord();
+            if (!r) return '';
+            const notes = [];
+            if (r.glucose != null && r.glucose > 6.1) notes.push('你有血糖偏高的记录（' + r.glucose + ' mmol/L）：主食选粗粮并定量一拳，避开含糖饮料和甜点');
+            if (r.sbp != null && (r.sbp >= 130 || r.dbp >= 85)) notes.push('你有血压偏高的记录（' + r.sbp + '/' + r.dbp + ' mmHg）：全天盐控制在 5 克内，少吃腌制和加工食品');
+            if (r.bmi != null && r.bmi >= 24) notes.push('你最近的 BMI 是 ' + r.bmi + '：控制总热量、晚餐主食减半会有帮助');
+            return notes.length ? '\n\n📋 结合你自己的健康记录：\n' + notes.map(n => '• ' + n).join('\n') : '';
+        }
         function nutriReply(msg) {
             const m = msg.toLowerCase();
             // ① 目标识别：记住并给出针对性方案
@@ -2249,19 +2295,19 @@
                     '控血压': '控血压饮食（DASH 饮食）：\n\n① 每日盐＜5 克（约一啤酒瓶盖），酱油、腌制品、加工肉都是隐形盐\n② 多吃钾：香蕉、菠菜、土豆、豆类\n③ 多吃蔬菜水果、低脂奶、全谷物\n④ 戒烟限酒，控制体重\n\n⚠️ 已确诊高血压请遵医嘱规律服药，饮食不能替代药物。',
                     '健康': '健康饮食其实很简单：\n\n① 每餐：一拳主食 + 一掌心蛋白质 + 两拳头蔬菜\n② 每周吃 25 种以上不同食物，颜色越丰富越好\n③ 少加工、多天然：蒸煮炖优先于油炸烧烤\n④ 规律三餐，别省早餐、别暴饮暴食\n\n你可以先告诉我今天吃了什么，我帮你看看哪里可以更好。'
                 };
-                return (changed ? '收到，目标设定为「' + goalHit.goal + '」💪\n\n' : '关于「' + goalHit.goal + '」，再帮你梳理一遍：\n\n') + bmi + plans[goalHit.goal] + (changed ? '\n\n接下来随时把三餐发给我，我帮你把关。今天吃了什么？' : '');
+                return (changed ? '收到，目标设定为「' + goalHit.goal + '」💪\n\n' : '关于「' + goalHit.goal + '」，再帮你梳理一遍：\n\n') + bmi + plans[goalHit.goal] + nutriHealthNotes() + (changed ? '\n\n接下来随时把三餐发给我，我帮你把关。今天吃了什么？' : '');
             }
             // ② 三餐方案
-            for (const meal of Object.keys(NUTRI_MEALS)) { if (m.includes(meal)) return NUTRI_MEALS[meal] + (nutriCtx.goal ? '\n\n结合你的「' + nutriCtx.goal + '」目标：' + ({ '减脂': '晚餐主食减半、全天戒含糖饮料。', '增肌': '每餐加一份蛋白质（蛋/奶/肉）。', '控糖': '主食换成粗粮且定量一拳。', '控血压': '全程少盐，酱油减半。', '健康': '保持这个结构就很棒。' }[nutriCtx.goal]) : '\n\n你的目标是什么？告诉我（减脂/增肌/控糖…），我可以把三餐搭配得更贴合你。'); }
+            for (const meal of Object.keys(NUTRI_MEALS)) { if (m.includes(meal)) return NUTRI_MEALS[meal] + (nutriCtx.goal ? '\n\n结合你的「' + nutriCtx.goal + '」目标：' + ({ '减脂': '晚餐主食减半、全天戒含糖饮料。', '增肌': '每餐加一份蛋白质（蛋/奶/肉）。', '控糖': '主食换成粗粮且定量一拳。', '控血压': '全程少盐，酱油减半。', '健康': '保持这个结构就很棒。' }[nutriCtx.goal]) : '\n\n你的目标是什么？告诉我（减脂/增肌/控糖…），我可以把三餐搭配得更贴合你。') + nutriHealthNotes(); }
             if (m.includes('一日三餐') || m.includes('食谱') || m.includes('菜单') || m.includes('怎么吃') || m.includes('搭配')) {
-                return '给你一份通用的一日三餐模板 🍱\n\n' + NUTRI_MEALS['早餐'] + '\n\n' + NUTRI_MEALS['午餐'] + '\n\n' + NUTRI_MEALS['晚餐'] + (nutriCtx.goal ? '\n\n已结合你的「' + nutriCtx.goal + '」目标微调。你想从哪一餐开始调整？' : '\n\n你的目标是什么？告诉我后我帮你针对性调整。');
+                return '给你一份通用的一日三餐模板 🍱（参考《中国居民膳食指南（2022）》）\n\n' + NUTRI_MEALS['早餐'] + '\n\n' + NUTRI_MEALS['午餐'] + '\n\n' + NUTRI_MEALS['晚餐'] + nutriHealthNotes() + (nutriCtx.goal ? '\n\n已结合你的「' + nutriCtx.goal + '」目标微调。你想从哪一餐开始调整？' : '\n\n你的目标是什么？告诉我后我帮你针对性调整。');
             }
             // ③ 食物分析：记住最近聊的食物，可以继续追问
             const foodHit = NUTRI_FOODS.find(f => f.keys.some(k => m.includes(k)));
             if (foodHit) {
                 nutriCtx.lastFood = foodHit.name;
                 const goalTip = nutriCtx.goal ? '\n\n结合你的「' + nutriCtx.goal + '」目标：' + ({ '减脂': '这一餐之后，下一餐清淡一点就能拉回平衡，别自责。', '增肌': '注意同时补足蛋白质（加蛋/奶/肉）。', '控糖': '这类高油高糖食物会让血糖波动较大，偶尔解馋即可。', '控血压': '这类食物通常偏咸，注意当天其他餐少盐。', '健康': '偶尔一次没问题，保持整体均衡就好。' }[nutriCtx.goal]) : '';
-                return '聊聊「' + foodHit.name + '」🍽️\n\n热量参考：' + foodHit.kcal + '\n\n' + foodHit.body + goalTip + (nutriCtx.goal ? '\n\n你平时多久吃一次？' : '\n\n顺便问一下：你目前的饮食目标是什么（减脂/增肌/控糖…）？');
+                return '聊聊「' + foodHit.name + '」🍽️\n\n热量参考：' + foodHit.kcal + '\n\n' + foodHit.body + goalTip + nutriHealthNotes() + (nutriCtx.goal ? '\n\n你平时多久吃一次？' : '\n\n顺便问一下：你目前的饮食目标是什么（减脂/增肌/控糖…）？');
             }
             // ④ 营养素专题
             const nutHit = NUTRI_NUTRIENTS.find(n => n.keys.some(k => m.includes(k)));
@@ -2293,9 +2339,20 @@
             { keys: ['愤怒', '生气', '烦躁', '脾气', '发火'], name: '愤怒情绪', body: '愤怒是有用的信号——它在告诉你：有件事越界了，或者你压抑太久了。\n\n先让身体降温：\n① 离开现场，去洗把脸或快走 5 分钟\n② 在纸上写"我为什么这么生气"，写完先放 2 小时\n③ 之后再决定要不要沟通、怎么沟通\n\n注意：可以表达愤怒，但别在愤怒中做决定、说狠话。\n\n是什么事让你这么生气？' },
             { keys: ['累', '疲惫', '心力交瘁', '撑不住', '好难', '崩溃'], name: '疲惫感', body: '听到你说累，想先抱抱你。撑不住的时候，允许自己停下来，这不叫放弃。\n\n现在只做三件事：\n① 睡一个好觉，其他事明天再说\n② 把清单上能划掉的先划掉（推迟、拒绝、简化都行）\n③ 向身边的人说"我需要帮忙"，一句就行\n\n你愿意说说，这种累是从哪里来的吗？身体上的还是心里的？' }
         ];
-        const MIND_CONT = ['然后', '还有', '继续', '接着说', '就是', '因为', '可是', '但是', '我觉得', '我不想', '我害怕', '我担心', '一直', '最近', '很久'];
+        const MIND_CONT = ['然后', '还有', '继续', '接着说', '就是', '因为', '可是', '但是', '我觉得', '我不想', '我害怕', '我担心', '一直', '最近', '很久', '怎么', '什么', '为什么'];
+        const MIND_ACK = ['我听到了，', '谢谢你愿意和我说这些，', '我在这里，', '嗯，我在认真听，', '谢谢你的信任，'];
+        const MIND_SOOTHE = ['这不是你的错。', '你已经很努力了。', '会这样想，说明你很在乎。', '换谁遇到这些，都会不好受。', '你愿意说出来，已经很有勇气了。'];
+        const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+        // 从用户的话里摘一小段，回应时引用，让用户感到"被听见"
+        function mindEcho(msg) {
+            const cleaned = msg.replace(/[，。！？、,.!?…\s]+/g, ' ').trim();
+            if (!cleaned) return '';
+            const frag = cleaned.slice(0, 14).trim();
+            return frag.length >= 3 ? frag : '';
+        }
         function mindReply(msg) {
             const m = msg.toLowerCase();
+            const echo = mindEcho(msg);
             // ① 危机干预：永远最优先
             const crisis = MIND_CRISIS.find(k => m.includes(k));
             if (crisis) {
@@ -2307,18 +2364,20 @@
                 const isNew = mindCtx.topic !== hit.name;
                 mindCtx.topic = hit.name;
                 mindCtx.turns = 1;
-                return (isNew ? '' : '关于「' + hit.name + '」我们再深入一点：\n\n') + hit.body;
+                return (isNew ? '' : '关于「' + hit.name + '」，我们再一起往下看看：\n\n') + hit.body;
             }
-            // ③ 多轮深入：接着当前话题，认真回应而不是复读
+            // ③ 多轮深入：先回应你刚说的话，再往下问，而不是自顾自讲
             if (mindCtx.topic && mindCtx.turns >= 1 && (MIND_CONT.some(k => m.includes(k)) || msg.length > 6)) {
                 mindCtx.turns++;
                 const t = mindCtx.topic;
-                if (mindCtx.turns === 2) return '谢谢你愿意继续说，我在认真听。关于「' + t + '」，我想再多了解一点：\n\n这种情况大概持续多久了？最难受的是什么时候（白天/晚上/特定场景）？\n\n不用急着一次说完，想到什么说什么。';
-                if (mindCtx.turns === 3) return '听完你的补充，我更能理解你的处境了。关于「' + t + '」，接下来可以试着做这三件小事：\n\n① 今天睡前，把最困扰你的一件事写在纸上，写完合上，明天再看\n② 明天安排一件"确定能让你舒服"的事：晒太阳、吃喜欢的食物、和朋友散步\n③ 如果这个困扰已经持续两周以上、明显影响吃饭睡觉，请认真考虑去医院心理科或找心理咨询师聊聊——求助是强者的行为\n\n你现在感觉怎么样？说出来，或者深呼吸三次再告诉我。';
-                return '我还在听。关于「' + t + '」，你不用一个人扛。\n\n如果愿意，我们可以继续聊聊具体的事；也可以换换心情，聊聊你今天遇到的一件小事——好的坏的都可以。你想聊哪个？';
+                const echoLine = echo ? '你说到「' + echo + '」——' + pick(MIND_SOOTHE) + '\n\n' : '';
+                if (mindCtx.turns === 2) return pick(MIND_ACK) + echoLine + '关于「' + t + '」，我想再多了解一点：\n\n这种情况大概持续多久了？最难受的是什么时候（白天/晚上/特定场景）？\n\n不用急着一次说完，想到什么说什么，我听着。';
+                if (mindCtx.turns === 3) return echoLine + '听完你的补充，我更理解你的处境了。针对「' + t + '」，接下来可以试着做三件小事：\n\n① 今天睡前，把最困扰你的一件事写在纸上，写完合上，明天再看\n② 明天安排一件"确定能让你舒服"的事：晒太阳、吃喜欢的食物、和朋友散步\n③ 如果这个困扰已经持续两周以上、明显影响吃饭睡觉，请认真考虑去医院心理科或找心理咨询师聊聊——求助是强者的行为\n\n你现在感觉怎么样？说说看，或者深呼吸三次再告诉我。';
+                return pick(MIND_ACK) + echoLine + '关于「' + t + '」，你不用一个人扛。\n\n如果愿意，我们可以继续聊聊具体的事；也可以换换心情，聊聊你今天遇到的一件小事——好的坏的都可以。你想聊哪个？';
             }
-            // ④ 情绪倾诉兜底：共情 + 开放提问，让对话延续
-            return '我在听，谢谢你愿意和我说这些。\n\n能多告诉我一点吗？比如：这种感受是从什么时候开始的？最近有没有发生什么特别的事？\n\n不用组织语言，想到哪说到哪，我会一直在这里。💛';
+            // ④ 情绪倾诉兜底：共情 + 引用原话 + 开放提问，让对话延续
+            const echoLine2 = echo ? '你提到「' + echo + '」，' : '';
+            return pick(MIND_ACK) + echoLine2 + pick(MIND_SOOTHE) + '\n\n能多告诉我一点吗？比如：这种感受是从什么时候开始的？最近有没有发生什么特别的事？\n\n不用组织语言，想到哪说到哪，我会一直在这里。💛';
         }
 
         // ─── 智能运动指导引擎（记住目标与水平，多轮定制计划） ────
@@ -2346,6 +2405,17 @@
             { keys: ['步数', '走路', '快走'], name: '步行', body: '步行是最容易坚持的运动 🚶\n\n① 每天 6000-8000 步，其中 30 分钟保持"快走"（微微出汗、能说话）\n② 快走姿势：抬头挺胸、手臂自然摆动、脚跟先着地\n③ 饭后 20 分钟散步，对血糖和消化都好\n\n别小看走路，坚持一个月，精力和睡眠都会变好。' }
         ];
         const SPORT_CONT = ['然后', '还有', '继续', '接着', '下一个', '再', '多久', '几次', '几组', '多少'];
+        // 结合用户健康档案的运动安全提醒（血压/BMI/心率）
+        function sportHealthNotes() {
+            const r = latestHealthRecord();
+            if (!r) return '';
+            const notes = [];
+            if (r.sbp != null && (r.sbp >= 140 || r.dbp >= 90)) notes.push('你有血压偏高记录（' + r.sbp + '/' + r.dbp + ' mmHg）：宜中等强度（能说话的强度），避免憋气发力的大重量动作，运动前后测一次血压');
+            else if (r.sbp != null && (r.sbp >= 130 || r.dbp >= 85)) notes.push('你有血压偏高趋势（' + r.sbp + '/' + r.dbp + ' mmHg）：从快走、慢跑等中等强度开始，别急着上强度');
+            if (r.bmi != null && r.bmi >= 28) notes.push('你最近的 BMI 是 ' + r.bmi + '：优先游泳、骑行、快走等对关节友好的项目，减少跳跃类动作');
+            if (r.hr != null && (r.hr > 100 || r.hr < 50)) notes.push('你有心率异常记录（' + r.hr + ' 次/分）：运动前先确认身体状态，运动中出现胸闷、心悸立即停止并就医');
+            return notes.length ? '\n\n📋 结合你自己的健康记录：\n' + notes.map(n => '• ' + n).join('\n') : '';
+        }
         function sportReply(msg) {
             const m = msg.toLowerCase();
             // ① 目标识别
@@ -2361,7 +2431,7 @@
                     '塑形': '体态塑形方案 🧘\n\n• 每天 15 分钟：靠墙站 5 分钟（收下巴、挺胸、收腹）+ 猫牛式 + 臀桥 3 组 × 15 次\n• 每周 3 次力量：重点练背（划船类动作）和臀部（深蹲、臀桥），改善圆肩驼背\n• 每周 2 次瑜伽/普拉提\n\n体态改善需要 8-12 周，坚持比强度重要。',
                     '健康': '健康运动方案 🌿\n\n• 每周 150 分钟中等强度运动（每天 30 分钟 × 5 天即可）\n• 快走、骑车、游泳、球类都算，选你喜欢的才坚持得下去\n• 每坐 45 分钟起身活动 5 分钟\n• 每周 2 次力量训练，保护肌肉和骨骼\n\n运动是给身体的长期投资，从今天 20 分钟开始。'
                 };
-                return (changed ? '收到，目标「' + goalHit.goal + '」已记下！💪\n\n' : '针对「' + goalHit.goal + '」再帮你理一遍：\n\n') + (bmi ? bmi + '\n\n' : '') + plans[goalHit.goal] + (sportCtx.level ? '' : '\n\n对了，你之前有运动习惯吗（完全新手 / 偶尔运动 / 有规律训练）？告诉我，我把计划调整得更合适。');
+                return (changed ? '收到，目标「' + goalHit.goal + '」已记下！💪\n\n' : '针对「' + goalHit.goal + '」再帮你理一遍：\n\n') + (bmi ? bmi + '\n\n' : '') + plans[goalHit.goal] + sportHealthNotes() + (sportCtx.level ? '' : '\n\n对了，你之前有运动习惯吗（完全新手 / 偶尔运动 / 有规律训练）？告诉我，我把计划调整得更合适。');
             }
             // ② 水平识别（影响后续所有建议强度）
             if (/新手|第一次|没基础|刚开始|零基础|小白/.test(msg)) { sportCtx.level = '新手'; return '好的，按新手标准来，我会给最稳妥的起步方案，循序渐进不受伤 😊\n\n你想练什么？跑步、跳绳、力量，还是想先要一个整体计划？'; }
@@ -2371,12 +2441,12 @@
             if (hit) {
                 sportCtx.topic = hit.name;
                 const levelTip = sportCtx.level === '新手' ? '\n\n（按你的新手水平：先保证动作标准，强度宁低勿高，2-3 周后再加量。）' : '';
-                return '聊聊「' + hit.name + '」\n\n' + hit.body + levelTip;
+                return '聊聊「' + hit.name + '」\n\n' + hit.body + levelTip + sportHealthNotes();
             }
             // ④ 计划请求
             if (m.includes('计划') || m.includes('安排') || m.includes('方案') || m.includes('怎么练') || m.includes('怎么开始')) {
                 if (!sportCtx.goal) return '定制计划前先了解两个信息：\n\n① 你的目标：减脂 / 增肌 / 提升体能 / 塑形 / 保持健康？\n② 你的基础：完全新手 / 偶尔运动 / 有规律训练？\n\n告诉我这两点，我马上给你一份一周计划 📋';
-                return '你的目标：「' + sportCtx.goal + '」' + (sportCtx.level ? '，水平：' + sportCtx.level : '') + '\n\n' + (sportCtx.goal === '减脂' ? '一周计划：周一/三/五 有氧 30-40 分钟；周二/四 力量 20 分钟（深蹲、俯卧撑、平板支撑各 3 组）；周末选喜欢的运动。' : sportCtx.goal === '增肌' ? '一周计划：隔天全身力量（深蹲、俯卧撑、弓步、平板），每次 30-40 分钟；训练后 1 小时内补蛋白质 + 碳水；睡够 7-8 小时。' : sportCtx.goal === '体能' ? '一周计划：3-4 次有氧（跑走结合起步），每两周总量 +10%；加 1 次间歇训练；记录每次距离时间。' : sportCtx.goal === '塑形' ? '一周计划：每天 15 分钟体态纠正（靠墙站 + 拉伸）；每周 3 次力量（背部 + 臀部重点）；2 次瑜伽。' : '一周计划：每周 150 分钟中等强度运动，选你喜欢的项目，加 2 次力量训练。') + '\n\n⚠️ 运动中出现胸闷、头晕、关节刺痛请立刻停止。有想深入的动作或项目吗？';
+                return '你的目标：「' + sportCtx.goal + '」' + (sportCtx.level ? '，水平：' + sportCtx.level : '') + '\n\n' + (sportCtx.goal === '减脂' ? '一周计划：周一/三/五 有氧 30-40 分钟；周二/四 力量 20 分钟（深蹲、俯卧撑、平板支撑各 3 组）；周末选喜欢的运动。' : sportCtx.goal === '增肌' ? '一周计划：隔天全身力量（深蹲、俯卧撑、弓步、平板），每次 30-40 分钟；训练后 1 小时内补蛋白质 + 碳水；睡够 7-8 小时。' : sportCtx.goal === '体能' ? '一周计划：3-4 次有氧（跑走结合起步），每两周总量 +10%；加 1 次间歇训练；记录每次距离时间。' : sportCtx.goal === '塑形' ? '一周计划：每天 15 分钟体态纠正（靠墙站 + 拉伸）；每周 3 次力量（背部 + 臀部重点）；2 次瑜伽。' : '一周计划：每周 150 分钟中等强度运动，选你喜欢的项目，加 2 次力量训练。') + sportHealthNotes() + '\n\n⚠️ 运动中出现胸闷、头晕、关节刺痛请立刻停止。有想深入的动作或项目吗？';
             }
             // ⑤ 接着上次项目深入
             if (sportCtx.topic && SPORT_CONT.some(k => m.includes(k))) {
@@ -2396,8 +2466,24 @@
                 placeholder: '请描述您的症状，例如：头痛、发烧、咳嗽...',
                 hints: ['头痛头晕', '发烧咳嗽', '胃痛恶心', '心悸胸闷', '失眠焦虑', '腰背疼痛'],
                 welcome: u => {
-                    const hello = u ? '你好，<strong>' + escapeHtml(u) + '</strong>！' : '你好！';
-                    return hello + '欢迎使用 <strong>MediAI</strong> 的 AI 家庭医生。请描述您的不适（症状、持续时间、程度等），医生将为您梳理可能的原因、提供居家处理建议，并提示需要就医的情况。<br><br>也可以点击下方快捷症状快速开始。<br><br>⚠️ 本系统仅供参考，不构成医疗诊断，如症状严重请及时就医。';
+                    const h = new Date().getHours();
+                    const greet = h < 6 ? '夜深了' : h < 9 ? '早上好' : h < 12 ? '上午好' : h < 14 ? '中午好' : h < 18 ? '下午好' : '晚上好';
+                    const hello = (u ? greet + '，<strong>' + escapeHtml(u) + '</strong>' : greet) + '！';
+                    const r = latestHealthRecord();
+                    let pro = '';
+                    if (r) {
+                        if ((r.sbp != null && (r.sbp >= 140 || r.dbp >= 90))) pro = '我注意到你最近记录的血压是 ' + r.sbp + '/' + r.dbp + ' mmHg，高于参考值了。最近有没有头晕、后颈发紧的感觉？别担心，先和我说说你现在的感受，我们一起看看。';
+                        else if (r.sbp != null && (r.sbp >= 130 || r.dbp >= 85)) pro = '你最近记录的血压 ' + r.sbp + '/' + r.dbp + ' 处于参考值的高值区间。最近睡得怎么样？压力大吗？我们可以一起想办法把血压稳下来。';
+                        else if (r.glucose != null && r.glucose > 7) pro = '你最近一次记录的血糖是 ' + r.glucose + ' mmol/L，高于参考范围。最近有没有口渴、多尿、容易累的感觉？和我聊聊近况吧。';
+                        else if (r.glucose != null && r.glucose > 6.1) pro = '你最近记录的血糖 ' + r.glucose + ' 略高于常见参考值。最近饮食和作息怎么样？可以从小的调整开始。';
+                        else if (r.bmi != null && r.bmi >= 28) pro = '你最近记录的 BMI 是 ' + r.bmi + '，明显高于参考范围。最近有没有想过从饮食或运动的小目标开始？我可以帮你参谋。';
+                        else if (r.bmi != null && r.bmi >= 24) pro = '你最近记录的 BMI 是 ' + r.bmi + '，略超参考范围。身体感觉怎么样？想不想一起聊聊怎么慢慢调整？';
+                        else if (typeof r.score === 'number' && r.score < 70) pro = '你上次的健康评分是 ' + r.score + ' 分，还有提升空间。你最想先改善哪一项？告诉我，我陪你一步步来。';
+                        else pro = '我看到你最近一次健康记录的各项指标都在参考范围内，很棒！继续保持。最近身体有任何不舒服吗？或者想聊聊健康习惯，我都在。';
+                    } else {
+                        pro = '第一次见面，我想先了解一下你的情况：最近身体哪里不太舒服吗？有没有在关注的指标（血压、血糖、体重等）？在「健康档案」里录入数据后，我会记得你的情况，给的建议也更贴合你。';
+                    }
+                    return hello + '欢迎来到 <strong>MediAI</strong>，我是你的 AI 家庭医生。请描述您的不适（症状、持续时间、程度等），我会为你梳理可能的原因、提供居家处理建议，并提示需要就医的情况。<br><br>也可以点击下方快捷症状快速开始。<br><br>🩺 ' + pro + '<br><br>⚠️ 本系统仅供参考，不构成医疗诊断，如症状严重请及时就医。';
                 },
                 reply: msg => getLocalReply(msg)
             },
@@ -2465,13 +2551,14 @@
                 const c = document.createElement('button');
                 c.className = 'hint-chip clear-chip';
                 c.type = 'button';
-                c.textContent = '🗑️ 清空对话';
+                c.textContent = '🗑️ 清空会话';
                 c.onclick = () => clearChat();
                 hintsBox.appendChild(c);
                 hintsBox.style.display = 'flex';
             }
+            refreshSessionUI();
         }
-        // 重建聊天区：欢迎语 + 当前智能体的历史记录
+        // 重建聊天区：欢迎语 + 当前会话的历史记录
         function renderAgentChat() {
             const body = document.getElementById('chatBody');
             if (!body) return;
@@ -2484,7 +2571,39 @@
             updateAgentUI();
             curHist().forEach(h => { if (h && h.content) addMsg(h.content, h.role); });
             document.getElementById('chatHints').style.display = curHist().length ? 'none' : 'flex';
+            refreshSessionUI();
             body.scrollTop = body.scrollHeight;
+        }
+        // 历史会话下拉列表
+        function refreshSessionUI() {
+            const sel = document.getElementById('chatSessions');
+            if (!sel) return;
+            const list = agentSessions[activeAgent];
+            sel.innerHTML = '';
+            list.forEach(s => {
+                const o = document.createElement('option');
+                o.value = s.id;
+                const d = s.updatedAt ? new Date(s.updatedAt) : null;
+                const dateStr = d ? (d.getMonth() + 1) + '/' + d.getDate() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) : '';
+                o.textContent = (s.title || '新对话') + (dateStr ? ' · ' + dateStr : '');
+                sel.appendChild(o);
+            });
+            sel.value = agentCurSession[activeAgent] || (list[0] && list[0].id) || '';
+            sel.style.display = list.length ? '' : 'none';
+        }
+        // 新建会话（旧会话全部保留）
+        function newChatSession() {
+            if (isBusy) return;
+            agentCurSession[activeAgent] = null;
+            agentTopic[activeAgent] = null;
+            renderAgentChat();
+        }
+        // 切换历史会话
+        function switchSession(id) {
+            if (!id || isBusy) { refreshSessionUI(); return; }
+            agentCurSession[activeAgent] = id;
+            agentTopic[activeAgent] = null;
+            renderAgentChat();
         }
 
         function sendMsg() {
@@ -2496,39 +2615,62 @@
             inp.value = ''; inp.style.height = 'auto';
             addMsg(msg, 'user');
             document.getElementById('chatHints').style.display = 'none';
-            curHist().push({ role: 'user', content: msg });
-            persistCurHist();
+            const agentAtSend = activeAgent;
+            const sess = curSession();
+            sess.msgs.push({ role: 'user', content: msg });
+            sess.updatedAt = Date.now();
+            if (sess.title === '新对话') { sess.title = msg.replace(/\s+/g, ' ').slice(0, 12); refreshSessionUI(); }
+            persistAgentSessions();
 
             isBusy = true; showTyping();
 
             const finishWith = (text) => {
                 hideTyping();
-                // 用打字机逐字"说"出来，有真人对话的感觉
+                // 打字机快速逐段"说"出来，点击气泡可立即显示全文
                 const { bubble } = addMsg('', 'ai');
                 bubble.classList.add('typing-active');
+                bubble.title = '点击直接查看全文';
+                let finished = false;
+                const finish = () => {
+                    if (finished) return;
+                    finished = true;
+                    bubble.classList.remove('typing-active');
+                    bubble.removeAttribute('title');
+                    bubble.innerHTML = '';
+                    text.split('\n').forEach((line, i) => {
+                        if (i) bubble.appendChild(document.createElement('br'));
+                        bubble.appendChild(document.createTextNode(line));
+                    });
+                    sess.msgs.push({ role: 'assistant', content: text });
+                    persistAgentSessions(agentAtSend);
+                    persistAgentMemories();
+                    if (activeAgent === agentAtSend) {
+                        document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
+                        isBusy = false;
+                    }
+                };
+                bubble.addEventListener('click', finish);
                 let typed = 0;
                 const tick = () => {
-                    if (typed >= text.length) {
-                        bubble.classList.remove('typing-active');
-                        curHist().push({ role: 'assistant', content: text });
-                        persistCurHist();
-                        isBusy = false;
-                        return;
-                    }
-                    const ch = text.charAt(typed);
-                    if (ch === '\n') bubble.appendChild(document.createElement('br'));
-                    else bubble.appendChild(document.createTextNode(ch));
-                    typed++;
-                    document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
-                    // 句号停顿更长，模拟真人思考节奏
-                    setTimeout(tick, ch === '。' || ch === '！' || ch === '？' ? 140 : 20);
+                    if (finished) return;
+                    if (typed >= text.length) { finish(); return; }
+                    // 每次 3 个字，回复更干脆；句号处稍作停顿，像真人呼吸
+                    let chunk = '';
+                    while (chunk.length < 3 && typed < text.length) { chunk += text.charAt(typed); typed++; }
+                    chunk.split('\n').forEach((line, i) => {
+                        if (i) bubble.appendChild(document.createElement('br'));
+                        if (line) bubble.appendChild(document.createTextNode(line));
+                    });
+                    if (activeAgent === agentAtSend) document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
+                    const lastCh = text.charAt(typed - 1);
+                    setTimeout(tick, lastCh === '。' || lastCh === '！' || lastCh === '？' ? 55 : 9);
                 };
                 tick();
             };
 
-            // 先"想一想"再回答，更像真人
+            // 稍作"思考"后回答
             const reply = AGENTS[activeAgent].reply(msg);
-            setTimeout(() => finishWith(reply), 500 + Math.random() * 600);
+            setTimeout(() => finishWith(reply), 250 + Math.random() * 350);
         }
 
         function sendHint(el) { document.getElementById('chatInput').value = el.textContent; sendMsg(); }
@@ -2537,15 +2679,15 @@
             const t = e.target; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 120) + 'px';
         }
 
-        // 清空当前智能体的对话
+        // 清空当前会话（历史会话保留，长期记忆保留）
         function clearChat() {
-            if (!confirm('确定清空当前对话记录吗？')) return;
-            agentHist[activeAgent] = [];
+            if (!confirm('确定清空当前会话的聊天内容吗？（历史会话与长期记忆会保留）')) return;
+            const s = curSession();
+            s.msgs = [];
+            s.title = '新对话';
+            s.updatedAt = Date.now();
             agentTopic[activeAgent] = null;
-            if (activeAgent === 'nutri') { nutriCtx.goal = null; nutriCtx.lastFood = null; }
-            if (activeAgent === 'mind') { mindCtx.topic = null; mindCtx.turns = 0; }
-            if (activeAgent === 'sport') { sportCtx.goal = null; sportCtx.level = null; sportCtx.topic = null; }
-            persistCurHist();
+            persistAgentSessions();
             renderAgentChat();
         }
 
@@ -4886,6 +5028,7 @@ ${bpImg ? '<h2>📈 血压趋势图</h2><img src="' + bpImg + '">' : ''}
         initGuideLoc();
         renderKb(kbData);
         loadAgentHistories();
+        loadAgentMemories();
         const activeUser = currentUser();
         if (activeUser) loadRecordsFor(activeUser);
         restoreHealthSummary();
