@@ -628,6 +628,38 @@ body {
     line-height: 1.65
 }
 
+.msg-del {
+    margin-top: 4px;
+    font-size: 11px;
+    line-height: 1;
+    padding: 2px 6px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text3);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s ease, color .15s ease, background .15s ease
+}
+
+.msg:hover .msg-del {
+    opacity: 1
+}
+
+.msg-del:hover {
+    color: var(--danger);
+    background: #fef2f2
+}
+
+.chat-disclaimer {
+    padding: 6px 24px 10px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text3);
+    flex-shrink: 0;
+    line-height: 1.5
+}
+
 .msg.ai .msg-bubble {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -2689,6 +2721,15 @@ body {
 
     .chat-foot {
         padding: 10px 12px
+    }
+
+    .chat-disclaimer {
+        padding: 4px 12px 8px;
+        font-size: 10.5px
+    }
+
+    .msg-del {
+        opacity: 1
     }
 
     .notice {

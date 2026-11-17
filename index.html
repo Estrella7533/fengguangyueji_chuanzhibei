@@ -437,6 +437,7 @@
                             onkeydown="handleKey(event)"></textarea>
                         <button class="chat-send" onclick="sendMsg()" title="发送（Enter）">➤</button>
                     </div>
+                    <div class="chat-disclaimer">🔬 内容仅供健康科普参考，不用于医疗诊断与治疗 · 用药请遵医嘱 · 身体不适请及时就医</div>
                 </div>
             </section>
             <!-- Health -->
@@ -1890,9 +1891,23 @@
             '失眠': '改善睡眠的科学方法：\n\n① 固定作息：每天同一时间睡觉和起床（含周末）\n② 睡前1小时停用手机和电脑\n③ 卧室保持黑暗、凉爽（18-20℃）、安静\n④ 午后避免咖啡因\n⑤ 白天适量有氧运动\n⑥ 只在困意明显时才上床\n\n持续2周无改善，建议睡眠科或心理科就诊。',
             '焦虑': '焦虑症状可以通过以下方式缓解：\n\n🧘 即时缓解：\n4-7-8呼吸法：吸气4秒→屏气7秒→呼气8秒，重复4次\n\n📅 日常管理：\n• 规律有氧运动（每周150分钟）\n• 正念冥想（每天10分钟）\n• 减少咖啡因\n• 保持规律睡眠\n\n若焦虑影响日常生活和工作，请寻求心理咨询或精神科帮助，不要独自承担。',
             '腰痛': '腰痛80%为非特异性腰痛，与姿势和肌肉劳损相关。\n\n急性腰扭伤处理：\n• 前48小时冷敷，之后热敷\n• 避免完全卧床，适度活动\n• 可服布洛芬等消炎止痛药\n\n预防慢性腰痛：\n• 避免久坐，每小时起立活动5分钟\n• 练习核心肌群（平板支撑）\n\n⚠️ 腰痛放射至下肢麻木、或伴大小便失禁 → 紧急就医！',
+            '感冒': '感冒（上呼吸道感染）多数由病毒引起，一般 5-7 天自愈：\n\n① 多喝温水、充分休息，别硬扛熬夜\n② 鼻塞流涕可用生理盐水洗鼻；咽痛可用温盐水漱口\n③ 发热超过 38.5℃ 或头痛明显，可按说明书服用对乙酰氨基酚\n④ 普通感冒不需要抗生素（抗生素对病毒无效）\n\n⚠️ 高热超过 3 天、呼吸困难、胸痛、精神变差 → 及时就医。',
+            '嗓子疼': '嗓子疼多是咽部炎症或干燥刺激引起：\n\n① 温盐水漱口，每天 3-4 次，能减轻肿痛\n② 多喝温水，含润喉糖缓解干痛\n③ 空气加湿，避免辛辣烟酒刺激\n④ 说话轻声，让嗓子休息\n\n⚠️ 咽痛剧烈伴吞咽困难、高热不退、或扁桃体化脓 → 就医，可能需用药。',
+            '流鼻涕': '鼻塞流涕的居家缓解：\n\n① 生理盐水洗鼻，每天 2-3 次，温和又有效\n② 室内加湿（湿度 50-60%），多喝温水\n③ 睡觉时垫高头部，缓解鼻塞\n④ 热毛巾敷鼻翼两侧，帮助通气\n\n⚠️ 单侧流黄脓涕伴面颊胀痛超过 10 天 → 警惕鼻窦炎，建议就医。',
+            '腹泻': '腹泻期间照顾好自己：\n\n① 补水第一：少量多次喝口服补液盐，或用淡盐水、米汤代替\n② 饮食：白粥、烂面条、蒸苹果，暂时避开奶制品和油腻\n③ 勤洗手，餐具分开，避免传染家人\n\n⚠️ 腹泻伴高热、血便、剧烈腹痛，或出现口干、尿少、精神差等脱水表现 → 及时就医。',
+            '便秘': '便秘先从生活方式调起：\n\n① 每天 25-30 克膳食纤维：蔬菜、全谷物、豆类，循序渐进加量\n② 每天 1500-2000ml 水，晨起一杯温水\n③ 固定时间如厕（如早餐后），别憋便\n④ 每天快走 30 分钟，顺时针轻揉腹部\n\n⚠️ 便秘伴便血、体重下降、排便习惯明显改变 → 就医排查。',
+            '牙疼': '牙疼建议尽快看牙医，临时可以：\n\n① 温盐水漱口，用牙线清洁牙缝\n② 避免冷热酸甜刺激患侧\n③ 疼痛明显可按说明书短期服用布洛芬\n\n⚠️ 牙疼伴面部肿胀、发热、张口困难 → 尽快口腔科就诊，可能已经感染。',
+            '口腔溃疡': '口腔溃疡多为自限性，一般 1-2 周自愈：\n\n① 补充 B 族维生素和锌（瘦肉、蛋类、坚果）\n② 避免辛辣烫食，淡盐水漱口\n③ 规律作息、减轻压力，能减少复发\n\n⚠️ 溃疡超过 2 周不愈合、或总在同一位置反复发作 → 就医排除其他问题。',
+            '过敏': '过敏的应对：\n\n① 先避开可疑过敏原（食物、花粉、尘螨、宠物毛发）\n② 皮肤瘙痒可冷敷；抗组胺药请遵医嘱或按说明书\n③ 记录发作时间和接触过的东西，方便医生判断\n\n🚨 出现喉头发紧、呼吸困难、全身风团伴头晕 → 可能是严重过敏，立即拨打 120。',
+            '眼睛干涩': '缓解眼睛干涩：\n\n① 20-20-20 法则：每用眼 20 分钟，远眺 20 英尺外 20 秒\n② 多眨眼，空调房放个加湿器\n③ 可选用不含防腐剂的人工泪液\n\n⚠️ 眼干伴眼痛、视力下降、畏光 → 眼科就诊。',
+            '耳鸣': '耳鸣先排除可逆原因：\n\n① 减少耳机使用，音量不超过最大音量的 60%\n② 避免熬夜、咖啡因和嘈杂环境\n③ 血压偏高者先把血压控制好\n\n⚠️ 单侧耳鸣伴听力下降、眩晕 → 尽快耳鼻喉科检查。',
+            '打呼噜': '打呼噜的改善方法：\n\n① 尽量侧卧睡（可在睡衣背部缝个小口袋装球，防止仰卧）\n② 控制体重，睡前 4 小时不饮酒\n③ 保持鼻腔通畅，睡前用生理盐水洗鼻\n\n⚠️ 打呼噜伴呼吸暂停、白天嗜睡 → 就医评估睡眠呼吸暂停。',
+            '痛经': '痛经的缓解：\n\n① 热敷下腹部，喝温水\n② 月经开始前 1-2 天起按说明书服布洛芬，效果更好\n③ 长期坚持规律有氧运动（每周 3 次）可减轻痛经\n\n⚠️ 痛经逐年加重、经量明显增多 → 妇科就诊排查。',
+            '中暑': '天热头晕乏力，先按中暑处理：\n\n① 立刻移到阴凉通风处，解开衣领\n② 少量多次补充凉水或淡盐水\n③ 用湿毛巾擦拭身体帮助降温\n\n🚨 意识模糊、体温超过 40℃、皮肤干热无汗 → 可能是热射病，立即拨打 120。',
+            '晕车': '晕车预防：\n\n① 出发前 1 小时清淡饮食，别空腹也别过饱\n② 坐前排、看远处地平线，少看手机\n③ 可提前 30-60 分钟按说明书服用晕车药（如茶苯海明）\n④ 保持通风，含姜片或薄荷糖也有帮助',
         };
-        // 兜底：没命中知识库时，先共情 + 温和引导，避免机械复读反问
-        const defaultReply = '谢谢你愿意和我说这些，不管是身体上的不舒服，还是心里觉得累，我都愿意听。\n\n要帮你分析得更贴合你的情况，能再多告诉我一点吗？比如是哪里不舒服、有多久了、有没有发烧头晕这些伴随情况、最近饮食睡眠怎么样。\n\n你先说最难受的那一点，我们从它开始慢慢梳理，好吗？❤️';
+        // 兜底：没命中知识库时，结构化引导，而不是空泛反问
+        const defaultReply = '谢谢你愿意和我说这些。为了给你更靠谱的参考，请再补充三点信息（任意一点都行）：\n\n① 具体是哪里不舒服？（部位和感觉，比如"嗓子像有东西""左腹隐痛"）\n② 持续多久了？什么情况下加重或缓解？\n③ 有没有伴随表现？（发烧、头晕、没胃口等）\n\n💡 小技巧：描述里带上具体症状词（如"头痛""咳嗽"），我能直接给出对应的科普建议；也可以在左侧「医疗知识库」里搜索关键词。\n\n⚠️ 本功能仅用于健康科普参考，不用于医疗诊断与治疗；症状明显或持续不缓解，请及时就医。';
 
         // 多轮对话历史：每个智能体可开多个会话（新对话），全部自动保存
         let activeAgent = 'doctor';
@@ -1916,7 +1931,9 @@
 
         function getTime() { const d = new Date(); return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0'); }
 
-        function addMsg(text, role, asHtml) {
+        const uid = () => 'm' + Date.now() + Math.floor(Math.random() * 1e6);
+
+        function addMsg(text, role, asHtml, id) {
             const body = document.getElementById('chatBody');
             const wrap = document.createElement('div');
             wrap.className = 'msg ' + role;
@@ -1931,10 +1948,41 @@
             time.className = 'msg-time';
             time.textContent = getTime();
             content.append(bubble, time);
+            if (id) {
+                wrap.dataset.msgId = id;
+                const del = document.createElement('button');
+                del.className = 'msg-del';
+                del.type = 'button';
+                del.textContent = '🗑';
+                del.title = '删除这条对话';
+                del.onclick = () => deleteMsg(id);
+                content.appendChild(del);
+            }
             wrap.append(avatar, content);
             body.appendChild(wrap);
             body.scrollTop = body.scrollHeight;
-            return { wrap, bubble };
+            return { wrap, bubble, content };
+        }
+        // 给正在打字的 AI 消息补挂删除按钮（完成后才可删）
+        function bindMsgDel(wrap, id) {
+            wrap.dataset.msgId = id;
+            const del = document.createElement('button');
+            del.className = 'msg-del';
+            del.type = 'button';
+            del.textContent = '🗑';
+            del.title = '删除这条对话';
+            del.onclick = () => deleteMsg(id);
+            wrap.lastElementChild.appendChild(del);
+        }
+        // 删除单条对话记录
+        function deleteMsg(id) {
+            const s = curSession();
+            const idx = s.msgs.findIndex(m => m.id === id);
+            if (idx >= 0) { s.msgs.splice(idx, 1); s.updatedAt = Date.now(); persistAgentSessions(); }
+            const body = document.getElementById('chatBody');
+            const el = body.querySelector('[data-msg-id="' + id + '"]');
+            if (el) el.remove();
+            if (!s.msgs.length) document.getElementById('chatHints').style.display = 'flex';
         }
 
         function showTyping() {
@@ -2470,20 +2518,28 @@
                     const greet = h < 6 ? '夜深了' : h < 9 ? '早上好' : h < 12 ? '上午好' : h < 14 ? '中午好' : h < 18 ? '下午好' : '晚上好';
                     const hello = (u ? greet + '，<strong>' + escapeHtml(u) + '</strong>' : greet) + '！';
                     const r = latestHealthRecord();
-                    let pro = '';
+                    let summary = '', pro = '';
                     if (r) {
-                        if ((r.sbp != null && (r.sbp >= 140 || r.dbp >= 90))) pro = '我注意到你最近记录的血压是 ' + r.sbp + '/' + r.dbp + ' mmHg，高于参考值了。最近有没有头晕、后颈发紧的感觉？别担心，先和我说说你现在的感受，我们一起看看。';
-                        else if (r.sbp != null && (r.sbp >= 130 || r.dbp >= 85)) pro = '你最近记录的血压 ' + r.sbp + '/' + r.dbp + ' 处于参考值的高值区间。最近睡得怎么样？压力大吗？我们可以一起想办法把血压稳下来。';
+                        const bits = [];
+                        if (r.sbp != null) bits.push('血压 ' + r.sbp + '/' + r.dbp);
+                        if (r.glucose != null) bits.push('血糖 ' + r.glucose);
+                        if (r.bmi != null) bits.push('BMI ' + r.bmi);
+                        if (r.hr != null) bits.push('心率 ' + r.hr);
+                        const hasFlag = (r.sbp != null && (r.sbp >= 140 || r.dbp >= 90)) || (r.glucose != null && r.glucose > 7) || (r.bmi != null && r.bmi >= 28) || (typeof r.score === 'number' && r.score < 70);
+                        summary = '📋 我看了你的健康档案（最近记录 ' + (r.key || '近期') + '）：' + (bits.length ? bits.join(' · ') : '暂无指标') + (hasFlag ? ' ⚠️ 有几项值得关注，咱们一起看看' : ' ✅ 整体不错，继续保持');
+                        if ((r.sbp != null && (r.sbp >= 140 || r.dbp >= 90))) pro = '我注意到你最近记录的血压偏高（' + r.sbp + '/' + r.dbp + ' mmHg）。最近有没有头晕、后颈发紧的感觉？别担心，先和我说说你现在的感受。';
+                        else if (r.sbp != null && (r.sbp >= 130 || r.dbp >= 85)) pro = '你最近记录的血压 ' + r.sbp + '/' + r.dbp + ' 处于参考值的高值区间。最近睡得怎么样？压力大吗？我们一起想办法把它稳住。';
                         else if (r.glucose != null && r.glucose > 7) pro = '你最近一次记录的血糖是 ' + r.glucose + ' mmol/L，高于参考范围。最近有没有口渴、多尿、容易累的感觉？和我聊聊近况吧。';
                         else if (r.glucose != null && r.glucose > 6.1) pro = '你最近记录的血糖 ' + r.glucose + ' 略高于常见参考值。最近饮食和作息怎么样？可以从小的调整开始。';
-                        else if (r.bmi != null && r.bmi >= 28) pro = '你最近记录的 BMI 是 ' + r.bmi + '，明显高于参考范围。最近有没有想过从饮食或运动的小目标开始？我可以帮你参谋。';
-                        else if (r.bmi != null && r.bmi >= 24) pro = '你最近记录的 BMI 是 ' + r.bmi + '，略超参考范围。身体感觉怎么样？想不想一起聊聊怎么慢慢调整？';
+                        else if (r.bmi != null && r.bmi >= 28) pro = '你最近记录的 BMI 是 ' + r.bmi + '，明显高于参考范围。想不想从饮食或运动的一个小目标开始？我可以帮你参谋。';
+                        else if (r.bmi != null && r.bmi >= 24) pro = '你最近记录的 BMI 是 ' + r.bmi + '，略超参考范围。身体感觉怎么样？想聊聊怎么慢慢调整吗？';
                         else if (typeof r.score === 'number' && r.score < 70) pro = '你上次的健康评分是 ' + r.score + ' 分，还有提升空间。你最想先改善哪一项？告诉我，我陪你一步步来。';
-                        else pro = '我看到你最近一次健康记录的各项指标都在参考范围内，很棒！继续保持。最近身体有任何不舒服吗？或者想聊聊健康习惯，我都在。';
+                        else pro = '最近身体有任何不舒服吗？或者想聊聊健康习惯，我都在。';
                     } else {
-                        pro = '第一次见面，我想先了解一下你的情况：最近身体哪里不太舒服吗？有没有在关注的指标（血压、血糖、体重等）？在「健康档案」里录入数据后，我会记得你的情况，给的建议也更贴合你。';
+                        summary = '📋 你还没有健康档案：去「健康档案」录入一次数据，我会记住你的情况，之后的建议会更贴合你。';
+                        pro = '第一次见面，我想先了解一下你的情况：最近身体哪里不太舒服吗？有没有在关注的指标（血压、血糖、体重等）？';
                     }
-                    return hello + '欢迎来到 <strong>MediAI</strong>，我是你的 AI 家庭医生。请描述您的不适（症状、持续时间、程度等），我会为你梳理可能的原因、提供居家处理建议，并提示需要就医的情况。<br><br>也可以点击下方快捷症状快速开始。<br><br>🩺 ' + pro + '<br><br>⚠️ 本系统仅供参考，不构成医疗诊断，如症状严重请及时就医。';
+                    return hello + '欢迎来到 <strong>MediAI</strong>，我是你的 AI 家庭医生。身体不舒服的时候，把症状、持续时间和程度告诉我，我会帮你梳理可能的原因、给出居家科普建议，并提示需要就医的情况。<br><br>' + summary + '<br><br>🩺 ' + pro + '<br><br>也可以点击下方快捷症状快速开始。<br><br>⚠️ <strong>本功能仅用于健康科普参考，不用于医疗诊断与治疗</strong>；用药请遵医嘱，症状严重或持续不缓解请及时就医。';
                 },
                 reply: msg => getLocalReply(msg)
             },
@@ -2569,7 +2625,13 @@
             wrap.innerHTML = '<div class="msg-av ai">' + agent.icon + '</div><div><div class="msg-bubble" id="chatWelcome"></div><div class="msg-time">刚刚</div></div>';
             body.appendChild(wrap);
             updateAgentUI();
-            curHist().forEach(h => { if (h && h.content) addMsg(h.content, h.role); });
+            let assigned = false;
+            curHist().forEach(h => {
+                if (!h || !h.content) return;
+                if (!h.id) { h.id = uid(); assigned = true; }
+                addMsg(h.content, h.role, false, h.id);
+            });
+            if (assigned) persistAgentSessions();
             document.getElementById('chatHints').style.display = curHist().length ? 'none' : 'flex';
             refreshSessionUI();
             body.scrollTop = body.scrollHeight;
@@ -2613,11 +2675,12 @@
             const msg = inp.value.trim();
             if (!msg) return;
             inp.value = ''; inp.style.height = 'auto';
-            addMsg(msg, 'user');
+            const userMsgId = uid();
+            addMsg(msg, 'user', false, userMsgId);
             document.getElementById('chatHints').style.display = 'none';
             const agentAtSend = activeAgent;
             const sess = curSession();
-            sess.msgs.push({ role: 'user', content: msg });
+            sess.msgs.push({ id: userMsgId, role: 'user', content: msg });
             sess.updatedAt = Date.now();
             if (sess.title === '新对话') { sess.title = msg.replace(/\s+/g, ' ').slice(0, 12); refreshSessionUI(); }
             persistAgentSessions();
@@ -2627,7 +2690,7 @@
             const finishWith = (text) => {
                 hideTyping();
                 // 打字机快速逐段"说"出来，点击气泡可立即显示全文
-                const { bubble } = addMsg('', 'ai');
+                const { wrap, bubble } = addMsg('', 'ai');
                 bubble.classList.add('typing-active');
                 bubble.title = '点击直接查看全文';
                 let finished = false;
@@ -2641,7 +2704,9 @@
                         if (i) bubble.appendChild(document.createElement('br'));
                         bubble.appendChild(document.createTextNode(line));
                     });
-                    sess.msgs.push({ role: 'assistant', content: text });
+                    const aid = uid();
+                    sess.msgs.push({ id: aid, role: 'assistant', content: text });
+                    bindMsgDel(wrap, aid);
                     persistAgentSessions(agentAtSend);
                     persistAgentMemories();
                     if (activeAgent === agentAtSend) {
