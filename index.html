@@ -39,25 +39,15 @@
 
     <!-- 动态开场页 -->
     <div class="splash" id="splash">
-        <div class="sp-blob b1"></div>
-        <div class="sp-blob b2"></div>
-        <div class="sp-blob b3"></div>
-        <div class="sp-floats" aria-hidden="true">
-            <span class="sp-float f1">❤️</span>
-            <span class="sp-float f2">💊</span>
-            <span class="sp-float f3">🩺</span>
-            <span class="sp-float f4">🌿</span>
-            <span class="sp-float f5">☕</span>
-        </div>
         <div class="sp-hero">
-            <div class="sp-logo">⚕️</div>
-            <div class="sp-title">你的私人<br><span class="sp-title-line2">健康守护伙伴</span></div>
-            <div class="sp-tagline">MediAI 不是冷冰冰的问诊机器——它会记住你的指标变化、读懂你的症状描述、陪你一步步养成更健康的习惯。每天打开，都有新的健康知识在等你。今天也要照顾好自己呀 ❤️
+            <div class="sp-logo">MediAI</div>
+            <div class="sp-title">智慧医疗<br><span class="sp-title-line2">健康管理平台</span></div>
+            <div class="sp-tagline">AI 问诊 · 健康档案 · 智能导诊 · 每日科普 —— 数据全程本地保存，隐私安全可控。
             </div>
-            <div class="sp-typing"><span id="spTypewriter">正在准备你的健康空间</span><span class="cur"></span></div>
+            <div class="sp-typing"><span id="spTypewriter">正在加载</span><span class="cur"></span></div>
             <div class="sp-cta">
-                <button class="sp-btn" onclick="enterApp()">🚪 进入 MediAI 医疗空间 →</button>
-                <span class="sp-btn-sub">无需安装 · 注册一个账号即可使用全部功能 · 全程本地保存</span>
+                <button class="sp-btn" onclick="enterApp()">进入平台 →</button>
+                <span class="sp-btn-sub">无需安装 · 注册即可使用全部功能 · 数据本地加密存储</span>
             </div>
         </div>
         <div class="sp-stats">
@@ -274,7 +264,7 @@
         </div>
         <div class="s-sect">主要功能</div>
         <div class="nav-item active" data-sec="home"><span class="nav-icon">🏠</span>首页总览</div>
-        <div class="nav-item" data-sec="chat"><span class="nav-icon">💬</span>AI 智能问诊<span class="nav-badge">在线</span>
+        <div class="nav-item" data-sec="chat"><span class="nav-icon">💬</span>智能问诊<span class="nav-badge">在线</span>
         </div>
         <div class="nav-item" data-sec="health"><span class="nav-icon">❤️</span>健康档案</div>
         <div class="nav-item" data-sec="kb"><span class="nav-icon">📚</span>医疗知识库</div>
@@ -283,6 +273,9 @@
         <div class="nav-item" data-sec="guide"><span class="nav-icon">📍</span>慧医导诊</div>
         <div class="nav-item" data-sec="news"><span class="nav-icon">📰</span>科普资讯<span class="nav-badge"
                 id="newsBadge">每日更新</span></div>
+        <div class="s-sect">数据</div>
+        <div class="nav-item" data-sec="qrsync"><span class="nav-icon">📲</span>扫码同步<span
+                class="nav-badge">手机↔电脑</span></div>
         <div class="s-foot" id="userFoot">
             <div class="u-card" id="userCard" role="button" tabindex="0" title="账号操作"
                 onclick="userCardClick()">
@@ -333,11 +326,11 @@
                 <div class="notice">⚠️ <span><strong>免责声明：</strong>本平台仅供参考，不构成医疗建议。如有紧急情况，请立即拨打 <strong>120</strong>
                         急救电话或前往最近医院就诊。</span></div>
                 <div class="hero">
-                    <div class="hero-title">🤖 AI 智能医疗助手</div>
-                    <div class="hero-sub">结合人工智能技术，为您提供症状分析、健康管理和医疗知识查询，全天候守护您和家人的健康。</div>
+                    <div class="hero-title">MediAI 智慧健康平台</div>
+                    <div class="hero-sub">症状分析 · 健康档案 · 智能导诊 · 每日科普，数据全程本地保存。</div>
                     <div class="hero-actions">
-                        <button class="btn-white" onclick="requireAuth(()=>showSec('chat'))">💬 立即问诊</button>
-                        <button class="btn-ow" onclick="showSec('kb')">📚 知识库</button>
+                        <button class="btn-white" onclick="requireAuth(()=>showSec('chat'))">开始问诊</button>
+                        <button class="btn-ow" onclick="showSec('kb')">浏览知识库</button>
                     </div>
                 </div>
                 <div class="g4">
@@ -402,9 +395,9 @@
             <section class="sec" id="sec-chat">
                 <div class="chat-sec">
                     <div class="chat-mode-bar" id="chatModeBar">
-                        <span class="chat-mode-dot" id="chatModeDot">🟢</span>
-                        <span class="chat-mode-text" id="chatModeText">MediAI 家庭医生 · 正在值班</span>
-                        <span class="chat-mode-sub">先听你说完，再帮你分析</span>
+                        <span class="chat-mode-dot" id="chatModeDot">●</span>
+                        <span class="chat-mode-text" id="chatModeText">智能问诊 · 在线</span>
+                        <span class="chat-mode-sub">描述症状，系统为您分析并给出建议</span>
                     </div>
                     <div class="chat-body" id="chatBody">
                         <div class="msg ai">
@@ -433,9 +426,16 @@
             </section>
             <!-- Health -->
             <section class="sec" id="sec-health">
-                <div style="margin-bottom:20px">
-                    <h2 style="font-size:22px;font-weight:700">❤️ 健康档案</h2>
-                    <p style="font-size:13px;color:var(--text3);margin-top:4px">录入数据，智能生成健康评分与建议</p>
+                <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+                    <div style="flex:1;min-width:240px">
+                        <h2 style="font-size:22px;font-weight:700">健康档案</h2>
+                        <p style="font-size:13px;color:var(--text3);margin-top:4px">录入数据，智能生成健康评分与建议</p>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2px">
+                        <button class="btn btn-g" onclick="exportHealthPdf()">📄 导出为 PDF</button>
+                        <button class="btn btn-g" style="color:var(--danger);border-color:var(--danger)"
+                            onclick="deleteAllHealthData()">🗑️ 一键删除全部数据</button>
+                    </div>
                 </div>
                 <div class="health-grid">
                     <div>
@@ -516,6 +516,7 @@
                             <div class="sec-title" style="margin-top:0">💡 个性化健康建议</div>
                             <div id="healthAdvice" style="font-size:13px;color:var(--text2);line-height:1.9">
                                 完善健康数据后将自动生成个性化建议...</div>
+                            <div id="docAlertBox" style="margin-top:12px"></div>
                         </div>
                     </div>
                 </div>
@@ -527,7 +528,7 @@
             <!-- BMI -->
             <section class="sec" id="sec-bmi">
                 <div style="margin-bottom:20px">
-                    <h2 style="font-size:22px;font-weight:700">⚖️ BMI 计算器</h2>
+                    <h2 style="font-size:22px;font-weight:700">BMI 计算器</h2>
                     <p style="font-size:13px;color:var(--text3);margin-top:4px">快速计算身体质量指数，评估体重状况</p>
                 </div>
                 <div class="bmi-tabs" id="bmiTabs" role="tablist" aria-label="BMI 分析内容">
@@ -651,7 +652,7 @@
             <section class="sec" id="sec-news">
                 <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:6px">
                     <div style="margin-bottom:20px;flex:1;min-width:240px">
-                        <h2 style="font-size:22px;font-weight:700">📰 健康科普资讯</h2>
+                        <h2 style="font-size:22px;font-weight:700">健康科普资讯</h2>
                         <p style="font-size:13px;color:var(--text3);margin-top:4px" id="newsDate"></p>
                     </div>
                     <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
@@ -685,7 +686,7 @@
             <!-- 慧医导诊 -->
             <section class="sec" id="sec-guide">
                 <div style="margin-bottom:20px">
-                    <h2 style="font-size:22px;font-weight:700">📍 慧医导诊</h2>
+                    <h2 style="font-size:22px;font-weight:700">慧医导诊</h2>
                     <p style="font-size:13px;color:var(--text3);margin-top:4px">先定位 / 切换位置（支持德州各县市区、全国 35 城与 9 个国家），再选择症状，系统推荐当地合适的医院（越近越优先）；点击医院可一键跳转高德 / 百度地图导航。</p>
                 </div>
 
@@ -764,10 +765,61 @@
                 </div>
             </div>
 
+            <!-- 建议咨询医生弹窗（非诊断性提示） -->
+            <div class="modal-mask" id="docMask" role="dialog" aria-modal="true" onclick="if(event.target===this)closeDocAdvice()">
+                <div class="modal" style="max-width:480px;max-height:86vh;overflow-y:auto">
+                    <button class="modal-close" type="button" onclick="closeDocAdvice()" aria-label="关闭">✕</button>
+                    <div class="sec-title" style="margin-top:0">🩺 建议咨询医生</div>
+                    <div id="docModalBody"></div>
+                </div>
+            </div>
+
+            <!-- 扫码同步弹窗（手机 ↔ 电脑） -->
+            <div class="modal-mask" id="qrMask" role="dialog" aria-modal="true" onclick="if(event.target===this)closeQrSync()">
+                <div class="modal" style="max-width:560px;max-height:88vh;overflow-y:auto">
+                    <button class="modal-close" type="button" onclick="closeQrSync()" aria-label="关闭">✕</button>
+                    <div class="sec-title" style="margin-top:0">📲 扫码同步（手机 ↔ 电脑）</div>
+                    <p style="font-size:12.5px;color:var(--text3);margin-bottom:14px">健康数据只在本机浏览器保存。通过二维码，可以把本机的健康档案传到另一台设备（手机或电脑），无需登录账号。</p>
+                    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+                        <button class="btn btn-p" id="qrGenTab" onclick="qrSwitchMode('gen')">⬇️ 生成同步码</button>
+                        <button class="btn btn-g" id="qrScanTab" onclick="qrSwitchMode('scan')">📷 扫同步码</button>
+                    </div>
+                    <div id="qrGenBox">
+                        <button class="btn btn-p" style="width:100%" onclick="qrGenerate()">🔳 生成二维码</button>
+                        <p style="font-size:12px;color:var(--text3);margin-top:8px">把本机健康档案编码成二维码，用另一台设备的「📷 扫同步码」扫描即可导入。</p>
+                        <div id="qrCanvasWrap" style="display:none;text-align:center;margin-top:12px">
+                            <div id="qrCanvasBox"></div>
+                            <p id="qrChunkInfo" style="font-size:12px;color:var(--text2);margin:8px 0"></p>
+                            <div style="display:flex;gap:8px;justify-content:center">
+                                <button class="btn btn-g" id="qrChunkPrev" onclick="qrShowChunk(-1)" style="display:none">◀ 上一张</button>
+                                <button class="btn btn-g" id="qrChunkNext" onclick="qrShowChunk(1)" style="display:none">下一张 ▶</button>
+                            </div>
+                            <div style="display:flex;gap:8px;margin-top:10px;justify-content:center;flex-wrap:wrap">
+                                <button class="btn btn-g" onclick="qrCopyCode()">📋 复制同步码文本</button>
+                            </div>
+                            <p style="font-size:11.5px;color:var(--text3);margin-top:8px">💡 若另一台设备无法扫码，可复制同步码文本，在对方设备的「手动输入同步码」中粘贴导入。</p>
+                        </div>
+                    </div>
+                    <div id="qrScanBox" style="display:none">
+                        <button class="btn btn-p" style="width:100%" id="qrScanBtn" onclick="qrStartScan()">📷 启动摄像头扫码</button>
+                        <p style="font-size:12px;color:var(--text3);margin-top:8px">对准另一台设备的二维码，可连续扫描多张（数据较大时会分多张）。</p>
+                        <div id="qrVideoWrap" style="display:none;margin-top:12px;text-align:center">
+                            <video id="qrVideo" playsinline style="width:100%;max-width:320px;border-radius:10px;background:#000"></video>
+                            <p id="qrScanTip" style="font-size:12px;color:var(--text2);margin-top:8px">正在识别…</p>
+                        </div>
+                        <div class="sec-title" style="margin-top:16px">✏️ 手动输入同步码（备用）</div>
+                        <textarea class="form-input" id="qrManualInput" rows="4" style="width:100%;resize:vertical"
+                            placeholder="粘贴对方的同步码文本（MXS开头）"></textarea>
+                        <button class="btn btn-p" style="width:100%;margin-top:8px" onclick="qrManualImport()">📥 导入同步码数据</button>
+                        <p style="font-size:11.5px;color:var(--text3);margin-top:8px">🔒 摄像头需要 HTTPS 或 localhost 环境；无法调用摄像头时请使用手动输入方式。导入采用「去重合并、新数据优先」，不会重复。</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Knowledge Base -->
             <section class="sec" id="sec-kb">
                 <div style="margin-bottom:20px">
-                    <h2 style="font-size:22px;font-weight:700">📚 医疗知识库</h2>
+                    <h2 style="font-size:22px;font-weight:700">医疗知识库</h2>
                     <p style="font-size:13px;color:var(--text3);margin-top:4px">查询常见疾病、症状和用药知识</p>
                 </div>
                 <div class="kb-search-wrap">
@@ -1248,7 +1300,7 @@
             const dayNum = parseInt(dayKey.replace(/-/g, ''), 10);
             const tip = NOTIF_TIPS[dayNum % NOTIF_TIPS.length];
             list.push({ id: 'tip', icon: '💡', title: '今日健康小贴士 · ' + tip[0], text: tip[1], sec: 'home' });
-            list.push({ id: 'doctor', icon: '💬', title: 'MediAI 家庭医生在线', text: '哪里不舒服随时来聊，我 24 小时都在。', sec: 'chat' });
+            list.push({ id: 'doctor', icon: '💬', title: '智能问诊在线', text: '描述您的症状，随时获得分析与建议。', sec: 'chat' });
             return list;
         }
 
@@ -1306,9 +1358,10 @@
         function closeSidebar() { document.getElementById('sidebar').classList.remove('open') }
 
         // ─── Navigation ───────────────────────────────────────────
-        const titles = { home: '首页总览', chat: 'AI 智能问诊', health: '健康档案', kb: '医疗知识库', bmi: 'BMI 计算器', guide: '慧医导诊', news: '健康科普资讯' };
+        const titles = { home: '首页总览', chat: '智能问诊', health: '健康档案', kb: '医疗知识库', bmi: 'BMI 计算器', guide: '慧医导诊', news: '健康科普资讯' };
         const subs = { home: '欢迎使用 MediAI 智能医疗平台', chat: '描述症状，AI 为您分析并给出建议', health: '记录和追踪您的健康数据', kb: '查询疾病、症状和用药知识', bmi: '快速计算身体质量指数', guide: '按症状推荐医院 · 一键地图导航', news: '每日更新 · 饮食健康 / 保健品 / 医学科普' };
         function showSec(id) {
+            if (id === 'qrsync') { openQrSync(); return }
             if ((id === 'chat' || id === 'health') && !currentUser()) { openAuth('login'); return }
             document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => {
@@ -1847,8 +1900,8 @@
             const w = document.getElementById('chatWelcome');
             if (!w) return;
             const u = currentUser();
-            const hello = u ? '你好呀，<strong>' + escapeHtml(u) + '</strong>！' : '你好呀！';
-            w.innerHTML = hello + '我是 <strong>MediAI</strong> 家庭医生小助手 🩺。<br><br>不管是不舒服想找人问问，还是想了解健康小知识，都可以随时来找我。我会先听你说完，再帮你梳理可能的原因、给你能马上做起来的处理办法，也会告诉你什么情况需要去看医生。<br><br>先和我说说，你今天感觉怎么样？也可以点击下方快捷症状快速开始。<br><br>⚠️ 本系统仅供参考，不能替代专业医生诊断。如症状严重请及时就医。';
+            const hello = u ? '你好，<strong>' + escapeHtml(u) + '</strong>！' : '你好！';
+            w.innerHTML = hello + '欢迎使用 <strong>MediAI</strong> 智能问诊。请描述您的不适（症状、持续时间、程度等），系统将为您梳理可能的原因、提供居家处理建议，并提示需要就医的情况。<br><br>也可以点击下方快捷症状快速开始。<br><br>⚠️ 本系统仅供参考，不构成医疗诊断，如症状严重请及时就医。';
         }
 
         function getTime() { const d = new Date(); return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0'); }
@@ -1900,22 +1953,22 @@
             return null;
         }
 
-        // 按时段问好，带用户名，开口就有温度
+        // 按时段问好，带用户名
         function warmGreeting() {
             const h = new Date().getHours();
             const u = currentUser();
-            if (h < 5) return u ? '夜深了，' + u + '，要注意休息' : '夜深了，要注意休息';
-            if (h < 11) return u ? '早上好，' + u : '早上好呀';
-            if (h < 14) return u ? '中午好，' + u : '中午好呀';
-            if (h < 18) return u ? '下午好，' + u : '下午好呀';
-            return u ? '晚上好，' + u : '晚上好呀';
+            if (h < 5) return u ? '夜深了，' + u + '，请注意休息' : '夜深了，请注意休息';
+            if (h < 11) return u ? '早上好，' + u : '早上好';
+            if (h < 14) return u ? '中午好，' + u : '中午好';
+            if (h < 18) return u ? '下午好，' + u : '下午好';
+            return u ? '晚上好，' + u : '晚上好';
         }
         const warmOpeners = [
-            '先别着急，我们一步一步来。',
-            '听起来确实挺难受的，先放宽心。',
-            '别担心，我在呢，我们先把情况理清楚。',
-            '辛苦了，不舒服的时候最需要人陪着，我来帮你分析。',
-            '来，深呼吸，慢慢和我说，我们一起想办法。',
+            '请别着急，我们一步一步分析。',
+            '请先放宽心，我们梳理一下情况。',
+            '请描述具体情况，我为您分析。',
+            '请您慢慢说，我帮您整理分析。',
+            '请补充更多细节，以便给出更准确的建议。',
         ];
 
         // 口语别名 → 命中知识库条目
@@ -2006,10 +2059,10 @@
         }
 
         const smallTalk = [
-            { keys: ['你好', '您好', 'hi', 'hello', '在吗'], reply: '你好呀～我是 MediAI 家庭医生小助手，随时在线。哪里不舒服都可以告诉我，也可以问我一些健康小知识 😊' },
-            { keys: ['谢谢', '感谢', '辛苦'], reply: '不客气～能帮到你我很开心。照顾好自己，有需要随时来找我 ❤️' },
-            { keys: ['你是谁', '你叫什么', '你能做什么', '你会什么', '介绍一下'], reply: '我是 MediAI 家庭医生小助手 🩺 我可以：\n① 帮你分析常见症状（头痛、发烧、咳嗽……）\n② 讲解 12 大类常见疾病的科普知识\n③ 给你可执行的居家处理建议和就医指引\n\n把我当成一个耐心的家庭医生朋友就好～' },
-            { keys: ['再见', '拜拜', '晚安', '先这样'], reply: '嗯嗯，照顾好自己～记得按时吃饭、早点休息。我随时都在，晚安 ❤️' },
+            { keys: ['你好', '您好', 'hi', 'hello', '在吗'], reply: '你好，我是 MediAI 智能问诊。请描述您的不适，我会为您分析并给出建议。' },
+            { keys: ['谢谢', '感谢', '辛苦'], reply: '不客气。有需要随时联系。' },
+            { keys: ['你是谁', '你叫什么', '你能做什么', '你会什么', '介绍一下'], reply: '我是 MediAI 智能问诊助手，可以为您提供：\n① 常见症状分析（头痛、发烧、咳嗽等）\n② 12 大类常见疾病科普知识\n③ 居家处理建议与就医指引\n\n本系统仅供参考，不构成医疗诊断。' },
+            { keys: ['再见', '拜拜', '晚安', '先这样'], reply: '再见，祝您健康。' },
         ];
         const FOLLOW_KEYS = ['还有', '然后', '继续', '别的', '其他', '注意什么', '怎么办'];
 
@@ -3296,6 +3349,456 @@
                 points: ['尽量喝黑咖啡，少加糖奶', '下午2点后避免，以免影响睡眠', '心慌、焦虑、胃食管反流者应减量或停用'],
                 warn: '孕妇建议每日咖啡因＜200mg；骨质疏松、心律失常患者需遵医嘱限制。'
             },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '控盐不止是少放盐：隐形盐藏在哪？', date: '每日新增', read: '4 分钟',
+                summary: '我国居民平均盐摄入约10.5g/天，远超5g的建议量，其中约七成来自加工食品和调味品，而非自家盐罐。',
+                body: ['酱油、蚝油、豆瓣酱、腐乳等调味品含盐量高，10ml酱油约含1.6g盐。',
+                    '挂面、面包、薯片、火腿、榨菜、方便面都是隐形盐大户，购买前看营养成分表中"钠"含量。',
+                    '味觉适应需要时间：逐周减量，4-6周后对咸味的敏感度会提高。'],
+                points: ['用限盐勺，每天总量＜5g（约一啤酒瓶盖）', '炒菜出锅前再放盐，咸味更突出', '学会看营养标签：钠(mg)÷400≈盐(g)'],
+                warn: '心衰、肾功能不全者限盐需遵医嘱，避免极端无盐饮食。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '主食吃得太精？全谷物替换指南', date: '每日新增', read: '4 分钟',
+                summary: '精米白面在加工中去掉了麸皮和胚芽，膳食纤维和B族维生素大量流失；每天把1/3主食换成全谷物，益处明显。',
+                body: ['全谷物包括糙米、燕麦、藜麦、荞麦、全麦、玉米、小米等，保留了完整谷粒。',
+                    '研究表明，增加全谷物摄入与心血管疾病、2型糖尿病风险下降相关。',
+                    '替换要循序渐进：先按1:3与精米混合，逐步提高比例，让肠胃适应。'],
+                points: ['每天全谷物50-150g，粗细搭配', '燕麦选原味麦片，避开"营养麦片"的糖', '杂豆（红豆、鹰嘴豆）也算优质主食'],
+                warn: '胃肠功能较弱者突然大量粗粮可能腹胀，应逐步加量并充分咀嚼。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '喝水也有讲究：一天到底喝多少？', date: '每日新增', read: '3 分钟',
+                summary: '成人每天饮水1500-1700ml为宜，但出汗、运动、发烧、空调房等场景需要额外补充，别等口渴再喝。',
+                body: ['口渴时身体已处于轻度缺水状态，主动少量多次饮水更合理。',
+                    '尿液颜色是简单指标：浅黄色说明水分充足，深黄色提示需要补水。',
+                    '淡茶、白开水、清汤都算；含糖饮料不算，反而增加负担。'],
+                points: ['晨起一杯温水，白天均匀分配', '运动前后各补200-300ml', '心肾功能不全者饮水量请遵医嘱'],
+                warn: '短时间内大量豪饮（1小时内超1L）有低钠风险；反复异常口渴、多饮多尿需就医排查。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '反式脂肪的"马甲"：这些名字要警惕', date: '每日新增', read: '4 分钟',
+                summary: '反式脂肪酸增加心血管疾病风险，我国标准要求每天摄入不超过2g。它常伪装成"氢化植物油"等名字藏在零食里。',
+                body: ['配料表出现"氢化植物油、部分氢化油、人造黄油、起酥油、植脂末、代可可脂"时需留意。',
+                    '按国家标准，每100g食品反式脂肪≤0.3g可标"0"，但多吃仍会累积。',
+                    '高温反复煎炸的油也会产生反式脂肪，油条、炸鸡应适量。'],
+                points: ['配料表越靠前的成分含量越高，先看前三项', '饼干、蛋糕、派、奶茶植脂末是重灾区', '家庭烹饪少油炸，油温不过高'],
+                warn: '有心脑血管疾病史者应更严格控制反式脂肪摄入。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '早餐吃对了吗？蛋白质别缺席', date: '每日新增', read: '3 分钟',
+                summary: '一顿合格早餐应包含谷薯类主食、优质蛋白和蔬果三类；长期只有稀饭馒头，上午容易饿，血糖波动大。',
+                body: ['蛋白质（蛋、奶、豆制品、瘦肉）能延缓胃排空，增加饱腹感。',
+                    '传统"粥+咸菜"结构盐分高、蛋白少，可加个鸡蛋和一小把坚果改善。',
+                    '早餐占全天能量约25-30%，不吃早餐与体重增加有一定关联。'],
+                points: ['标配：主食+1个蛋+1杯奶/豆浆', '来不及吃就带个煮鸡蛋、酸奶、水果', '早餐宜在起床后1小时内进食'],
+                warn: '胃食管反流者睡前3小时勿进食，早餐结构请遵医嘱调整。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '汤里的营养，真的都在汤里吗？', date: '每日新增', read: '3 分钟',
+                summary: '肉汤、骨头汤中大部分营养仍留在肉里，汤里主要是脂肪、嘌呤和盐；喝汤不吃肉是常见误区。',
+                body: ['实验显示，炖煮后肉中蛋白质仅约5-10%溶入汤中。',
+                    '奶白色的浓汤是脂肪乳化的结果，并非"营养更丰富"。',
+                    '痛风人群应少喝老火靓汤，嘌呤易溶于水。'],
+                points: ['喝汤更要吃肉，营养大头在食材', '少盐少油，汤面浮油撇掉', '煲汤别超过2小时，绿叶菜最后放'],
+                warn: '痛风急性发作期避免肉汤、海鲜汤；肾功能不全者汤量遵医嘱。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '水果饭前吃还是饭后吃？', date: '每日新增', read: '3 分钟',
+                summary: '健康人群什么时候吃水果影响不大，关键是总量：每天200-350g新鲜水果，果汁不能替代完整水果。',
+                body: ['水果中的糖分以果糖为主，完整水果含膳食纤维，饱腹感强，不易过量。',
+                    '果汁去掉了纤维，一杯橙汁可能含3-4个橙子的糖，吸收快、升糖快。',
+                    '餐前吃少量低糖水果（如苹果、梨）有助于控制正餐食量。'],
+                points: ['每天水果200-350g，约1-2个拳头大小', '直接吃完整水果，不榨汁', '水果不能替代蔬菜，两者都要有'],
+                warn: '血糖控制不佳者选低升糖水果并在两餐间少量食用，具体请咨询医生。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '晚餐吃太晚，身体在悄悄抗议', date: '每日新增', read: '3 分钟',
+                summary: '睡前2-3小时内大量进食与胃食管反流、睡眠质量下降、体重增加相关，晚餐宜清淡、不过饱。',
+                body: ['夜间胰岛素敏感性下降，同样食物晚上摄入更容易促进脂肪储存。',
+                    '胃内容物未排空就躺下，反流几率明显上升。',
+                    '如果加班必须晚吃，选易消化的食物：粥、汤面、蒸蛋，七分饱即可。'],
+                points: ['晚餐与睡觉间隔2-3小时', '七分饱：不饿了就停', '夜宵首选奶、水果，避开油炸和烧烤'],
+                warn: '反复夜间反酸、烧心应就医排查，勿长期自行服药压制症状。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '深色蔬菜的秘密：每天吃够300g了吗？', date: '每日新增', read: '3 分钟',
+                summary: '深色蔬菜（菠菜、西兰花、胡萝卜、紫甘蓝等）富含维生素、矿物质和植物化学物，应占每天蔬菜的一半。',
+                body: ['每天蔬菜摄入建议300-500g，其中深色蔬菜占一半以上。',
+                    '不同颜色代表不同植物化学物：橙黄含β-胡萝卜素，紫红含花青素，深绿含叶绿素和叶酸。',
+                    '急火快炒、少油少盐能更好保留维生素，凉拌焯水都是好方法。'],
+                points: ['每餐有蔬菜，深色过半', '先洗后切，减少营养流失', '薯类、藕等淀粉高的蔬菜要计入主食量'],
+                warn: '服用华法林等抗凝药者，大量菠菜等富含维生素K的食物需保持稳定摄入并咨询医生。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '坚果虽好，每天一小把就够了', date: '每日新增', read: '3 分钟',
+                summary: '坚果富含不饱和脂肪酸、膳食纤维和维生素E，但热量高，每天10-15g（约一小把）即可，选原味。',
+                body: ['研究显示适量坚果摄入与心血管健康有益相关。',
+                    '10g坚果约等于2个核桃、8-10粒巴旦木或15粒花生。',
+                    '盐焗、糖霜、奶油味坚果额外增加钠和糖，首选原味、带壳（能自然限速）。'],
+                points: ['每天10-15g，放在掌心比一比', '买原味，吃带壳的能少吃点', '坚果入菜可代替部分烹调油'],
+                warn: '对坚果过敏者严格回避；3岁以下幼儿整粒坚果有窒息风险。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '"0糖"饮料可以放心喝吗？', date: '每日新增', read: '4 分钟',
+                summary: '代糖饮料热量近零，是减糖期的过渡选择，但长期大量饮用对代谢的影响仍在研究中，最解渴的始终是水。',
+                body: ['常见代糖：阿斯巴甜、三氯蔗糖、赤藓糖醇、甜菊糖苷，甜度高、热量低。',
+                    '部分研究提示长期高频摄入代糖饮料可能与食欲变化相关，结论尚不统一。',
+                    '对"甜味"的依赖本身值得留意：越喝越甜的口味偏好可以逐步降低。'],
+                points: ['当作过渡工具，目标是回归白水', '每天代糖饮料不超过1瓶', '自制无糖茶饮：柠檬水、薄荷水、淡茶'],
+                warn: '苯丙酮尿症患者须避开阿斯巴甜；肠胃敏感者大量赤藓糖醇可能腹胀。'
+            },
+            {
+                cat: '饮食健康', catClass: 'c-diet', title: '隔夜菜能不能吃？分情况处理', date: '每日新增', read: '4 分钟',
+                summary: '隔夜菜主要风险是细菌繁殖和亚硝酸盐，关键是保存方式：及时冷藏、彻底加热，某些菜别隔夜。',
+                body: ['熟食在室温放置超2小时，细菌开始大量繁殖，"趁热放冰箱"更安全。',
+                    '绿叶菜反复加热后营养流失多、亚硝酸盐易累积，建议当顿吃完。',
+                    '鱼虾海鲜、凉拌菜变质快，也尽量不隔夜。'],
+                points: ['剩菜趁热密封冷藏，不超24小时', '食用前彻底加热到沸腾并保持几分钟', '荤菜可隔夜，绿叶菜和海鲜不留'],
+                warn: '进食剩菜后出现呕吐、腹泻、发热，警惕食物中毒并及时就医。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '维生素D：晒太阳就够了吗？', date: '每日新增', read: '4 分钟',
+                summary: '维生素D主要靠皮肤日照合成，食物来源有限。久坐室内、严格防晒、北方冬季人群易缺乏，可查血后按需补充。',
+                body: ['每天裸露手臂和面部晒太阳15-30分钟，通常能满足合成需求。',
+                    '隔着玻璃晒太阳无法合成维生素D，需要直接日照。',
+                    '血液25-羟维生素D水平是判断是否缺乏的金标准，别盲目补。'],
+                points: ['晴天户外活动，晒手晒脸15-30分钟', '深海鱼、蛋黄、强化奶含少量维D', '长期室内工作可咨询医生查血后决定是否补充'],
+                warn: '大剂量维生素D补充剂需在医生指导下进行，过量可致高钙血症。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '钙片怎么选、怎么吃才吸收好？', date: '每日新增', read: '4 分钟',
+                summary: '成人每日需钙800mg，优先从奶制品、豆制品、绿叶菜获取；饮食不够再考虑补充剂，分次服用吸收更好。',
+                body: ['碳酸钙含钙量高、需胃酸帮助吸收，随餐吃；柠檬酸钙对胃酸要求低，肠胃弱者可选。',
+                    '单次补钙不超过500mg，早晚分两次吃吸收率更高。',
+                    '钙与维生素D是好搭档，户外活动不足者注意同时评估。'],
+                points: ['一杯牛奶≈250-300mg钙，先算饮食缺口', '分次服用，随餐或餐后', '看元素钙含量，别只看药片重量'],
+                warn: '有肾结石病史者补钙前请咨询医生，不宜自行长期大剂量服用。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '鱼油和鱼肝油，一字之差大不同', date: '每日新增', read: '3 分钟',
+                summary: '鱼油提供Omega-3脂肪酸（EPA/DHA），鱼肝油来自鱼类肝脏、富含维生素A和D——两者成分、用途完全不同，别混用。',
+                body: ['鱼油适合饮食中深海鱼摄入少的人群，关注EPA+DHA含量。',
+                    '鱼肝油长期大量服用有维生素A过量风险，不建议随意当"营养品"天天吃。',
+                    '每周吃2次深海鱼（三文鱼、沙丁鱼、鲭鱼）是更自然的选择。'],
+                points: ['看标签：EPA+DHA每粒含量', '认准"鱼油"而非"鱼肝油"', '优先食补：每周2次深海鱼'],
+                warn: '服用抗凝药物者补充高剂量鱼油前应咨询医生，可能增加出血倾向。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '蛋白粉适合谁？大多数人并不需要', date: '每日新增', read: '3 分钟',
+                summary: '蛋白粉是浓缩蛋白质食品，适合饮食摄入不足、高强度训练或术后恢复人群；普通人通过三餐获取蛋白质更经济合理。',
+                body: ['成人每日蛋白质建议约每公斤体重0.8-1.2g，60kg者约48-72g。',
+                    '一个鸡蛋≈6g，100g鸡胸肉≈20g，一杯奶≈8g——正常饮食通常足够。',
+                    '乳清蛋白吸收快适合运动后；大豆蛋白适合乳糖不耐受或素食者。'],
+                points: ['先算饮食蛋白够不够，不够再考虑', '训练后30-60分钟内补充20-30g', '选购看蛋白含量，警惕"固体饮料"'],
+                warn: '肾功能不全者蛋白质摄入量必须遵医嘱，不可自行使用蛋白粉。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '褪黑素能当安眠药用吗？', date: '每日新增', read: '4 分钟',
+                summary: '褪黑素主要帮助调整昼夜节律（如倒时差、轮班），对慢性失眠证据有限，短期小剂量使用相对安全。',
+                body: ['褪黑素是人体松果体分泌的激素，补充剂适用于生物钟紊乱场景。',
+                    '常见副作用：头晕、白天嗜睡、多梦，长期安全性数据仍有限。',
+                    '失眠应优先排查睡眠习惯：固定作息、睡前远离屏幕、避免咖啡因。'],
+                points: ['睡前30-60分钟服小剂量（1-3mg）', '短期使用，不超过2-4周', '调节作息、改善睡眠环境是根本'],
+                warn: '孕妇、哺乳期、自身免疫疾病患者慎用；慢性失眠请就医明确原因。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '叶酸：备孕夫妇都要补，普通人看饮食', date: '每日新增', read: '3 分钟',
+                summary: '备孕女性应从孕前3个月起每天补充0.4mg叶酸以预防神经管缺陷；普通人群通过深绿叶菜、豆类即可获取。',
+                body: ['神经管在孕早期闭合，等确认怀孕再补往往已错过关键窗口。',
+                    '深绿色蔬菜（菠菜、西兰花）、豆类、动物肝脏富含天然叶酸。',
+                    '长期大量饮酒、部分慢性病用药者叶酸需求可能增加。'],
+                points: ['备孕女性：孕前3个月起每天0.4mg', '普通人：每天半斤深色蔬菜', '烹调少煮久，叶酸怕长时间高温'],
+                warn: '有神经管缺陷生育史者需更高剂量叶酸，必须在医生指导下使用。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '辅酶Q10是"心脏神药"吗？', date: '每日新增', read: '4 分钟',
+                summary: '辅酶Q10参与细胞能量代谢，作为辅助治疗在部分心脏疾病中有应用，但普通人自行服用预防心脏病的证据不足。',
+                body: ['人体可自行合成辅酶Q10，随年龄增长合成能力下降。',
+                    '他汀类药物可能轻度降低体内辅酶Q10水平，是否需补充存在争议。',
+                    '健康人群均衡饮食即可，无证据支持"吃了心脏更年轻"。'],
+                points: ['先明确需求，勿跟风购买', '若服用，选正规品牌并看含量', '心脏不适首选就医，而非自行进补'],
+                warn: '辅酶Q10可能影响华法林抗凝效果，服药者使用前必须咨询医生。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '护肝片、保肝茶：肝脏不需要"排毒"', date: '每日新增', read: '4 分钟',
+                summary: '肝脏本身有强大的解毒代谢能力，不需要额外"排毒"；很多标榜护肝的产品反而增加肝脏代谢负担。',
+                body: ['酒精、高脂饮食、药物滥用才是伤肝主因，护肝的关键是减负而非进补。',
+                    '部分"护肝"产品成分不明，甚至检出伤肝成分，警惕三无产品。',
+                    '部分中草药（如未经炮制的何首乌）有明确肝损伤风险。'],
+                points: ['不饮酒或少饮酒，控制体重', '不自行服用成分不明的产品', '肝功能异常请就医查明原因'],
+                warn: '出现乏力、食欲差、尿色加深、皮肤发黄需尽快就医排查肝脏问题。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '葡萄籽、花青素：抗氧化不是越多越好', date: '每日新增', read: '3 分钟',
+                summary: '花青素等抗氧化成分在深色蔬果中天然存在，食补安全有效；高剂量补充剂的获益证据有限，还可能干扰治疗。',
+                body: ['蓝莓、桑葚、紫薯、紫甘蓝、黑枸杞都是花青素的天然来源。',
+                    '抗氧化不等于越多越好：体内氧化还原需要平衡，大剂量补充剂可能干扰化疗等治疗。',
+                    '深色蔬果同时提供纤维和多种植物化学物，比单一成分补充剂更全面。'],
+                points: ['每天一小把深色浆果', '新鲜蔬果优于胶囊', '接受治疗期间慎用高剂量补充剂'],
+                warn: '肿瘤治疗期间服用任何抗氧化补充剂前，必须先与主治医生沟通。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '胶原蛋白口服液能"喝出"好皮肤吗？', date: '每日新增', read: '4 分钟',
+                summary: '口服胶原蛋白会被消化分解为氨基酸，能否定向补充到皮肤缺乏强力证据；皮肤状态更多取决于防晒、睡眠和均衡营养。',
+                body: ['胶原蛋白是蛋白质，口服后和其他蛋白质一样被分解成氨基酸吸收。',
+                    '部分小样本研究显示胶原蛋白肽或对皮肤弹性有轻微改善，证据等级不高。',
+                    '皮肤合成胶原需要原料：优质蛋白+维生素C（柑橘、猕猴桃、彩椒）。'],
+                points: ['把钱花在防晒和优质蛋白上更划算', '想尝试选小分子肽类，看临床研究', '猪蹄鱼皮≠定向补胶原，还附赠大量脂肪'],
+                warn: '对鱼、蛋类过敏者注意胶原蛋白原料来源；效果宣传过度的产品需警惕。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '阿胶、燕窝、冬虫夏草：名贵补品的真相', date: '每日新增', read: '5 分钟',
+                summary: '阿胶主要成分是胶原蛋白，燕窝主要是蛋白质和唾液酸，冬虫夏草缺乏高质量证据支持其"神效"——高价不等于高效。',
+                body: ['阿胶由驴皮熬制，营养上接近普通胶原蛋白，贫血患者应优先查明原因规范治疗。',
+                    '燕窝蛋白并不优于鸡蛋，唾液酸人体可自行合成。',
+                    '冬虫夏草曾因重金属超标被通报，"抗癌增强免疫"的宣称缺乏可靠证据。'],
+                points: ['理性看待名贵补品，量力而行', '明确医疗问题先就医，不靠补品解决', '均衡饮食的性价比远高于任何补品'],
+                warn: '网购名贵补品警惕假冒伪劣；正在服药者进补前咨询医生，避免相互作用。'
+            },
+            {
+                cat: '保健品', catClass: 'c-supp', title: '什么时候该查维生素？别再盲目补', date: '每日新增', read: '4 分钟',
+                summary: '维生素缺乏有迹可循：长期偏食、素食、胃肠道吸收不良、特定用药人群可查血明确；健康人均衡饮食无需常规补充。',
+                body: ['严格素食者易缺维生素B12，需重点关注。',
+                    '长期服用二甲双胍可能影响B12吸收，长期服质子泵抑制剂影响B12和镁。',
+                    '复合维生素适合饮食不规律人群作为"保险"，不能替代真实食物。'],
+                points: ['特殊人群（素食/慢病用药）定期评估', '选复合维生素看剂量，勿叠加同类产品', '出现乏力、口腔溃疡先查饮食再查血'],
+                warn: '脂溶性维生素（A、D、E、K）过量会蓄积中毒，不可自行加大剂量。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '体检报告上的"结节"到底要不要紧？', date: '每日新增', read: '5 分钟',
+                summary: '甲状腺结节、肺结节检出率随检查技术进步大增，绝大多数为良性，关键是看大小、形态和随访变化，由医生评估。',
+                body: ['结节是影像学描述，不是疾病诊断，多数终身无害。',
+                    '医生依据大小、边界、形态、血流、钙化等特征评估风险，决定复查间隔。',
+                    '随访中无变化的结节通常无需处理，变化明显的才考虑进一步检查。'],
+                points: ['别自行"百度"恐慌，带报告问医生', '按医嘱定期复查，保存好历次报告', '复查间隔由医生根据风险分层决定'],
+                warn: '出现快速增大、声音嘶哑、吞咽困难、咳嗽咯血等症状及时就医。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '幽门螺杆菌阳性,一定要根除吗?', date: '每日新增', read: '4 分钟',
+                summary: '幽门螺杆菌是明确致癌物，我国感染率约40-60%。规范根除治疗可降低胃癌风险，是否治疗及方案由医生决定。',
+                body: ['幽门螺杆菌与慢性胃炎、消化性溃疡、胃癌风险相关。',
+                    '规范四联疗法根除成功率可达85-95%，但需足疗程、规律服药。',
+                    '治疗完成4周后复查呼气试验确认是否根除。'],
+                points: ['呼气试验最常用，检测前遵医嘱停药', '家人分餐、使用公筷减少传播', '根除失败不要慌，医生会调整方案'],
+                warn: '出现黑便、呕血、不明原因消瘦、吞咽困难等报警症状立即就医。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '血脂报告怎么看?记住四个数', date: '每日新增', read: '4 分钟',
+                summary: '血脂主要看四项:总胆固醇、甘油三酯、低密度脂蛋白(LDL-C)、高密度脂蛋白(HDL-C)。其中LDL-C是管理重点。',
+                body: ['LDL-C俗称"坏胆固醇",是动脉粥样硬化的主要危险因素,目标值因人而异。',
+                    '甘油三酯受饮食影响大,采血前一天清淡饮食、避免饮酒更准确。',
+                    'HDL-C俗称"好胆固醇",偏低也是风险信号。'],
+                points: ['报告单箭头≠一定有问题,找医生解读', '采血前保持日常饮食,不要刻意"突击"', '控制LDL-C:限饱和脂肪+规律运动'],
+                warn: '已确诊心脑血管疾病者LDL-C目标更严格,必须遵医嘱用药,勿自行停药。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '尿酸高了就是痛风吗?', date: '每日新增', read: '4 分钟',
+                summary: '高尿酸血症≠痛风,但血尿酸长期升高是痛风和肾损伤的危险因素。无症状高尿酸是否用药,由医生评估决定。',
+                body: ['痛风是尿酸盐结晶沉积引起的关节炎,约1/3高尿酸血症患者会发生。',
+                    '尿酸水平受饮食影响,但80%的尿酸来自体内代谢,单靠忌口效果有限。',
+                    '啤酒、海鲜、内脏、浓肉汤、果糖饮料是明确升尿酸食物。'],
+                points: ['多饮水,每天2000ml以上促排泄', '控制体重,减重本身可降尿酸', '别自行吃"痛风药",需医生评估'],
+                warn: '关节红肿热痛急性发作、血尿或腰痛伴发热需及时就医。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '打呼噜就是睡得香?警惕睡眠呼吸暂停', date: '每日新增', read: '5 分钟',
+                summary: '响亮、不规律打鼾伴呼吸停顿,可能是阻塞性睡眠呼吸暂停,与高血压、心律失常、日间嗜睡相关,可治可防。',
+                body: ['呼吸暂停时血氧反复下降,心脏和大脑长期处于缺氧应激状态。',
+                    '典型表现:鼾声中断后突然大声喘气、晨起口干头痛、白天不可抑制地犯困。',
+                    '减重、侧卧睡眠、戒烟酒是基础干预,中重度需专科评估。'],
+                points: ['让家人观察呼吸是否停顿,录下来给医生看', '超重者减重5-10%可显著改善', '白天嗜睡影响驾驶安全,先查再开车'],
+                warn: '已确诊者出现胸痛、夜间憋醒加重需尽快复诊;驾驶前请评估嗜睡程度。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '长期吃止痛药,伤胃更伤肾', date: '每日新增', read: '4 分钟',
+                summary: '非甾体抗炎药(布洛芬、双氯芬酸等)长期或大剂量使用可能损伤胃黏膜和肾脏,务必按说明书短期小剂量使用。',
+                body: ['止痛药通过抑制前列腺素发挥作用,同时也削弱了胃黏膜保护。',
+                    '老年人、脱水状态、合并用其他肾毒性药物时肾损伤风险上升。',
+                    '慢性疼痛应就医找病因,而不是无限期靠止痛药维持。'],
+                points: ['严格按说明书剂量,不超过3-5天', '餐后服用减轻胃部刺激', '避免同时使用两种止痛药'],
+                warn: '出现黑便、呕血、尿量明显减少、浮肿,立即停药就医。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '抗生素和消炎药,90%的人分不清', date: '每日新增', read: '4 分钟',
+                summary: '抗生素(如阿莫西林、头孢)只杀细菌,对病毒无效;布洛芬等"消炎药"其实不消炎菌。感冒多数是病毒,别乱吃抗生素。',
+                body: ['普通感冒90%以上由病毒引起,抗生素无效,滥用反而催生耐药菌。',
+                    '"消炎药"通常指解热镇痛药,和抗生素是两个概念。',
+                    '抗生素必须足疗程服用,症状好转就停药容易造成耐药。'],
+                points: ['看药名:XX西林、头孢XX、XX霉素、XX沙星是抗生素', '感冒先休息补水,不自行吃抗生素', '抗生素按医嘱吃完整个疗程'],
+                warn: '高热超过3天、咳黄绿色脓痰、呼吸困难提示可能合并细菌感染,需就医评估。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '咳嗽老不好,先别急着止咳', date: '每日新增', read: '4 分钟',
+                summary: '咳嗽是保护性反射,帮助清除异物和分泌物。持续超3周的慢性咳嗽,重点是找病因而非强行镇咳。',
+                body: ['感冒后咳嗽可持续2-3周,多因气道高反应,通常逐渐自愈。',
+                    '慢性咳嗽常见原因:鼻后滴漏、咳嗽变异性哮喘、胃食管反流、药物。',
+                    '强力镇咳药可能掩盖病情,痰多时反而影响排痰。'],
+                points: ['多饮温水、蜂蜜水(1岁以上)缓解咳嗽', '观察规律:夜间重?进食后重?', '超3周不愈或伴胸痛咯血需就医'],
+                warn: '咳嗽伴呼吸困难、咯血、高热不退、声音嘶哑超2周,尽快就医排查。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '血糖仪测不准?这些细节你注意了吗', date: '每日新增', read: '4 分钟',
+                summary: '自测血糖误差常来自操作:手指未干、血量不足、试纸受潮过期、消毒残留。规范操作才能获得可靠读数。',
+                body: ['采血前用温水洗手并完全擦干,酒精消毒需待挥发后再采血。',
+                    '试纸开封后3个月内用完,注意防潮防高温。',
+                    '不同时间点血糖意义不同:空腹、餐后2小时、睡前,按医生要求记录。'],
+                points: ['第一滴血弃去,用第二滴更稳定', '定期与医院静脉血比对校准', '记录饮食和运动,数据才可解读'],
+                warn: '血糖仪显示HI(过高)或LO(过低)伴不适症状,需按医嘱处理或就医。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '头晕目眩,可能不是颈椎的锅', date: '每日新增', read: '5 分钟',
+                summary: '头晕病因复杂,涉及前庭、心血管、神经、贫血等多个系统,"颈椎病引起头晕"常被过度诊断,需医生系统排查。',
+                body: ['耳石症(良性阵发性位置性眩晕)是常见原因,特定头位变化诱发、几秒到1分钟缓解。',
+                    '体位性低血压、心律失常、贫血、焦虑都可能表现为头晕。',
+                    '不同病因伴随表现不同:耳鸣听力下降提示耳源性,胸闷心慌提示心血管。'],
+                points: ['记录发作时间、诱因、持续时长给医生', '起床、转头动作放慢', '反复头晕别自行按摩推拿,先明确病因'],
+                warn: '头晕伴口齿不清、肢体麻木无力、剧烈头痛、意识障碍,立即拨打120。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '伤口处理三步走:别用紫药水了', date: '每日新增', read: '3 分钟',
+                summary: '擦伤割伤的正确处理:流动清水冲洗→碘伏消毒→无菌敷料覆盖。紫药水、红药水、撒药粉都是过时做法。',
+                body: ['清水冲洗是清创核心,冲掉泥沙和细菌比任何"药水"都重要。',
+                    '碘伏温和有效,是家庭常备首选消毒剂;酒精刺激大,不宜用于破损皮肤。',
+                    '创可贴透气性差,适合小伤口短时使用,大伤口用无菌纱布。'],
+                points: ['冲洗至少2-3分钟', '碘伏由内向外消毒', '保持敷料干燥,定期更换'],
+                warn: '伤口深、出血不止、被生锈金属或动物咬伤、超6小时未处理,需尽快就医(可能需破伤风预防)。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '体检前夜还能喝水吃药吗?', date: '每日新增', read: '3 分钟',
+                summary: '常规体检要求空腹8-12小时,期间可少量白水;慢性病药物(降压药等)通常照常服用,具体以医嘱为准。',
+                body: ['空腹指禁食8-12小时,可饮少量白水(<200ml),茶、咖啡、牛奶不行。',
+                    '降压药、抗癫痫药等长期用药一般用少量水照常服用,勿自行停药。',
+                    '体检前3天保持日常饮食,避免暴饮暴食和大量饮酒,结果更真实。'],
+                points: ['前夜8点后禁食,可少量白水', '长期用药请提前与医生确认', '穿宽松衣物,携带历次报告便于对比'],
+                warn: '糖尿病患者空腹体检谨防低血糖,可携带糖块,抽血后尽快进食。'
+            },
+            {
+                cat: '医学科普', catClass: 'c-sci', title: '老年人跌倒,扶起之前先判断', date: '每日新增', read: '4 分钟',
+                summary: '老人跌倒后不要急于扶起:先观察意识、询问疼痛部位,疑似骨折或脊柱损伤时移动不当会加重伤害。',
+                body: ['跌倒后先原地判断:是否清醒?哪里疼?四肢能否活动?',
+                    '疑似髋部或脊柱损伤,保持原体位,垫衣物保暖,呼叫120。',
+                    '意识不清时保持呼吸道通畅,侧卧防误吸,立即呼救。'],
+                points: ['家中防跌倒:浴室防滑垫、夜灯、扶手', '加强下肢力量和平衡训练', '定期检查视力和药物副作用'],
+                warn: '跌倒后头部着地,即使当时清醒,24小时内出现头痛呕吐嗜睡需急诊检查。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '每天走多少步最合适?别迷信一万步', date: '每日新增', read: '3 分钟',
+                summary: '对多数成年人,每天6000-8000步的中等强度步行已能获得健康收益;步数之外,步速和连续性同样重要。',
+                body: ['研究表明健康收益随步数增加,但在6000-10000步后趋于平台。',
+                    '连续快走10分钟以上、微微出汗的强度更有效。',
+                    '膝关节不适者不必硬凑步数,可选游泳、骑车等低冲击运动。'],
+                points: ['目标:6000-8000步+每周2次力量训练', '把步行拆成早晚两段也有效', '鞋要合脚缓震,别穿拖鞋暴走'],
+                warn: '运动中出现胸闷、异常气喘、关节疼痛加重,停止运动并及时就医。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '午睡20分钟,下午效率翻倍', date: '每日新增', read: '3 分钟',
+                summary: '20分钟左右的短午睡能恢复精力、改善情绪;超过45分钟易进入深睡眠,醒来反而昏沉。',
+                body: ['午睡时长与效果呈"U型":太短没效果,太长醒后迷糊。',
+                    '下午1-3点是人体昼夜节律的自然低谷,适合小憩。',
+                    '趴桌睡压迫手臂和眼睛,可用颈枕靠椅背闭目养神。'],
+                points: ['设20-30分钟闹钟,别贪睡', '睡前远离咖啡因,午睡本身更香', '睡不着就闭眼休息10分钟,同样有效'],
+                warn: '夜间严重失眠者建议控制午睡时长,必要时咨询医生调整睡眠节律。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '久坐是"新吸烟":每小时起来动2分钟', date: '每日新增', read: '4 分钟',
+                summary: '每天久坐超8小时与心血管病、糖尿病、腰背痛风险相关。打断久坐比下班后突击运动更关键。',
+                body: ['久坐时腿部肌肉长期静止,脂蛋白脂肪酶活性下降,影响血脂血糖代谢。',
+                    '每坐30-60分钟起身活动2-3分钟,就能显著改善代谢指标。',
+                    '站立办公并非万能,动态活动(走动、拉伸)优于单纯站立。'],
+                points: ['设番茄钟,每小时起身接水、伸展', '接电话时走动,少用电梯', '下班后30分钟中高强度运动补回来'],
+                warn: '久坐后单侧腿肿痛需警惕血栓,及时就医;腰背痛持续不缓解也应就诊。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '手机刷到凌晨?给睡眠一个缓冲期', date: '每日新增', read: '4 分钟',
+                summary: '屏幕蓝光抑制褪黑素分泌,延迟入睡;睡前一小时放下手机,做低刺激活动,能明显改善入睡速度。',
+                body: ['蓝光通过视网膜影响生物钟,把"睡意信号"往后推。',
+                    '睡前刷短视频的即时反馈让大脑兴奋,形成"越刷越清醒"的循环。',
+                    '把手机放客厅充电,用实体闹钟,是最有效的物理隔离。'],
+                points: ['睡前一小时:调暗灯光,告别屏幕', '固定起床时间,周末别睡懒觉超1小时', '卧室只用来睡觉,建立"床=睡觉"联结'],
+                warn: '持续失眠超3个月、白天功能明显受损,建议到睡眠专科就诊。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '运动前热身,5分钟就够', date: '每日新增', read: '3 分钟',
+                summary: '热身提升肌肉温度和关节灵活性,降低拉伤风险:动态拉伸为主,针对即将进行的运动做动作预演。',
+                body: ['静态拉伸更适合运动后;运动前做动态动作(摆腿、转肩、慢跑)。',
+                    '热身强度循序渐进,微微出汗即可,别把力气花完。',
+                    '气温低时热身时间适当延长,尤其晨练。'],
+                points: ['5-10分钟:慢跑/开合跳+关节活动', '重点活动肩、髋、膝、踝', '运动后静态拉伸放松10分钟'],
+                warn: '运动中突发剧烈疼痛、关节"卡住"、无法承重,立即停止并就医。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '眼睛干涩疲劳?试试20-20-20法则', date: '每日新增', read: '3 分钟',
+                summary: '每用眼20分钟,看20英尺(约6米)外20秒——简单法则有效缓解视疲劳,配合眨眼和人工泪液效果更好。',
+                body: ['盯着屏幕时眨眼频率降至正常的一半,泪膜蒸发加快导致干涩。',
+                    '屏幕略低于视线、距离50-70cm、字体调大,减少眼部负担。',
+                    '环境干燥时用加湿器;热敷眼周促进睑板腺分泌。'],
+                points: ['20-20-20:定时远眺', '有意识多眨眼,每小时闭目1分钟', '干涩明显选不含防腐剂的人工泪液'],
+                warn: '突发视力下降、眼痛、畏光、看灯有彩虹圈,需尽快眼科就诊。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '情绪不好,先照顾身体的四个需求', date: '每日新增', read: '4 分钟',
+                summary: '情绪和生理状态互相影响:睡眠不足、饥饿、缺水、久坐都会放大负面情绪。先检查这四个"基础盘"。',
+                body: ['睡眠剥夺会让大脑情绪中枢反应过度,小事也容易引爆。',
+                    '低血糖状态让人易怒,规律三餐、备点坚果水果。',
+                    '运动20分钟就能提升多巴胺和内啡肽,是天然的"情绪调节剂"。'],
+                points: ['HALT自查:饿了吗?生气吗?孤独吗?累吗?', '每天晒太阳10-15分钟', '写下来:把担忧具象化能降低焦虑'],
+                warn: '持续2周以上情绪低落、兴趣减退、睡眠食欲明显改变,建议寻求心理或精神科专业帮助。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '冰箱不是保险箱:食物储存时间表', date: '每日新增', read: '4 分钟',
+                summary: '冷藏只能延缓细菌繁殖:剩菜24小时内吃完,生肉冷藏不超过2天,鸡蛋看保质期。定期清理冰箱防"冰箱味"。',
+                body: ['冰箱冷藏温度应≤4℃,冷冻≤-18℃,定期用温度计检查。',
+                    '生熟分开:熟食放上层,生肉密封放下层,防交叉污染。',
+                    '解冻用冷藏室或微波炉,不要在室温长时间化冻。'],
+                points: ['剩菜贴日期标签,超24小时果断处理', '每月清理一次冰箱,擦拭消毒', '食物"闻起来没坏"不等于安全'],
+                warn: '进食后多人同时出现呕吐腹泻,怀疑食物中毒,保留食物样本并就医。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '洗澡水温别太高:冬季护肤第一步', date: '每日新增', read: '3 分钟',
+                summary: '过热的水和长时间淋浴破坏皮肤屏障,是冬季皮肤瘙痒的常见诱因;温水快洗+及时保湿更护肤。',
+                body: ['水温38-40℃为宜,洗澡时间控制在10分钟内。',
+                    '沐浴后3分钟内涂抹保湿乳,锁水效果最好。',
+                    '肥皂碱性大,选温和沐浴露,重点清洗腋下、腹股沟即可。'],
+                points: ['温水快洗,别"烫"皮肤', '浴后趁湿润立即涂身体乳', '贴身穿纯棉,少用刺激性洗衣液'],
+                warn: '皮肤瘙痒伴黄疸、皮疹扩散、夜间加重影响睡眠,需就医排查。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '牙线、冲牙器、漱口水,哪个最值得买?', date: '每日新增', read: '4 分钟',
+                summary: '牙刷只能清洁约60%牙面,牙缝清洁首选牙线;冲牙器适合牙周维护人群,漱口水是辅助,不能替代刷牙。',
+                body: ['牙缝里堆积的牙菌斑是龋齿和牙周炎的温床,刷牙刷不到。',
+                    '牙线正确使用:贴着牙面"C"形刮蹭,每天至少一次。',
+                    '含酒精漱口水长期使用可能刺激口腔黏膜,选不含酒精配方。'],
+                points: ['每天睡前用一次牙线', '每半年到一年洗牙一次', '牙龈出血不是"上火",是炎症信号'],
+                warn: '牙齿松动、牙龈反复肿痛流脓、口腔溃疡超2周不愈合,尽快就诊。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '血压自测:家庭监测的"三个固定"', date: '每日新增', read: '4 分钟',
+                summary: '家庭自测血压建议做到固定时间、固定体位、固定血压计,取多次平均值,记录给医生参考更有价值。',
+                body: ['测量前静坐5分钟,不吸烟不喝咖啡,排空膀胱。',
+                    '袖带与心脏同高,绑在上臂,松紧以能塞进一指为宜。',
+                    '早晚各测2次,间隔1分钟,取平均值;连续记录7天交给医生。'],
+                points: ['固定时间:晨起服药前+睡前', '固定体位:坐姿,背靠椅背', '上臂式血压计比腕式更准'],
+                warn: '家庭自测血压只是参考,不能替代诊室测量;读数异常时请医生解读,勿自行调药。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '老年人肌少症:存钱不如存肌肉', date: '每日新增', read: '4 分钟',
+                summary: '30岁后肌肉量每10年流失3-8%,老年肌少症增加跌倒和失能风险。蛋白质+抗阻训练是两大抓手。',
+                body: ['老年人每日蛋白质需求反而更高,建议每餐25-30g优质蛋白。',
+                    '抗阻训练(弹力带、靠墙深蹲、举小哑铃)每周2-3次,安全有效。',
+                    '判断信号:步速变慢、起身困难、握力下降、无故消瘦。'],
+                points: ['每餐一掌大小的优质蛋白', '每周2-3次抗阻训练,从低强度开始', '称体重:半年内无故下降5%要警惕'],
+                warn: '步速明显变慢、反复跌倒、爬楼困难,建议就医评估肌少症和营养状态。'
+            },
+            {
+                cat: '健康生活', catClass: 'c-life', title: '体检套餐怎么选?别只买贵的', date: '每日新增', read: '4 分钟',
+                summary: '体检项目应按年龄、性别、家族史、生活习惯"定制",基础项目+针对性加项比盲目选昂贵套餐更合理。',
+                body: ['基础项目:身高体重血压、血常规、尿常规、肝肾功能、血糖血脂、心电图、腹部B超。',
+                    '40岁以上或有家族史:加查胃肠镜、低剂量胸部CT(按医生建议)。',
+                    '体检前告诉医生你的不适和用药史,检查结果更有针对性。'],
+                points: ['保存历年报告,纵向对比趋势', '异常结果别恐慌,先找医生解读', '体检不能替代看病,有症状随时就医'],
+                warn: '肿瘤标志物升高不等于患癌,需结合影像和医生评估,勿自行恐慌。'
+            },
         ];
         const NEWS_KEY = 'mediai-news-day';   // 记录上次"新增"是哪一天
         function pickDailyNews() {
@@ -3481,10 +3984,7 @@
       </div>`;
                 return;
             }
-            el.innerHTML = list.map((n, i) => {
-                const realIdx = newsPool.indexOf(n);
-                const isNew = dailyIds.includes(realIdx);
-                return `<div class="news-card" role="button" tabindex="0" onclick="openNews=${realIdx};renderNews()">
+            const cardHtml = (realIdx, isNew, n) => `<div class="news-card" role="button" tabindex="0" onclick="openNews=${realIdx};renderNews()">
       <div class="news-cover-wrap">
         <img class="news-cover" data-idx="${realIdx}" data-step="0" loading="lazy" alt="科普资讯配图"
              src="${newsCoverSrc(realIdx, 0)}" onerror="newsCoverFail(this)">
@@ -3499,7 +3999,22 @@
       <div class="news-summary">${n.summary}</div>
       <div class="news-meta"><span>📖 点击阅读全文</span><span>👍 有帮助</span><span>🔖 收藏</span></div>
     </div>`;
-            }).join('');
+            if (newsType === 'all') {
+                // 每日不同：当天新增置顶分组展示，其余归入往期内容
+                const dailyItems = dailyIds.map(i => newsPool[i]);
+                const restItems = newsPool.filter((_, i) => !dailyIds.includes(i));
+                el.innerHTML =
+                    `<h4 class="news-group-title">🆕 ${newBadge} · ${dStr}（${dailyItems.length} 篇）</h4>` +
+                    dailyItems.map(n => cardHtml(newsPool.indexOf(n), true, n)).join('') +
+                    `<h4 class="news-group-title">📚 往期内容（共 ${restItems.length} 篇 · 可用「往日资讯日历」回看近 3 个月）</h4>` +
+                    restItems.map(n => cardHtml(newsPool.indexOf(n), false, n)).join('');
+            } else {
+                el.innerHTML = list.map((n, i) => {
+                    const realIdx = newsPool.indexOf(n);
+                    const isNew = dailyIds.includes(realIdx);
+                    return cardHtml(realIdx, isNew, n);
+                }).join('');
+            }
         }
         function filterNews(type, btn) {
             newsType = type;
@@ -3511,7 +4026,7 @@
 
         // ─── 动态开场页 ───────────────────────────────────────────
         const SP_KEY = 'mediai-splash-seen';
-        const spWords = ['正在准备你的健康空间', '加载医疗知识库', '整理今日科普资讯', '校准健康评分模型', '✨ 一切就绪，我们开始吧'];
+        const spWords = ['加载医疗知识库', '同步健康档案模块', '初始化智能导诊', '准备完毕'];
         let spIdx = 0;
         function spTypeLoop() {
             const el = document.getElementById('spTypewriter');
@@ -3584,32 +4099,61 @@
         let recordsByUser = {};        // {username:[...]}
 
         // 给单次录入打分 + 建议（抽出复用）
+        // 说明：所有文案只描述"读数与参考范围的关系"，不做任何诊断性表述
         function assessHealth(d) {
             let score = 100, advice = [];
             if (d.bmi) {
-                if (d.bmi < 18.5) { score -= 10; advice.push('BMI 偏低，建议增加优质蛋白质和碳水化合物摄入'); }
-                else if (d.bmi < 24) { advice.push('BMI 正常，请继续保持健康的饮食和运动习惯！'); }
-                else if (d.bmi < 28) { score -= 10; advice.push('体重偏重，建议每周有氧运动150分钟，控制精制碳水摄入'); }
-                else { score -= 20; advice.push('体重明显超标，建议就医制定专业的减重方案'); }
+                if (d.bmi < 18.5) { score -= 10; advice.push('体重指数低于参考范围（' + d.bmi + '）。可适当增加优质蛋白质和主食摄入；若持续偏低或伴乏力、消瘦，建议咨询医生。'); }
+                else if (d.bmi < 24) { advice.push('体重指数在参考范围内（' + d.bmi + '），请继续保持健康的饮食和运动习惯！'); }
+                else if (d.bmi < 28) { score -= 10; advice.push('体重指数高于参考范围（' + d.bmi + '）。可尝试每周有氧运动 150 分钟、减少精制碳水；具体减重方案建议咨询医生。'); }
+                else { score -= 20; advice.push('体重指数明显高于参考范围（' + d.bmi + '）。建议咨询医生，了解适合你的体重管理方案。'); }
             }
             if (d.sbp && d.dbp) {
-                if (d.sbp >= 140 || d.dbp >= 90) { score -= 20; advice.push('血压偏高！建议低盐饮食（每日<5g盐），坚持服降压药，及时就医复查'); }
-                else if (d.sbp >= 130 || d.dbp >= 85) { score -= 8; advice.push('血压处于正常高值，需注意减少盐分摄入并加强运动'); }
-                else if (d.sbp < 90 || d.dbp < 60) { score -= 10; advice.push('血压偏低，注意补充水分和适当增加盐分，避免快速起身'); }
-                else advice.push('血压正常（' + d.sbp + '/' + d.dbp + ' mmHg）✅，请继续保持！');
+                if (d.sbp >= 140 || d.dbp >= 90) { score -= 20; advice.push('血压读数高于参考范围（' + d.sbp + '/' + d.dbp + ' mmHg）。日常注意低盐饮食（每日<5g盐）；建议咨询医生进一步了解，是否需要处理请以医生意见为准。'); }
+                else if (d.sbp >= 130 || d.dbp >= 85) { score -= 8; advice.push('血压读数处于参考范围的高值区间（' + d.sbp + '/' + d.dbp + ' mmHg）。注意减少盐分摄入并加强运动，定期复测观察。'); }
+                else if (d.sbp < 90 || d.dbp < 60) { score -= 10; advice.push('血压读数低于参考范围（' + d.sbp + '/' + d.dbp + ' mmHg）。注意补充水分、避免快速起身；若常有头晕乏力，建议咨询医生。'); }
+                else advice.push('血压读数在参考范围内（' + d.sbp + '/' + d.dbp + ' mmHg）✅，请继续保持！');
             }
             if (d.glucose) {
-                if (d.glucose > 7) { score -= 15; advice.push('空腹血糖偏高，建议控制精制糖和高GI食物摄入，尽快就医检查糖化血红蛋白'); }
-                else if (d.glucose > 6.1) { score -= 8; advice.push('血糖处于糖尿病前期范围（' + d.glucose + ' mmol/L），建议运动干预并3个月后复查'); }
-                else if (d.glucose < 3.9) { score -= 10; advice.push('血糖偏低，注意随身携带糖果，避免空腹剧烈运动'); }
-                else advice.push('血糖正常（' + d.glucose + ' mmol/L）✅');
+                if (d.glucose > 7) { score -= 15; advice.push('血糖读数高于参考范围（' + d.glucose + ' mmol/L）。建议减少精制糖摄入，并咨询医生了解后续检查方案。'); }
+                else if (d.glucose > 6.1) { score -= 8; advice.push('血糖读数高于常见参考值（' + d.glucose + ' mmol/L）。建议控制饮食、增加运动并定期复测；是否需进一步检查请咨询医生。'); }
+                else if (d.glucose < 3.9) { score -= 10; advice.push('血糖读数低于参考范围（' + d.glucose + ' mmol/L）。注意规律进食、随身携带糖果；若反复出现，建议咨询医生。'); }
+                else advice.push('血糖读数在参考范围内（' + d.glucose + ' mmol/L）✅');
             }
             if (d.hr) {
-                if (d.hr > 100) { score -= 10; advice.push('心率偏快（' + d.hr + ' 次/分），注意充分休息，减少咖啡因，必要时查心电图'); }
-                else if (d.hr < 50) { score -= 8; advice.push('心率较慢（' + d.hr + ' 次/分），若无运动员背景，建议心电图排查'); }
-                else advice.push('心率正常（' + d.hr + ' 次/分）✅');
+                if (d.hr > 100) { score -= 10; advice.push('心率读数高于参考范围（' + d.hr + ' 次/分）。注意充分休息、减少咖啡因；若静息状态下持续较快，建议咨询医生。'); }
+                else if (d.hr < 50) { score -= 8; advice.push('心率读数低于参考范围（' + d.hr + ' 次/分）。长期规律运动者可见较低心率；若无运动习惯，建议咨询医生了解。'); }
+                else advice.push('心率读数在参考范围内（' + d.hr + ' 次/分）✅');
             }
             return { score: Math.max(score, 0), advice };
+        }
+        // 异常指标清单（仅描述读数与参考范围的关系，不诊断）
+        function abnormalFlags(r) {
+            const flags = [];
+            if (r.bmi != null && (r.bmi < 18.5 || r.bmi >= 28)) flags.push({ icon: '⚖️', name: '体重指数', text: '体重指数 ' + r.bmi + '，超出参考范围（18.5–24）' });
+            if (r.sbp != null && (r.sbp >= 140 || r.dbp >= 90)) flags.push({ icon: '🩸', name: '血压', text: '血压读数 ' + r.sbp + '/' + r.dbp + ' mmHg，高于参考范围（<140/90）' });
+            else if (r.sbp != null && (r.sbp < 90 || r.dbp < 60)) flags.push({ icon: '🩸', name: '血压', text: '血压读数 ' + r.sbp + '/' + r.dbp + ' mmHg，低于参考范围（≥90/60）' });
+            if (r.glucose != null && (r.glucose > 7 || r.glucose < 3.9)) flags.push({ icon: '🍬', name: '血糖', text: '血糖读数 ' + r.glucose + ' mmol/L，超出参考范围（3.9–7.0）' });
+            if (r.hr != null && (r.hr > 100 || r.hr < 50)) flags.push({ icon: '💓', name: '心率', text: '心率读数 ' + r.hr + ' 次/分，超出参考范围（50–100）' });
+            return flags;
+        }
+        // 连续上升趋势检测：最近 3 次记录中任意指标连续上升
+        function risingTrends() {
+            const sorted = [...healthRecords].sort((a, b) => a.key.localeCompare(b.key));
+            if (sorted.length < 3) return [];
+            const out = [];
+            const check = (name, label, unit) => {
+                const vals = sorted.slice(-3).map(r => r[name]);
+                if (vals.every(v => v != null) && vals[0] < vals[1] && vals[1] < vals[2]) {
+                    out.push({ icon: '📈', name: label, text: label + '读数连续 3 次上升（' + vals[0] + ' → ' + vals[1] + ' → ' + vals[2] + ' ' + unit + '）' });
+                }
+            };
+            check('sbp', '收缩压', 'mmHg');
+            check('dbp', '舒张压', 'mmHg');
+            check('glucose', '血糖', 'mmol/L');
+            check('bmi', '体重指数', '');
+            check('weight', '体重', 'kg');
+            return out;
         }
         function loadRecordsFor(username) {
             if (!recordsByUser[username]) {
@@ -3704,6 +4248,7 @@
             document.getElementById('bmiResult').style.display = 'none';
             drawScore(healthScore);
             drawBpChart();
+            renderDocAlerts();
         }
         function restoreHealthSummary() {
             const latest = [...healthRecords].sort((a, b) => b.key.localeCompare(a.key))[0];
@@ -3740,7 +4285,7 @@
                 box.innerHTML = `<div class="hist-empty">
       📭 还没有历史记录<br><br>
       填写上方表单并保存，即可生成你的第一份健康档案。<br>
-      <strong>每份档案一经生成即自动封存，不可修改、不可删除</strong>——这就是它值得信赖的原因。
+      <strong>每份档案一经生成即自动封存，单条不可修改、不可删除</strong>——这就是它值得信赖的原因（如需清空全部数据，可用右上角「一键删除全部数据」）。
     </div>`;
                 return;
             }
@@ -3749,12 +4294,14 @@
                 const [bcls, blabel] = badgeFor(r);
                 const open = idx === 0 ? ' open' : '';
                 const locked = idx > 0;
+                const flags = abnormalFlags(r);
                 return `<div class="hist-card${open}">
       <div class="hist-head" role="button" tabindex="0" aria-expanded="${idx === 0}" onclick="toggleHist(this)">
         <span style="font-size:20px">${idx === 0 ? '📄' : '📁'}</span>
         <span class="hist-date">${escapeHtml(r.date)}${r.key === todayKey() ? ' <span style="font-size:11px;color:var(--primary)">· 今日</span>' : ''}</span>
         <span class="hist-badge ${locked ? 'locked' : 'open'}">${locked ? '🔒 已封存' : '✅ 有效'}</span>
         <span class="hist-badge ${bcls}">${r.score} 分 · ${blabel}</span>
+        ${flags.length ? `<span class="hist-badge danger" role="button" tabindex="0" style="cursor:pointer" onclick="event.stopPropagation();openDocAdvice(${idx})" title="点击查看读数提示（非诊断）">🩺 建议咨询医生</span>` : ''}
         <span class="hist-arrow">▶</span>
       </div>
       <div class="hist-body">
@@ -3768,7 +4315,7 @@
         <div class="hist-trend">
           ${trendBlock(r, sorted, idx)}
         </div>
-        ${locked ? `<div class="hist-lock" style="margin:14px 0 0"><span>🔒</span><span>此档案于 ${escapeHtml(r.savedAt)} 生成并<strong>自动封存</strong>。系统不提供修改或删除入口，如需更正请等待次日重新归档，形成可追溯的连续记录。</span></div>` : ''}
+        ${locked ? `<div class="hist-lock" style="margin:14px 0 0"><span>🔒</span><span>此档案于 ${escapeHtml(r.savedAt)} 生成并<strong>自动封存</strong>。单条记录不提供修改或删除入口，如需更正请等待次日重新归档，形成可追溯的连续记录；如需清空全部数据，可用右上角「🗑️ 一键删除全部数据」。</span></div>` : ''}
       </div>
     </div>`;
             }).join('');
@@ -3797,9 +4344,309 @@
             head.setAttribute('aria-expanded', String(card.classList.contains('open')));
         }
 
+        // ─── 健康档案 · 异常提示（建议咨询医生，非诊断性表述） ────
+        function renderDocAlerts() {
+            const box = document.getElementById('docAlertBox');
+            if (!box) return;
+            box.replaceChildren();
+            const latest = [...healthRecords].sort((a, b) => b.key.localeCompare(a.key))[0];
+            const flags = latest ? abnormalFlags(latest) : [];
+            const trends = risingTrends();
+            if (flags.length) {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'doc-alert';
+                b.textContent = '⚠️ 有 ' + flags.length + ' 项指标超出参考范围，建议咨询医生';
+                b.onclick = () => openDocAdvice('latest');
+                box.append(b);
+            }
+            trends.forEach(t => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'doc-alert trend';
+                b.textContent = t.icon + ' ' + t.name + '读数连续上升，建议咨询医生';
+                b.onclick = () => openDocAdvice('trend');
+                box.append(b);
+            });
+        }
+        function openDocAdvice(which) {
+            const body = document.getElementById('docModalBody');
+            if (!body) return;
+            let items = [];
+            if (which === 'trend') items = risingTrends();
+            else if (which === 'latest') {
+                const latest = [...healthRecords].sort((a, b) => b.key.localeCompare(a.key))[0];
+                items = latest ? abnormalFlags(latest) : [];
+            } else {
+                const sorted = [...healthRecords].sort((a, b) => b.key.localeCompare(a.key));
+                const r = sorted[which];
+                items = r ? abnormalFlags(r) : [];
+            }
+            if (!items.length) return;
+            body.innerHTML = `
+      <div style="font-size:12.5px;color:var(--text3);margin-bottom:10px">以下为读数提示，<strong>不构成任何诊断或治疗建议</strong>：</div>
+      ${items.map(it => `<div style="display:flex;gap:10px;padding:10px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;margin-bottom:8px">
+        <span style="font-size:18px">${it.icon}</span>
+        <div><div style="font-weight:700;font-size:13px;color:#b91c1c">${escapeHtml(it.name)}</div>
+        <div style="font-size:12.5px;color:var(--text2);margin-top:2px">${escapeHtml(it.text)}</div></div>
+      </div>`).join('')}
+      <p style="font-size:12px;color:var(--text3);margin-top:10px">📌 是否需要进一步检查或调整，请携带记录咨询医生。你也可以先到「AI 智能问诊」描述你的情况。</p>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-p" onclick="closeDocAdvice();requireAuth(()=>showSec('chat'))">💬 去 AI 问诊</button>
+        <button class="btn btn-g" onclick="closeDocAdvice()">关闭</button>
+      </div>`;
+            document.getElementById('docMask').classList.add('show');
+        }
+        function closeDocAdvice() { const m = document.getElementById('docMask'); if (m) m.classList.remove('show'); }
+
+        // ─── 健康档案 · 一键删除 / 导出 PDF ───────────────────────
+        function deleteAllHealthData() {
+            const n = healthRecords.length + bpHistory.length;
+            if (!n) { alert('当前没有可删除的健康数据'); return; }
+            if (!confirm('确定要删除全部健康数据吗？（' + healthRecords.length + ' 条记录 + ' + bpHistory.length + ' 条血压趋势）\n\n此操作不可恢复。如需留存，请先「导出为 PDF」或使用「扫码同步」备份。')) return;
+            if (!confirm('再次确认：删除后数据无法找回，确定继续吗？')) return;
+            const u = currentUser();
+            if (u) {
+                try { localStorage.removeItem(HREC_KEY + '_' + u); } catch (e) { }
+                try { localStorage.removeItem(BP_HISTORY_KEY + '_' + u); } catch (e) { }
+            }
+            try { localStorage.removeItem('mediai-bp'); } catch (e) { }
+            healthRecords = [];
+            bpHistory = [];
+            recordsByUser = {};
+            renderHealthSummary(null);
+            renderHistory();
+            alert('🗑️ 已删除全部健康数据。');
+        }
+        function exportHealthPdf() {
+            if (!healthRecords.length) { alert('暂无健康数据可导出，请先录入'); return; }
+            const sorted = [...healthRecords].sort((a, b) => b.key.localeCompare(a.key));
+            const latest = sorted[0];
+            const u = currentUser();
+            const bpImg = (() => { const c = document.getElementById('bpChart'); return c ? c.toDataURL('image/png') : null; })();
+            const scoreImg = (() => { const c = document.getElementById('scoreCanvas'); return c ? c.toDataURL('image/png') : null; })();
+            const flags = abnormalFlags(latest);
+            const trends = risingTrends();
+            const rows = sorted.map(r => `<tr>
+      <td>${escapeHtml(r.date)}</td><td>${r.bmi ?? '--'}</td><td>${r.sbp ?? '--'}/${r.dbp ?? '--'}</td>
+      <td>${r.glucose ?? '--'}</td><td>${r.hr ?? '--'}</td><td>${r.score} 分</td></tr>`).join('');
+            const html = `<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8">
+<title>MediAI 健康档案报告</title>
+<style>
+  body{font-family:"Microsoft YaHei",sans-serif;color:#1f2937;margin:32px;font-size:13px}
+  h1{font-size:22px;margin-bottom:4px} h2{font-size:15px;margin-top:24px;border-bottom:2px solid #f97316;padding-bottom:6px}
+  .meta{color:#6b7280;font-size:12px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{border:1px solid #d1d5db;padding:7px 10px;text-align:center}
+  th{background:#fff7ed;font-weight:700}
+  .alert{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;padding:10px 12px;border-radius:8px;margin:8px 0}
+  .ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;padding:10px 12px;border-radius:8px;margin:8px 0}
+  ul{margin:4px 0} li{line-height:1.8}
+  .disc{font-size:11px;color:#9ca3af;margin-top:24px;border-top:1px solid #e5e7eb;padding-top:10px}
+  img{max-width:100%}
+  @media print{body{margin:12px}}
+</style></head><body>
+<h1>❤️ MediAI 健康档案报告</h1>
+<div class="meta">账号：${escapeHtml(u || '游客')} · 导出时间：${new Date().toLocaleString('zh')} · 共 ${sorted.length} 条记录</div>
+<h2>📊 最新一次记录（${escapeHtml(latest.date)}）</h2>
+<p>综合评分：<strong>${latest.score} 分</strong> · BMI ${latest.bmi ?? '--'} · 血压 ${latest.sbp ?? '--'}/${latest.dbp ?? '--'} mmHg · 血糖 ${latest.glucose ?? '--'} mmol/L · 心率 ${latest.hr ?? '--'} 次/分</p>
+${flags.length ? '<div class="alert"><strong>⚠️ 读数提示（非诊断）：</strong><ul>' + flags.map(f => '<li>' + escapeHtml(f.text) + '</li>').join('') + '</ul>以上指标超出参考范围，建议咨询医生。</div>' : '<div class="ok">✅ 最新记录各项读数均在参考范围内。</div>'}
+${trends.length ? '<div class="alert"><strong>📈 趋势提示（非诊断）：</strong><ul>' + trends.map(t => '<li>' + escapeHtml(t.text) + '</li>').join('') + '</ul>建议咨询医生。</div>' : ''}
+${scoreImg ? '<h2>🟢 健康评分图</h2><img src="' + scoreImg + '" style="width:220px">' : ''}
+${bpImg ? '<h2>📈 血压趋势图</h2><img src="' + bpImg + '">' : ''}
+<h2>💡 个性化建议</h2><ul>${(latest.advice || []).map(a => '<li>' + escapeHtml(a) + '</li>').join('')}</ul>
+<h2>📚 全部历史记录</h2>
+<table><thead><tr><th>日期</th><th>BMI</th><th>血压 mmHg</th><th>血糖 mmol/L</th><th>心率 次/分</th><th>评分</th></tr></thead><tbody>${rows}</tbody></table>
+<div class="disc">⚠️ 本报告仅为个人健康数据记录，所有内容不构成医疗诊断或治疗建议。如有健康疑问请咨询专业医生。</div>
+</body></html>`;
+            const win = window.open('', '_blank');
+            if (!win) { alert('浏览器阻止了弹出窗口，请允许弹出窗口后重试'); return; }
+            win.document.write(html);
+            win.document.close();
+            win.focus();
+            setTimeout(() => { try { win.print(); } catch (e) { } }, 600);
+        }
+
+        // ─── 扫码同步（手机 ↔ 电脑，二维码传输健康档案） ──────────
+        let qrChunks = [];          // 生成的同步码分片
+        let qrChunkIdx = 0;
+        let qrStream = null;        // 摄像头媒体流
+        let qrScanning = false;
+        let qrRcvChunks = {};       // 收到的分片
+        let qrRcvTotal = 0;
+
+        function openQrSync() {
+            requireAuth(() => {
+                document.getElementById('qrMask').classList.add('show');
+                qrSwitchMode('gen');
+            });
+        }
+        function closeQrSync() {
+            const m = document.getElementById('qrMask');
+            if (m) m.classList.remove('show');
+            qrStopScan();
+        }
+        function qrSwitchMode(mode) {
+            document.getElementById('qrGenBox').style.display = mode === 'gen' ? 'block' : 'none';
+            document.getElementById('qrScanBox').style.display = mode === 'scan' ? 'block' : 'none';
+            const g = document.getElementById('qrGenTab'), s = document.getElementById('qrScanTab');
+            g.classList.toggle('btn-p', mode === 'gen'); g.classList.toggle('btn-g', mode !== 'gen');
+            s.classList.toggle('btn-p', mode === 'scan'); s.classList.toggle('btn-g', mode !== 'scan');
+            if (mode === 'gen') qrStopScan();
+        }
+        function qrBuildPayload() {
+            const sorted = [...healthRecords].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+            return JSON.stringify({ v: 1, records: sorted, bp: bpHistory, exportedAt: new Date().toISOString() });
+        }
+        function qrGenerate() {
+            if (!healthRecords.length && !bpHistory.length) { alert('当前账号还没有健康数据，请先到「健康档案」录入'); return; }
+            const payload = qrBuildPayload();
+            const chunkMax = 1500;
+            const n = Math.ceil(payload.length / chunkMax);
+            qrChunks = [];
+            for (let i = 0; i < n; i++) qrChunks.push('MXS|' + (i + 1) + '|' + n + '|' + payload.slice(i * chunkMax, (i + 1) * chunkMax));
+            qrChunkIdx = 0;
+            document.getElementById('qrCanvasWrap').style.display = 'block';
+            qrShowChunk(0);
+        }
+        function qrShowChunk(dir) {
+            qrChunkIdx = Math.min(qrChunks.length - 1, Math.max(0, qrChunkIdx + dir));
+            const box = document.getElementById('qrCanvasBox');
+            box.innerHTML = '';
+            const chunk = qrChunks[qrChunkIdx];
+            if (window.QRCode) {
+                try { new QRCode(box, { text: chunk, width: 240, height: 240, correctLevel: QRCode.CorrectLevel.M }); }
+                catch (e) { box.textContent = '二维码生成失败，请使用「复制同步码文本」方式'; }
+            } else {
+                box.innerHTML = `<div style="padding:14px;border:1px dashed var(--border);border-radius:10px;font-size:12px;word-break:break-all;color:var(--text2)">二维码组件未加载，请「复制同步码文本」后在对方设备「手动输入同步码」中粘贴导入。</div>`;
+            }
+            document.getElementById('qrChunkInfo').textContent = qrChunks.length > 1
+                ? '第 ' + (qrChunkIdx + 1) + ' / ' + qrChunks.length + ' 张（数据较大，请逐张扫描）'
+                : '共 1 张 · 含 ' + healthRecords.length + ' 条健康记录';
+            document.getElementById('qrChunkPrev').style.display = qrChunks.length > 1 ? 'inline-flex' : 'none';
+            document.getElementById('qrChunkNext').style.display = qrChunks.length > 1 ? 'inline-flex' : 'none';
+        }
+        function qrCopyCode() {
+            const t = qrChunks.join('\n');
+            const done = () => alert('已复制全部同步码文本（共 ' + qrChunks.length + ' 段）');
+            if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, () => prompt('请手动复制：', t) && done());
+            else { prompt('请手动复制：', t); done(); }
+        }
+        function qrStartScan() {
+            if (qrScanning) { qrStopScan(); return; }
+            if (!window.jsQR) { alert('扫码组件未能加载。请使用「手动输入同步码」方式导入。'); return; }
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('当前环境无法调用摄像头（需要 HTTPS 或 localhost）。请使用「手动输入同步码」方式。');
+                return;
+            }
+            const video = document.getElementById('qrVideo');
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }).then(stream => {
+                qrStream = stream;
+                video.srcObject = stream;
+                document.getElementById('qrVideoWrap').style.display = 'block';
+                document.getElementById('qrScanBtn').textContent = '⏹ 停止扫码';
+                qrScanning = true;
+                qrRcvChunks = {}; qrRcvTotal = 0;
+                qrSetScanTip('正在识别…');
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                const tick = () => {
+                    if (!qrScanning) return;
+                    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                        ctx.drawImage(video, 0, 0);
+                        try {
+                            const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                            const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
+                            if (code && code.data) qrHandleChunk(code.data);
+                        } catch (e) { }
+                    }
+                    requestAnimationFrame(tick);
+                };
+                requestAnimationFrame(tick);
+            }).catch(err => {
+                alert('无法打开摄像头：' + (err && err.message ? err.message : '请检查权限或改用「手动输入同步码」'));
+            });
+        }
+        function qrStopScan() {
+            qrScanning = false;
+            if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
+            const btn = document.getElementById('qrScanBtn');
+            if (btn) btn.textContent = '📷 启动摄像头扫码';
+            const wrap = document.getElementById('qrVideoWrap');
+            if (wrap) wrap.style.display = 'none';
+        }
+        function qrSetScanTip(msg) {
+            const el = document.getElementById('qrScanTip');
+            if (el) el.textContent = msg;
+        }
+        function qrHandleChunk(text) {
+            if (text.indexOf('MXS|') !== 0) { qrSetScanTip('识别到非同步码内容，请对准本应用的同步二维码'); return; }
+            const parts = text.split('|');
+            if (parts.length < 4) return;
+            const idx = +parts[1], total = +parts[2];
+            qrRcvChunks[idx] = parts.slice(3).join('|');
+            qrRcvTotal = total;
+            const got = Object.keys(qrRcvChunks).length;
+            if (got >= total) {
+                const payload = Array.from({ length: total }, (_, i) => qrRcvChunks[i + 1] || '').join('');
+                qrRcvChunks = {}; qrRcvTotal = 0;
+                qrImportPayload(payload);
+                qrStopScan();
+            } else {
+                qrSetScanTip('已识别第 ' + idx + ' / ' + total + ' 张，继续扫描下一张…');
+            }
+        }
+        function qrManualImport() {
+            const v = document.getElementById('qrManualInput').value.trim();
+            if (!v) { alert('请粘贴同步码文本（MXS 开头）'); return; }
+            const lines = v.split('\n').map(s => s.trim()).filter(s => s.startsWith('MXS|'));
+            if (!lines.length) { alert('未识别到有效的同步码（应以 MXS| 开头）'); return; }
+            const byIdx = {};
+            let total = 0;
+            lines.forEach(l => { const p = l.split('|'); if (p.length >= 4) { byIdx[+p[1]] = p.slice(3).join('|'); total = Math.max(total, +p[2]); } });
+            const got = Object.keys(byIdx).length;
+            if (total && got < total) { alert('同步码不完整：共 ' + total + ' 段，仅识别到 ' + got + ' 段。请完整复制全部段落。'); return; }
+            qrImportPayload(Array.from({ length: total || 1 }, (_, i) => byIdx[i + 1] || '').join(''));
+            document.getElementById('qrManualInput').value = '';
+        }
+        function qrImportPayload(json) {
+            let data;
+            try { data = JSON.parse(json); } catch (e) { alert('同步码数据解析失败，请确认复制完整'); return; }
+            if (!data || !Array.isArray(data.records)) { alert('同步码格式不正确'); return; }
+            // 去重合并：按 id 去重，updatedAt 新者胜
+            const map = new Map();
+            [...healthRecords, ...data.records].forEach(r => {
+                const old = map.get(r.id);
+                if (!old || (r.updatedAt || 0) > (old.updatedAt || 0)) map.set(r.id, r);
+            });
+            healthRecords = [...map.values()].sort((a, b) => a.key.localeCompare(b.key));
+            persistRecords();
+            if (Array.isArray(data.bp) && data.bp.length) {
+                const seen = new Set();
+                bpHistory = [...bpHistory, ...data.bp].filter(d => { const k = JSON.stringify(d); if (seen.has(k)) return false; seen.add(k); return true; }).slice(-30);
+                persistBpHistory();
+            }
+            restoreHealthSummary();
+            renderHistory();
+            alert('✅ 同步完成：已导入 ' + data.records.length + ' 条健康记录（去重合并，新数据优先）。');
+        }
+        function loadQrLibs() {
+            const libs = [
+                'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js',
+                'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js'
+            ];
+            libs.forEach(src => {
+                const s = document.createElement('script');
+                s.src = src;
+                s.async = true;
+                document.head.appendChild(s);
+            });
+        }
+
         // ─── 键盘与初始化 ─────────────────────────────────────────
         document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') { closeAuth(); closeNotif(); closeSync(); closeLocPicker(); const um = document.getElementById('userMenu'); if (um) um.classList.remove('show'); }
+            if (e.key === 'Escape') { closeAuth(); closeNotif(); closeSync(); closeLocPicker(); closeDocAdvice(); closeQrSync(); const um = document.getElementById('userMenu'); if (um) um.classList.remove('show'); }
             const control = e.target.closest('[role="button"], [role="tab"]');
             if (control && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); control.click(); }
         });
@@ -3812,6 +4659,7 @@
         });
         initSplash();
         initGuideLoc();
+        loadQrLibs();
         renderKb(kbData);
         loadChatHistory();
         const activeUser = currentUser();
