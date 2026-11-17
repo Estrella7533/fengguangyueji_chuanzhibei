@@ -280,13 +280,20 @@
         </div>
         <div class="nav-item" data-sec="health"><span class="nav-icon">❤️</span>健康档案</div>
         <div class="nav-item" data-sec="kb"><span class="nav-icon">📚</span>医疗知识库</div>
+        <div class="s-sect">AI 智能体</div>
+        <div class="nav-item" data-sec="nutri"><span class="nav-icon">🥗</span>AI 营养分析师<span
+                class="nav-badge">饮食</span></div>
+        <div class="nav-item" data-sec="mind"><span class="nav-icon">🧠</span>心理健康对话<span
+                class="nav-badge">暖心</span></div>
+        <div class="nav-item" data-sec="sport"><span class="nav-icon">🏃</span>智能运动指导师<span
+                class="nav-badge">运动</span></div>
         <div class="s-sect">工具</div>
         <div class="nav-item" data-sec="bmi"><span class="nav-icon">⚖️</span>BMI 计算器</div>
         <div class="nav-item" data-sec="guide"><span class="nav-icon">📍</span>慧医导诊</div>
         <div class="nav-item" data-sec="news"><span class="nav-icon">📰</span>科普资讯<span class="nav-badge"
                 id="newsBadge">每日更新</span></div>
         <div class="s-sect">数据</div>
-        <div class="nav-item" data-sec="qrsync"><span class="nav-icon">📲</span>扫码同步<span
+        <div class="nav-item" data-sec="qrsync"><span class="nav-icon">📲</span>设备同步<span
                 class="nav-badge">手机↔电脑</span></div>
         <div class="s-foot" id="userFoot">
             <div class="u-card" id="userCard" role="button" tabindex="0" title="账号操作"
@@ -409,7 +416,7 @@
                     <div class="chat-mode-bar" id="chatModeBar">
                         <span class="chat-mode-dot" id="chatModeDot">●</span>
                         <span class="chat-mode-text" id="chatModeText">智能问诊 · 在线</span>
-                        <span class="chat-mode-sub">描述症状，系统为您分析并给出建议</span>
+                        <span class="chat-mode-sub" id="chatModeSub">描述症状，系统为您分析并给出建议</span>
                     </div>
                     <div class="chat-body" id="chatBody">
                         <div class="msg ai">
@@ -420,15 +427,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="chat-hints" id="chatHints">
-                        <button class="hint-chip" type="button" onclick="sendHint(this)">头痛头晕</button>
-                        <button class="hint-chip" type="button" onclick="sendHint(this)">发烧咳嗽</button>
-                        <button class="hint-chip" type="button" onclick="sendHint(this)">胃痛恶心</button>
-                        <button class="hint-chip" type="button" onclick="sendHint(this)">心悸胸闷</button>
-                        <button class="hint-chip" type="button" onclick="sendHint(this)">失眠焦虑</button>
-                        <button class="hint-chip" type="button" onclick="sendHint(this)">腰背疼痛</button>
-                        <button class="hint-chip clear-chip" type="button" onclick="clearChat()">🗑️ 清空对话</button>
-                    </div>
+                    <div class="chat-hints" id="chatHints"><!-- 快捷提问由各智能体动态渲染 --></div>
                     <div class="chat-foot">
                         <textarea class="chat-input" id="chatInput" rows="1" placeholder="请描述您的症状，例如：头痛、发烧、咳嗽..."
                             onkeydown="handleKey(event)"></textarea>
@@ -786,44 +785,30 @@
                 </div>
             </div>
 
-            <!-- 扫码同步弹窗（手机 ↔ 电脑） -->
+            <!-- 设备同步弹窗（手机 ↔ 电脑） -->
             <div class="modal-mask" id="qrMask" role="dialog" aria-modal="true" onclick="if(event.target===this)closeQrSync()">
                 <div class="modal" style="max-width:560px;max-height:88vh;overflow-y:auto">
                     <button class="modal-close" type="button" onclick="closeQrSync()" aria-label="关闭">✕</button>
-                    <div class="sec-title" style="margin-top:0">📲 扫码同步（手机 ↔ 电脑）</div>
-                    <p style="font-size:12.5px;color:var(--text3);margin-bottom:14px">健康数据只在本机浏览器保存。通过二维码，可以把本机的健康档案传到另一台设备（手机或电脑），无需登录账号。</p>
+                    <div class="sec-title" style="margin-top:0">📲 设备同步（手机 ↔ 电脑）</div>
+                    <p style="font-size:12.5px;color:var(--text3);margin-bottom:14px">健康数据只在本机浏览器保存。通过「同步码文件 / 同步码文本」，可以把本机的健康档案传到另一台设备（手机或电脑），无需登录账号，也无需联网。</p>
                     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
                         <button class="btn btn-p" id="qrGenTab" onclick="qrSwitchMode('gen')">⬇️ 生成同步码</button>
-                        <button class="btn btn-g" id="qrScanTab" onclick="qrSwitchMode('scan')">📷 扫同步码</button>
+                        <button class="btn btn-g" id="qrScanTab" onclick="qrSwitchMode('scan')">📥 导入同步码</button>
                     </div>
                     <div id="qrGenBox">
-                        <button class="btn btn-p" style="width:100%" onclick="qrGenerate()">🔳 生成二维码</button>
-                        <p style="font-size:12px;color:var(--text3);margin-top:8px">把本机健康档案编码成二维码，用另一台设备的「📷 扫同步码」扫描即可导入。</p>
-                        <div id="qrCanvasWrap" style="display:none;text-align:center;margin-top:12px">
-                            <div id="qrCanvasBox"></div>
-                            <p id="qrChunkInfo" style="font-size:12px;color:var(--text2);margin:8px 0"></p>
-                            <div style="display:flex;gap:8px;justify-content:center">
-                                <button class="btn btn-g" id="qrChunkPrev" onclick="qrShowChunk(-1)" style="display:none">◀ 上一张</button>
-                                <button class="btn btn-g" id="qrChunkNext" onclick="qrShowChunk(1)" style="display:none">下一张 ▶</button>
-                            </div>
-                            <div style="display:flex;gap:8px;margin-top:10px;justify-content:center;flex-wrap:wrap">
-                                <button class="btn btn-g" onclick="qrCopyCode()">📋 复制同步码文本</button>
-                            </div>
-                            <p style="font-size:11.5px;color:var(--text3);margin-top:8px">💡 若另一台设备无法扫码，可复制同步码文本，在对方设备的「手动输入同步码」中粘贴导入。</p>
-                        </div>
+                        <p style="font-size:12px;color:var(--text3);margin-bottom:10px">把本机健康档案打包成同步码，任选一种方式发到另一台设备：</p>
+                        <button class="btn btn-p" style="width:100%" onclick="qrDownloadCode()">💾 下载同步码文件（.txt）</button>
+                        <button class="btn btn-p" style="width:100%;margin-top:8px" onclick="qrCopyCode()">📋 复制同步码文本</button>
+                        <p style="font-size:11.5px;color:var(--text3);margin-top:10px">💡 同步码文件可通过微信、QQ、U盘等任意方式传输，在对方设备用「📥 导入同步码 → 选择文件」即可恢复；复制文本则粘贴到对方设备的输入框里导入。</p>
                     </div>
                     <div id="qrScanBox" style="display:none">
-                        <button class="btn btn-p" style="width:100%" id="qrScanBtn" onclick="qrStartScan()">📷 启动摄像头扫码</button>
-                        <p style="font-size:12px;color:var(--text3);margin-top:8px">对准另一台设备的二维码，可连续扫描多张（数据较大时会分多张）。</p>
-                        <div id="qrVideoWrap" style="display:none;margin-top:12px;text-align:center">
-                            <video id="qrVideo" playsinline style="width:100%;max-width:320px;border-radius:10px;background:#000"></video>
-                            <p id="qrScanTip" style="font-size:12px;color:var(--text2);margin-top:8px">正在识别…</p>
-                        </div>
-                        <div class="sec-title" style="margin-top:16px">✏️ 手动输入同步码（备用）</div>
+                        <button class="btn btn-p" style="width:100%" onclick="document.getElementById('qrFileInput').click()">📂 选择同步码文件导入</button>
+                        <input type="file" id="qrFileInput" accept=".txt,text/plain" style="display:none" onchange="qrImportFile(this)">
+                        <div class="sec-title" style="margin-top:16px">✏️ 或粘贴同步码文本</div>
                         <textarea class="form-input" id="qrManualInput" rows="4" style="width:100%;resize:vertical"
                             placeholder="粘贴对方的同步码文本（MXS开头）"></textarea>
                         <button class="btn btn-p" style="width:100%;margin-top:8px" onclick="qrManualImport()">📥 导入同步码数据</button>
-                        <p style="font-size:11.5px;color:var(--text3);margin-top:8px">🔒 摄像头需要 HTTPS 或 localhost 环境；无法调用摄像头时请使用手动输入方式。导入采用「去重合并、新数据优先」，不会重复。</p>
+                        <p style="font-size:11.5px;color:var(--text3);margin-top:8px">🔒 全程本地处理，不上传任何服务器。导入采用「去重合并、新数据优先」，不会重复。</p>
                     </div>
                 </div>
             </div>
@@ -1370,25 +1355,27 @@
         function closeSidebar() { document.getElementById('sidebar').classList.remove('open') }
 
         // ─── Navigation ───────────────────────────────────────────
-        const titles = { home: '首页总览', chat: '智能问诊', health: '健康档案', kb: '医疗知识库', bmi: 'BMI 计算器', guide: '慧医导诊', news: '健康科普资讯' };
-        const subs = { home: '欢迎使用 MediAI 智能医疗平台', chat: '描述症状，AI 为您分析并给出建议', health: '记录和追踪您的健康数据', kb: '查询疾病、症状和用药知识', bmi: '快速计算身体质量指数', guide: '按症状推荐医院 · 一键地图导航', news: '每日更新 · 饮食健康 / 保健品 / 医学科普' };
+        const titles = { home: '首页总览', chat: '智能问诊', health: '健康档案', kb: '医疗知识库', bmi: 'BMI 计算器', guide: '慧医导诊', news: '健康科普资讯', nutri: 'AI 营养分析师', mind: '心理健康对话', sport: '智能运动指导师' };
+        const subs = { home: '欢迎使用 MediAI 智能医疗平台', chat: '描述症状，AI 为您分析并给出建议', health: '记录和追踪您的健康数据', kb: '查询疾病、症状和用药知识', bmi: '快速计算身体质量指数', guide: '按症状推荐医院 · 一键地图导航', news: '每日更新 · 饮食健康 / 保健品 / 医学科普', nutri: '一日三餐 · 热量营养 · 减脂增肌饮食方案', mind: '情绪倾诉 · 压力疏导 · 睡眠改善 · 心理陪伴', sport: '运动计划 · 动作指导 · 损伤预防 · 体能提升' };
+        const CHAT_SECTIONS = ['chat', 'nutri', 'mind', 'sport'];
         function showSec(id) {
             if (id === 'qrsync') { openQrSync(); return }
-            if ((id === 'chat' || id === 'health') && !currentUser()) { openAuth('login'); return }
+            if ((CHAT_SECTIONS.includes(id) || id === 'health') && !currentUser()) { openAuth('login'); return }
             document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => {
                 n.classList.remove('active');
                 n.removeAttribute('aria-current');
                 n.tabIndex = -1;
             });
-            document.getElementById('sec-' + id).classList.add('active');
+            if (CHAT_SECTIONS.includes(id)) switchAgent(id);
+            document.getElementById('sec-' + (CHAT_SECTIONS.includes(id) ? 'chat' : id)).classList.add('active');
             const ni = document.querySelector('[data-sec="' + id + '"]');
             if (ni) { ni.classList.add('active'); ni.setAttribute('aria-current', 'page'); ni.tabIndex = 0; }
             document.getElementById('tb-title').textContent = titles[id] || id;
             document.getElementById('tb-sub').textContent = subs[id] || '';
             document.getElementById('mobTitle').textContent = 'MediAI · ' + (titles[id] || id);
             const ca = document.getElementById('contentArea');
-            ca.style.overflow = id === 'chat' ? 'hidden' : 'auto';
+            ca.style.overflow = CHAT_SECTIONS.includes(id) ? 'hidden' : 'auto';
             ca.scrollTop = 0;
             closeSidebar();
             if (id === 'health') setTimeout(() => { drawScore(healthScore); drawBpChart(); }, 50);
@@ -1903,18 +1890,16 @@
         // 兜底：没命中知识库时，先共情 + 温和引导，避免机械复读反问
         const defaultReply = '谢谢你愿意和我说这些，不管是身体上的不舒服，还是心里觉得累，我都愿意听。\n\n要帮你分析得更贴合你的情况，能再多告诉我一点吗？比如是哪里不舒服、有多久了、有没有发烧头晕这些伴随情况、最近饮食睡眠怎么样。\n\n你先说最难受的那一点，我们从它开始慢慢梳理，好吗？❤️';
 
-        // 多轮对话历史
-        let chatHistory = [];
+        // 多轮对话历史：每个智能体独立记忆，互不干扰
+        let activeAgent = 'doctor';
+        const agentHist = { doctor: [], nutri: [], mind: [], sport: [] };
+        const AGENT_HIST_KEYS = { doctor: CHAT_HISTORY_KEY, nutri: 'mediai-nutri-history', mind: 'mediai-mind-history', sport: 'mediai-sport-history' };
+        const agentTopic = { doctor: null, nutri: null, mind: null, sport: null }; // 每个智能体的“当前话题”，支持多轮深入
+        function curHist() { return agentHist[activeAgent] || (agentHist[activeAgent] = []); }
         let isBusy = false;
 
         // 问诊欢迎语（随登录状态个性化）
-        function updateChatWelcome() {
-            const w = document.getElementById('chatWelcome');
-            if (!w) return;
-            const u = currentUser();
-            const hello = u ? '你好，<strong>' + escapeHtml(u) + '</strong>！' : '你好！';
-            w.innerHTML = hello + '欢迎使用 <strong>MediAI</strong> 智能问诊。请描述您的不适（症状、持续时间、程度等），系统将为您梳理可能的原因、提供居家处理建议，并提示需要就医的情况。<br><br>也可以点击下方快捷症状快速开始。<br><br>⚠️ 本系统仅供参考，不构成医疗诊断，如症状严重请及时就医。';
-        }
+        function updateChatWelcome() { updateAgentUI(); }
 
         function getTime() { const d = new Date(); return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0'); }
 
@@ -1924,7 +1909,7 @@
             wrap.className = 'msg ' + role;
             const avatar = document.createElement('div');
             avatar.className = 'msg-av ' + role;
-            avatar.textContent = role === 'ai' ? '🤖' : '👤';
+            avatar.textContent = role === 'ai' ? (AGENTS[activeAgent] ? AGENTS[activeAgent].icon : '🤖') : '👤';
             const content = document.createElement('div');
             const bubble = document.createElement('div');
             bubble.className = 'msg-bubble';
@@ -1943,13 +1928,13 @@
             const body = document.getElementById('chatBody');
             const t = document.createElement('div');
             t.className = 'msg ai'; t.id = 'typing-ind';
-            t.innerHTML = '<div class="msg-av ai">🤖</div><div class="typing"><span></span><span></span><span></span></div>';
+            t.innerHTML = '<div class="msg-av ai">' + (AGENTS[activeAgent] ? AGENTS[activeAgent].icon : '🤖') + '</div><div class="typing"><span></span><span></span><span></span></div>';
             body.appendChild(t); body.scrollTop = body.scrollHeight;
         }
         function hideTyping() { const t = document.getElementById('typing-ind'); if (t) t.remove(); }
 
         // ── 本地家庭医生引擎 ─────────────────────────────────────
-        let lastTopic = null;   // 上一次命中的知识库条目，支持“继续说”追问
+        // 上一次命中的知识库条目，支持“继续说”追问（存在 agentTopic[activeAgent]）
 
         // 紧急情况：先救命，再谈其他
         function urgentCheck(msg) {
@@ -2173,15 +2158,15 @@
             if (urgent) return warmGreeting() + '。先别慌，听我说——\n\n🚨 ' + urgent + '\n\n在等待救护车或去医院的路上，尽量保持安静休息，不要走动或进食。别怕，及时求助就是最正确的做法。❤️';
             // ② 疾病知识库匹配
             const kb = findKbMatch(msg);
-            if (kb) { lastTopic = kb; return composeKbReply(kb, msg) + personalReminder(); }
+            if (kb) { agentTopic.doctor = kb; return composeKbReply(kb, msg) + personalReminder(); }
             // ③ 症状关键词兜底
             for (const [key, val] of Object.entries(aiReplies)) {
-                if (m.includes(key)) { lastTopic = null; return wrapWarm(val) + personalReminder(); }
+                if (m.includes(key)) { agentTopic.doctor = null; return wrapWarm(val) + personalReminder(); }
             }
             // ④ 接着上次话题继续
-            if (lastTopic && FOLLOW_KEYS.some(k => msg.includes(k))) return continueTopic(lastTopic);
+            if (agentTopic.doctor && FOLLOW_KEYS.some(k => msg.includes(k))) return continueTopic(agentTopic.doctor);
             // ⑤ 用户给了描述性信息（时长/阵发性/疼痛程度等）→ 真正消化并解读，而不是复读反问
-            const infoWords = chatHistory.filter(h => h && h.role === 'user' && h.content).map(h => typeof h.content === 'string' ? h.content : '');
+            const infoWords = curHist().filter(h => h && h.role === 'user' && h.content).map(h => typeof h.content === 'string' ? h.content : '');
             const lastMsg = infoWords[infoWords.length - 1] || '';
             const prevMsg = infoWords.length > 1 ? infoWords[infoWords.length - 2] : '';
             const prevTopic = prevMsg ? findKbMatch(prevMsg) : null;
@@ -2194,14 +2179,312 @@
             return wrapWarm(defaultReply) + personalReminder();
         }
 
-        // 加载/保存对话历史
-        function loadChatHistory() {
-            try {
-                chatHistory = JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY)) || [];
-            } catch (e) { chatHistory = []; }
+        // ─── 多智能体框架：共享聊天界面，各自独立记忆与人格 ────────
+        function loadAgentHistories() {
+            Object.keys(agentHist).forEach(k => {
+                try { agentHist[k] = JSON.parse(localStorage.getItem(AGENT_HIST_KEYS[k])) || []; }
+                catch (e) { agentHist[k] = []; }
+            });
         }
-        function persistChatHistory() {
-            try { localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(chatHistory.slice(-20))); } catch (e) { }
+        function persistCurHist() {
+            try { localStorage.setItem(AGENT_HIST_KEYS[activeAgent], JSON.stringify(curHist().slice(-40))); } catch (e) { }
+        }
+
+        // 三个智能体的“长期记忆”上下文（跨多轮对话持续生效）
+        const nutriCtx = { goal: null, lastFood: null };
+        const mindCtx = { topic: null, turns: 0 };
+        const sportCtx = { goal: null, level: null, topic: null };
+
+        // 最新健康数据（供营养/运动智能体个性化参考）
+        function latestHealthRecord() {
+            const list = [...healthRecords].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+            return list[0] || null;
+        }
+
+        // ─── 营养分析师引擎（记住目标与最近食物，多轮深入） ────────
+        const NUTRI_GOALS = [
+            { keys: ['减脂', '减肥', '瘦身', '减重', '掉秤'], goal: '减脂' },
+            { keys: ['增肌', '长肌肉', '练肌肉', '增重', '长胖', '太瘦'], goal: '增肌' },
+            { keys: ['控糖', '糖尿病', '血糖高', '血糖'], goal: '控糖' },
+            { keys: ['控血压', '高血压', '降压', '低盐'], goal: '控血压' },
+            { keys: ['养生', '健康饮食', '吃得健康', '营养均衡'], goal: '健康' }
+        ];
+        const NUTRI_FOODS = [
+            { keys: ['泡面', '方便面'], name: '泡面', kcal: '450-500 千卡/包', body: '高盐高油、营养单一，经常吃容易热量超标、钠摄入过多（一包含一天 80% 的盐量）。偶尔吃一次没关系：加一个鸡蛋 + 一把青菜，调料包放一半，汤尽量不喝，这一餐的热量就友好很多。' },
+            { keys: ['奶茶'], name: '奶茶', kcal: '300-600 千卡/杯', body: '奶茶的糖和植脂末是主要负担，一杯全糖奶茶约等于 3 碗米饭的热量。想喝的话：点三分糖/无糖、选鲜奶基底、少加小料（珍珠椰果都是糖），一周 1-2 次就好。' },
+            { keys: ['炸鸡', '烧烤', '火锅', '油炸'], name: '高油餐', kcal: '600-1000 千卡/餐', body: '这类餐油脂和盐偏高，吃完第二天身体容易水肿、犯困。补救方式：下一餐清淡（粥 + 蔬菜 + 蛋白质），多喝水帮助代谢，配合 30 分钟快走。不必自责，一顿饭不会毁掉你的努力。' },
+            { keys: ['米饭', '主食', '碳水'], name: '主食', kcal: '米饭 116 千卡/100g', body: '碳水不是敌人，大脑和运动都需要它。关键是量和搭配：每餐主食一拳大小，粗细搭配（糙米、燕麦、玉米、红薯替代部分白米饭），先吃菜和蛋白质再吃主食，血糖更平稳、更抗饿。' },
+            { keys: ['水果'], name: '水果', kcal: '约 50-90 千卡/100g', body: '水果每天 200-350 克（约 1-2 个拳头），放在两餐之间吃比饭后吃更好。减脂优先选低糖的：草莓、蓝莓、柚子、苹果；榴莲、荔枝、葡萄要控量。' },
+            { keys: ['牛奶', '鸡蛋', '鸡胸肉', '牛肉', '肉', '蛋白质'], name: '蛋白质', kcal: '鸡蛋 70 千卡/个', body: '蛋白质是减脂保肌肉、增肌长肌肉的关键：每天每公斤体重 1.2-1.6 克。优质来源：鸡蛋、牛奶、鸡胸肉、鱼虾、豆腐。每餐都有一掌心蛋白质，饱腹感强，还不容易掉肌肉。' },
+            { keys: ['蔬菜', '青菜', '菜'], name: '蔬菜', kcal: '30 千卡/100g', body: '蔬菜热量低、膳食纤维足，餐餐都要有：每天 300-500 克，深色蔬菜占一半（菠菜、西兰花、胡萝卜）。先吃菜再吃主食，血糖更稳，还能自然少吃。' },
+            { keys: ['夜宵', '宵夜', '深夜', '半夜吃'], name: '夜宵', kcal: '200-500 千卡', body: '睡前一小时尽量不吃，实在饿就选：温牛奶、一小把坚果、香蕉或水煮蛋，避免泡面、烧烤、甜品。吃完别立刻躺下，缓 30 分钟再睡，肠胃会舒服很多。' },
+            { keys: ['零食', '薯片', '饼干', '辣条'], name: '零食', kcal: '100-500 千卡/包', body: '零食可以吃，诀窍是"单独装一小份"而不是抱着整包吃。替换成：原味坚果、无糖酸奶、水果、海苔。想吃薯片时先喝杯水，很多时候是口渴不是饿。' },
+            { keys: ['外卖'], name: '外卖', kcal: '600-900 千卡/餐', body: '外卖重油重盐。点餐小技巧：优先蒸煮炖（蒸菜、水饺、轻食），备注"少油少盐"，米饭只吃一半，加一份青菜。饮料换成无糖茶或水。' }
+        ];
+        const NUTRI_MEALS = {
+            '早餐': '早餐（7-9 点）：优质蛋白 + 慢碳 + 一份蔬果。例如：鸡蛋 1-2 个 + 全麦面包/燕麦粥 + 牛奶/豆浆 + 一个水果。早餐吃够蛋白质，一上午不容易饿，还能减少晚上的暴食。',
+            '午餐': '午餐（12 点左右）：一拳头主食 + 一掌心蛋白质 + 两拳头蔬菜。例如：杂粮饭 + 鸡胸肉/鱼肉 + 清炒西兰花。午餐吃饱不吃撑，饭后散步 10 分钟。',
+            '晚餐': '晚餐（18-19 点）：主食减半（或换成玉米/红薯）+ 足量蛋白质 + 大量蔬菜。例如：半碗饭 + 蒸鱼 + 凉拌菜。睡前 3 小时吃完，睡得更好，第二天不容易水肿。'
+        };
+        const NUTRI_NUTRIENTS = [
+            { keys: ['蛋白质', '蛋白'], body: '每天每公斤体重 1.2-1.6 克蛋白质：60kg 的人约 72-96 克/天。分布到三餐：早餐 2 个蛋 + 牛奶，午餐/晚餐各一掌心的肉或鱼虾。增肌期可到 1.6-2 克，并配合力量训练。' },
+            { keys: ['碳水', '主食'], body: '每天碳水约占总热量 45-60%，优先"慢碳"：糙米、燕麦、玉米、红薯、全麦。训练前后吃快碳（香蕉、白米饭）恢复更快。完全戒碳水会掉肌肉、影响情绪和睡眠，不建议。' },
+            { keys: ['脂肪', '油脂', '油'], body: '脂肪每天 40-60 克，选"好脂肪"：坚果（每天一小把）、牛油果、橄榄油、深海鱼。避开反式脂肪：起酥面包、代可可脂、油炸食品。' },
+            { keys: ['维生素', '微量元素', '补剂', '保健品'], body: '优先从食物补充：果蔬吃够 5 种颜色，维生素基本不缺。真正需要关注的是：常待室内 → 维生素 D；素食 → B12；女性 → 铁。先查清楚再补，别乱吃保健品。' },
+            { keys: ['喝水', '饮水', '补水'], body: '每天 1500-2000ml 水（约 7-8 杯），少量多次。餐前一杯水能帮助控制食量；运动后按出汗量补。别等渴了才喝，尿液淡黄色说明喝够了。' }
+        ];
+        const NUTRI_CONT = ['然后', '还有', '继续', '再讲讲', '接着说', '为什么', '怎么办'];
+        function nutriReply(msg) {
+            const m = msg.toLowerCase();
+            // ① 目标识别：记住并给出针对性方案
+            const goalHit = NUTRI_GOALS.find(g => g.keys.some(k => m.includes(k)));
+            if (goalHit) {
+                const changed = nutriCtx.goal !== goalHit.goal;
+                nutriCtx.goal = goalHit.goal;
+                const bmi = latestHealthRecord() && latestHealthRecord().bmi ? '你最近记录的 BMI 是 ' + latestHealthRecord().bmi + '，我会结合它来给建议。\n\n' : '';
+                const plans = {
+                    '减脂': '减脂核心是"温和的热量缺口 + 吃够蛋白质"：\n\n① 每餐结构：一拳主食 + 一掌心蛋白质 + 两拳头蔬菜\n② 三餐之外：戒含糖饮料，零食换成水果/坚果\n③ 每天 1500-2000ml 水，晚 8 点后不再进食\n④ 主食粗细搭配，先吃菜和蛋白质再吃主食\n\n目标每周减 0.5-1 斤最健康，减太快容易反弹、掉肌肉。',
+                    '增肌': '增肌 = 训练 + 吃够：\n\n① 蛋白质每天每公斤体重 1.6-2 克，分布到每餐\n② 训练后 1 小时内补充"快碳 + 蛋白质"（如牛奶 + 香蕉 + 鸡蛋）\n③ 总热量要略有盈余（比消耗多 300-500 千卡），但别变成"脏增肌"\n④ 睡眠 7-8 小时，肌肉在休息时生长\n\n你的体重是多少？我可以帮你算每天该吃多少蛋白质。',
+                    '控糖': '控糖饮食要点：\n\n① 主食粗细搭配、定时定量（每餐一拳），别吃糊化过度的粥\n② 先吃菜和蛋白质，再吃主食，血糖更平稳\n③ 戒含糖饮料和甜点，水果选低 GI 的（草莓、柚子、苹果）且不过量\n④ 少食多餐改为规律三餐，避免血糖大起大落\n\n⚠️ 已确诊糖尿病请务必遵医嘱和用药，饮食只是辅助。',
+                    '控血压': '控血压饮食（DASH 饮食）：\n\n① 每日盐＜5 克（约一啤酒瓶盖），酱油、腌制品、加工肉都是隐形盐\n② 多吃钾：香蕉、菠菜、土豆、豆类\n③ 多吃蔬菜水果、低脂奶、全谷物\n④ 戒烟限酒，控制体重\n\n⚠️ 已确诊高血压请遵医嘱规律服药，饮食不能替代药物。',
+                    '健康': '健康饮食其实很简单：\n\n① 每餐：一拳主食 + 一掌心蛋白质 + 两拳头蔬菜\n② 每周吃 25 种以上不同食物，颜色越丰富越好\n③ 少加工、多天然：蒸煮炖优先于油炸烧烤\n④ 规律三餐，别省早餐、别暴饮暴食\n\n你可以先告诉我今天吃了什么，我帮你看看哪里可以更好。'
+                };
+                return (changed ? '收到，目标设定为「' + goalHit.goal + '」💪\n\n' : '关于「' + goalHit.goal + '」，再帮你梳理一遍：\n\n') + bmi + plans[goalHit.goal] + (changed ? '\n\n接下来随时把三餐发给我，我帮你把关。今天吃了什么？' : '');
+            }
+            // ② 三餐方案
+            for (const meal of Object.keys(NUTRI_MEALS)) { if (m.includes(meal)) return NUTRI_MEALS[meal] + (nutriCtx.goal ? '\n\n结合你的「' + nutriCtx.goal + '」目标：' + ({ '减脂': '晚餐主食减半、全天戒含糖饮料。', '增肌': '每餐加一份蛋白质（蛋/奶/肉）。', '控糖': '主食换成粗粮且定量一拳。', '控血压': '全程少盐，酱油减半。', '健康': '保持这个结构就很棒。' }[nutriCtx.goal]) : '\n\n你的目标是什么？告诉我（减脂/增肌/控糖…），我可以把三餐搭配得更贴合你。'); }
+            if (m.includes('一日三餐') || m.includes('食谱') || m.includes('菜单') || m.includes('怎么吃') || m.includes('搭配')) {
+                return '给你一份通用的一日三餐模板 🍱\n\n' + NUTRI_MEALS['早餐'] + '\n\n' + NUTRI_MEALS['午餐'] + '\n\n' + NUTRI_MEALS['晚餐'] + (nutriCtx.goal ? '\n\n已结合你的「' + nutriCtx.goal + '」目标微调。你想从哪一餐开始调整？' : '\n\n你的目标是什么？告诉我后我帮你针对性调整。');
+            }
+            // ③ 食物分析：记住最近聊的食物，可以继续追问
+            const foodHit = NUTRI_FOODS.find(f => f.keys.some(k => m.includes(k)));
+            if (foodHit) {
+                nutriCtx.lastFood = foodHit.name;
+                const goalTip = nutriCtx.goal ? '\n\n结合你的「' + nutriCtx.goal + '」目标：' + ({ '减脂': '这一餐之后，下一餐清淡一点就能拉回平衡，别自责。', '增肌': '注意同时补足蛋白质（加蛋/奶/肉）。', '控糖': '这类高油高糖食物会让血糖波动较大，偶尔解馋即可。', '控血压': '这类食物通常偏咸，注意当天其他餐少盐。', '健康': '偶尔一次没问题，保持整体均衡就好。' }[nutriCtx.goal]) : '';
+                return '聊聊「' + foodHit.name + '」🍽️\n\n热量参考：' + foodHit.kcal + '\n\n' + foodHit.body + goalTip + (nutriCtx.goal ? '\n\n你平时多久吃一次？' : '\n\n顺便问一下：你目前的饮食目标是什么（减脂/增肌/控糖…）？');
+            }
+            // ④ 营养素专题
+            const nutHit = NUTRI_NUTRIENTS.find(n => n.keys.some(k => m.includes(k)));
+            if (nutHit) { nutriCtx.lastFood = null; return nutHit.body + (nutriCtx.goal ? '\n\n结合「' + nutriCtx.goal + '」目标，还有想了解的吗？' : '\n\n你目前的饮食目标是什么？我可以讲得更贴合你。'); }
+            // ⑤ 接着上次话题深入
+            if (nutriCtx.lastFood && NUTRI_CONT.some(k => m.includes(k))) {
+                const f = NUTRI_FOODS.find(x => x.name === nutriCtx.lastFood);
+                return '关于「' + nutriCtx.lastFood + '」，再多说一点：\n\n① 频率比单次重要：一周不超过 1-2 次，身体完全能应对\n② 吃之前先吃些蔬菜垫底，油脂和糖吸收更平缓\n③ 吃之后第二天：清淡饮食 + 多喝水 + 30 分钟快走，很快代谢掉\n\n别为偶尔的一顿纠结，长期习惯才决定身材和健康。' + (nutriCtx.goal ? '你还有想了解的饮食问题吗？' : '还想了解其他食物吗？把吃的告诉我，我帮你分析。');
+            }
+            // ⑥ 兜底：主动了解情况，开启对话而不是终结对话
+            if (!nutriCtx.goal) return '想帮你把饮食安排得更科学，我先了解两件事：\n\n① 你的目标是什么？（减脂 / 增肌 / 控糖 / 控血压 / 吃得健康）\n② 你今天三餐大概吃了什么？\n\n随便说哪一件都行，我们从那里开始聊 🥗';
+            return '收到～你刚才提到的我想了解更多：是具体吃了什么，还是想了解某个食物/营养素？\n\n比如直接说"我今天早上吃了油条豆浆"，我就能帮你分析这餐的营养结构，并结合你的「' + nutriCtx.goal + '」目标给建议。';
+        }
+
+        // ─── 心理健康对话引擎（危机干预 + 共情倾听 + 多轮深入） ────
+        const MIND_CRISIS = ['自杀', '自伤', '自残', '不想活', '活不下去', '结束生命', '伤害自己', '割腕', '轻生', '想死', '没意思了'];
+        const MIND_TOPICS = [
+            { keys: ['压力', '焦虑', '紧张', '心慌'], name: '压力与焦虑', body: '压力大不是你的错，是身体在提醒你：背的东西有点多了。\n\n先做三件立刻能做的事：\n① 4-7-8 呼吸：吸气 4 秒 → 屏气 7 秒 → 呼气 8 秒，重复 4 轮\n② 把脑子里的事全部写到纸上，写出来压力就减一半\n③ 出门走 10 分钟，晒晒太阳，让身体先松下来\n\n然后挑"最小的一件事"先完成它——焦虑常常来自想同时解决所有事。\n\n你现在压力最大的来源是什么？可以说给我听。' },
+            { keys: ['失眠', '睡不着', '睡不好', '熬夜', '早醒', '多梦'], name: '睡眠困扰', body: '睡不好真的很消耗人，第二天什么情绪都会被放大。\n\n今晚就可以试：\n① 睡前 1 小时放下手机，蓝光会骗大脑"还是白天"\n② 固定起床时间（哪怕周末），比早睡更有效\n③ 躺下 20 分钟睡不着就起来，做点无聊的事，困了再回床\n④ 白天晒 30 分钟太阳、适量运动，晚上更容易困\n\n你通常是"入睡难"还是"半夜醒"？持续多久了？' },
+            { keys: ['情绪低落', '抑郁', '难过', '想哭', 'emo', '不开心', '心情不好', '低落'], name: '情绪低落', body: '我听到了，你最近心里不好受。想哭的时候不用忍着，情绪像水，流过去会轻松一点。\n\n你可以试试：\n① 给自己 10 分钟，把不开心的原因原原本本写下来\n② 做一件小小的、确定能完成的事（收拾桌面、洗个澡、出门买杯喝的）\n③ 给信任的人发条消息，哪怕只说"我今天不太好"\n\n如果这种低落已经持续两周以上，或对什么都不感兴趣，请一定去医院心理科聊聊，这不是软弱，是给心灵做个体检。\n\n你愿意多和我说说，是什么让你难受吗？' },
+            { keys: ['内耗', '纠结', '想太多', '精神消耗'], name: '内耗', body: '内耗的人往往很善良——太在意别人的看法，又对自己要求太高。\n\n三个方法把它关小一点：\n① "三分钟原则"：小事纠结超过 3 分钟就直接做决定，先完成再完美\n② 区分"我的事/别人的事"：你无法让所有人满意，也不必\n③ 每天睡前写下"今天我做得好的三件事"，哪怕很小\n\n你最近在纠结什么事？说出来，我陪你理一理。' },
+            { keys: ['孤独', '没人理解', '没人说话', '一个人'], name: '孤独感', body: '孤独不是你的问题，渴望被理解是每个人都会有的感受。\n\n可以尝试：\n① 从微小的连接开始：给老朋友发一句"最近怎么样"、参加一个兴趣小组\n② 养一盆植物或小宠物，照顾生命会让心里有牵挂\n③ 和自己好好相处：一个人吃顿好的、看场电影，孤独也能是自在\n\n现在想和我说说话吗？我一直在。' },
+            { keys: ['失恋', '分手', '感情问题', '喜欢的人'], name: '感情困扰', body: '失去一段感情，难过是正常的，说明你真的投入过。\n\n给现在的你：\n① 允许自己难过，但别反复翻聊天记录、别追问"为什么"\n② 把生活填满一点点：运动出汗、和朋友吃饭、捡起一个爱好\n③ 时间不会自动治愈，但"新的生活内容"会慢慢覆盖旧的\n\n你们之间发生了什么？愿意说的话，我听着。' },
+            { keys: ['吵架', '矛盾', '父母', '家人', '室友', '同学', '关系'], name: '人际关系', body: '和亲近的人起冲突最难受，因为既生气又委屈。\n\n试试这样：\n① 先处理情绪再处理事情：情绪上头时说"我需要冷静一下，晚点再谈"\n② 用"我感到…因为…我希望…"代替指责（"你总是…"）\n③ 有些关系需要距离，保护自己的边界不是自私\n\n具体发生了什么？说说看，也许能理出个思路。' },
+            { keys: ['学业', '考试', '挂科', '成绩', '作业', '考研', '学习'], name: '学业压力', body: '学业压力下还能坚持到现在，你已经很不容易了。\n\n几个实用的方法：\n① 把任务切成 25 分钟的小块（番茄钟），只专注眼前这 25 分钟\n② 每天定"最低完成量"而不是"完美完成量"，完成就奖励自己\n③ 成绩只是人生的一张标签，不是你的价值\n\n你现在最担心的是哪一科或哪件事？' },
+            { keys: ['工作', '加班', '就业', '面试', '职场'], name: '工作压力', body: '工作上的事，你辛苦了。\n\n可以做的：\n① 把工作量和时间写下来，分清"必须今天做"和"其实没那么急"\n② 学会说"我这个时间做不完，可以周五前给你吗"——合理表达不是能力差\n③ 下班后给自己 20 分钟"切换仪式"：洗澡、散步、听歌，把工作留在门外\n\n你最近工作里最压着你的是什么事？' },
+            { keys: ['社恐', '社交恐惧', '不敢说话', '害怕交流'], name: '社交焦虑', body: '在人群里感到紧张，不是你不行，而是你的大脑把社交当成了"危险"。\n\n小步子练习：\n① 从最小交互开始：便利店结账时说声谢谢、对同学点头微笑\n② 提前准备 2-3 个话题（"你最近在看什么剧"），手里有牌心里不慌\n③ 每次社交后记下"其实没有我想的那么糟"的瞬间\n\n你是在什么场合最紧张？我们一起拆解它。' },
+            { keys: ['自卑', '不自信', '觉得自己差', '配不上'], name: '自我怀疑', body: '会自我怀疑的人，往往比谁都认真努力。\n\n请你做一件事：写下自己 10 个优点（会做饭、守时、对朋友好……都算）。\n\n还有三个提醒：\n① 别人没有你想的那么关注你——大家都忙着担心自己\n② 拿自己的"幕后"和别人的"高光"比，本来就不公平\n③ 自信不是"我什么都行"，而是"我不行也没关系，可以慢慢来"\n\n你觉得自己哪方面"不够好"？我们客观地看一看。' },
+            { keys: ['愤怒', '生气', '烦躁', '脾气', '发火'], name: '愤怒情绪', body: '愤怒是有用的信号——它在告诉你：有件事越界了，或者你压抑太久了。\n\n先让身体降温：\n① 离开现场，去洗把脸或快走 5 分钟\n② 在纸上写"我为什么这么生气"，写完先放 2 小时\n③ 之后再决定要不要沟通、怎么沟通\n\n注意：可以表达愤怒，但别在愤怒中做决定、说狠话。\n\n是什么事让你这么生气？' },
+            { keys: ['累', '疲惫', '心力交瘁', '撑不住', '好难', '崩溃'], name: '疲惫感', body: '听到你说累，想先抱抱你。撑不住的时候，允许自己停下来，这不叫放弃。\n\n现在只做三件事：\n① 睡一个好觉，其他事明天再说\n② 把清单上能划掉的先划掉（推迟、拒绝、简化都行）\n③ 向身边的人说"我需要帮忙"，一句就行\n\n你愿意说说，这种累是从哪里来的吗？身体上的还是心里的？' }
+        ];
+        const MIND_CONT = ['然后', '还有', '继续', '接着说', '就是', '因为', '可是', '但是', '我觉得', '我不想', '我害怕', '我担心', '一直', '最近', '很久'];
+        function mindReply(msg) {
+            const m = msg.toLowerCase();
+            // ① 危机干预：永远最优先
+            const crisis = MIND_CRISIS.find(k => m.includes(k));
+            if (crisis) {
+                return '我在这里，谢谢你愿意说出来，这已经是非常勇敢的一步。\n\n🚨 现在请立刻做这件事：\n① 拨打 12356（全国心理援助热线）或 120，电话那头有专业的、温暖的人\n② 找到身边信任的人（家人、朋友、老师），让 TA 陪着你，不要独处\n③ 远离可能伤害到自己的物品\n\n你现在的感受是暂时的，痛苦会过去，但你要先活下来。这个世界需要你。❤️\n\n如果你愿意，我也可以继续陪你说说话。';
+            }
+            // ② 话题识别：记住当前困扰，支持多轮深入
+            const hit = MIND_TOPICS.find(t => t.keys.some(k => m.includes(k)));
+            if (hit) {
+                const isNew = mindCtx.topic !== hit.name;
+                mindCtx.topic = hit.name;
+                mindCtx.turns = 1;
+                return (isNew ? '' : '关于「' + hit.name + '」我们再深入一点：\n\n') + hit.body;
+            }
+            // ③ 多轮深入：接着当前话题，认真回应而不是复读
+            if (mindCtx.topic && mindCtx.turns >= 1 && (MIND_CONT.some(k => m.includes(k)) || msg.length > 6)) {
+                mindCtx.turns++;
+                const t = mindCtx.topic;
+                if (mindCtx.turns === 2) return '谢谢你愿意继续说，我在认真听。关于「' + t + '」，我想再多了解一点：\n\n这种情况大概持续多久了？最难受的是什么时候（白天/晚上/特定场景）？\n\n不用急着一次说完，想到什么说什么。';
+                if (mindCtx.turns === 3) return '听完你的补充，我更能理解你的处境了。关于「' + t + '」，接下来可以试着做这三件小事：\n\n① 今天睡前，把最困扰你的一件事写在纸上，写完合上，明天再看\n② 明天安排一件"确定能让你舒服"的事：晒太阳、吃喜欢的食物、和朋友散步\n③ 如果这个困扰已经持续两周以上、明显影响吃饭睡觉，请认真考虑去医院心理科或找心理咨询师聊聊——求助是强者的行为\n\n你现在感觉怎么样？说出来，或者深呼吸三次再告诉我。';
+                return '我还在听。关于「' + t + '」，你不用一个人扛。\n\n如果愿意，我们可以继续聊聊具体的事；也可以换换心情，聊聊你今天遇到的一件小事——好的坏的都可以。你想聊哪个？';
+            }
+            // ④ 情绪倾诉兜底：共情 + 开放提问，让对话延续
+            return '我在听，谢谢你愿意和我说这些。\n\n能多告诉我一点吗？比如：这种感受是从什么时候开始的？最近有没有发生什么特别的事？\n\n不用组织语言，想到哪说到哪，我会一直在这里。💛';
+        }
+
+        // ─── 智能运动指导引擎（记住目标与水平，多轮定制计划） ────
+        const SPORT_GOALS = [
+            { keys: ['减脂', '减肥', '瘦', '减重', '掉秤'], goal: '减脂' },
+            { keys: ['增肌', '长肌肉', '练肌肉', '力量'], goal: '增肌' },
+            { keys: ['体能', '耐力', '跑步', '马拉松', '五公里', '5公里', '十公里'], goal: '体能' },
+            { keys: ['塑形', '线条', '体态', '驼背', '圆肩'], goal: '塑形' },
+            { keys: ['健康', '锻炼', '动一动', '运动习惯', '健身'], goal: '健康' }
+        ];
+        const SPORT_TOPICS = [
+            { keys: ['跑步', '慢跑', '夜跑'], name: '跑步', body: '跑步要点 🏃\n\n① 跑前动态热身 5 分钟（高抬腿、开合跳、踢臀跑），别直接起跑\n② 呼吸：鼻吸口呼，两步一吸两步一呼，找到节奏\n③ 落地：中前掌先着地，步频 170-180 步/分钟，减小步幅\n④ 跑后慢走 3 分钟再停，静态拉伸小腿和大腿\n\n新手：跑 2 分钟走 1 分钟，循环 20 分钟起步，每周 3 次，两周后逐渐延长。\n\n你平时跑步吗？跑多久会喘？' },
+            { keys: ['跳绳'], name: '跳绳', body: '跳绳是性价比最高的有氧之一 🔥\n\n① 装备：软底鞋 + 地面平整（垫个瑜伽垫减震），绳长：单脚踩绳、手柄到胸口\n② 动作：手腕摇绳、前脚掌着地、膝盖微屈、收紧核心\n③ 新手计划：每组 1 分钟 + 休息 30 秒，共 10 组；每周 3-4 次\n④ 注意：体重较大或膝盖不适者，先从快走和游泳开始\n\n⚠️ 运动中出现胸闷、头晕、膝盖刺痛，立刻停止。' },
+            { keys: ['游泳'], name: '游泳', body: '游泳对关节最友好 🏊\n\n① 每周 2-3 次，每次 30-45 分钟，蛙泳/自由泳交替\n② 下水前充分热身肩部，游后拉伸肩背\n③ 注意池水卫生，游完洗澡、滴眼药水\n\n减脂效果很好（约 400-600 千卡/小时），且不伤膝盖，特别适合大体重人群。' },
+            { keys: ['骑车', '骑行', '自行车'], name: '骑行', body: '骑行要点 🚴\n\n① 座垫高度：脚踩到最低点时膝盖微屈（约 150°），太低伤膝盖\n② 每次 40-60 分钟，保持"能说话但有点喘"的强度\n③ 骑行前检查刹车和胎压，戴好头盔\n\n通勤骑行也是很好的日常运动，每天来回 40 分钟就达标一半了。' },
+            { keys: ['俯卧撑'], name: '俯卧撑', body: '俯卧撑标准动作 💪\n\n① 双手略宽于肩，身体从头到脚一条直线，核心收紧\n② 下降时肘部与身体呈 45°，胸口接近地面，呼气推起\n③ 新手：从跪姿或撑墙开始，每组做到"还能再做 2 个"的程度，3-4 组\n④ 组间休息 60-90 秒\n\n坚持 4 周，力量会有明显提升。' },
+            { keys: ['深蹲'], name: '深蹲', body: '深蹲是"动作之王" 🦵\n\n① 双脚与肩同宽，脚尖微外展，重心在脚掌中部\n② 下蹲时先屈髋再屈膝，像往后坐椅子，膝盖方向对准脚尖\n③ 下蹲到大腿与地面平行，背部保持挺直，起身呼气\n④ 新手：徒手 12-15 个 × 3 组，组间休息 90 秒\n\n⚠️ 膝盖内扣、腰部代偿是常见错误，宁可蹲浅一点也要姿势对。' },
+            { keys: ['平板支撑', '核心'], name: '核心训练', body: '平板支撑要点 ⏱️\n\n① 肘在肩正下方，身体一条直线，别塌腰、别撅臀\n② 收紧腹部和臀部，保持自然呼吸\n③ 新手从 20 秒 × 3 组开始，每周加 5-10 秒\n\n核心是全身动作的地基，练好它跑步、深蹲都更稳，还能改善腰背不适。' },
+            { keys: ['瑜伽', '拉伸', '柔韧'], name: '柔韧拉伸', body: '拉伸原则 🧘\n\n① 运动前做动态拉伸（摆腿、转肩），运动后做静态拉伸（每个动作 20-30 秒）\n② 拉伸到"微酸但不刺痛"的程度，别弹震\n③ 每天久坐后拉伸：猫牛式、婴儿式、站姿体前屈\n\n每周 2 次瑜伽/普拉提，对体态和睡眠都有帮助。' },
+            { keys: ['膝盖', '膝关节', '膝盖疼'], name: '膝盖保护', body: '膝盖保护 🦵\n\n① 运动前充分热身，跑步选软地面、穿缓冲好的鞋\n② 加强大腿前侧（股四头肌）和臀部力量，它们是膝盖的"减震器"\n③ 体重较大者优先游泳、骑车、快走\n\n⚠️ 膝盖肿胀、上下楼疼痛、打软腿 → 暂停运动，冰敷，就医检查。' },
+            { keys: ['崴脚', '扭伤', '脚踝', '拉伤', '受伤'], name: '运动损伤', body: '急性损伤处理（RICE 原则）🩹\n\n① R-休息：立刻停止运动\n② I-冰敷：每次 15-20 分钟，每天 3-4 次（前 48 小时）\n③ C-加压：弹性绷带包扎\n④ E-抬高：患肢抬高过心脏\n\n48 小时后改热敷。若肿胀严重、无法承重、听到"啪"的响声 → 尽快就医拍片。' },
+            { keys: ['久坐', '办公', '上班族', '学生党'], name: '久坐人群', body: '久坐族的微运动方案 🪑\n\n① 每坐 45 分钟，起身活动 5 分钟（接水、走动、拉伸）\n② 每小时做 10 个"靠墙站立"（收下巴、挺胸、夹肩胛骨）\n③ 每天下班后 30 分钟快走或跟练一套拉伸\n\n久坐伤腰颈，定时起身是最便宜有效的护身法。' },
+            { keys: ['热身'], name: '热身', body: '热身 5-8 分钟，别跳过 🔥\n\n① 原地慢跑或开合跳 2 分钟，让心率升起来\n② 动态拉伸：高抬腿、踢臀跑、肩绕环、弓步转体，各 30 秒\n③ 做 2 组"目标动作的空手版"（如徒手深蹲）\n\n热身到位，运动表现更好，受伤风险大降。' },
+            { keys: ['心率'], name: '心率', body: '运动心率参考 ❤️\n\n① 最大心率 ≈ 220 - 年龄\n② 减脂/耐力：最大心率的 60-75%，"能说话但微喘"\n③ 心肺强化：75-85%，"说短句有点费劲"\n④ 新手先保持在 60-70%，适应 4 周再提升\n\n用手环或"10 秒脉搏 × 6"随时测，比凭感觉准。' },
+            { keys: ['步数', '走路', '快走'], name: '步行', body: '步行是最容易坚持的运动 🚶\n\n① 每天 6000-8000 步，其中 30 分钟保持"快走"（微微出汗、能说话）\n② 快走姿势：抬头挺胸、手臂自然摆动、脚跟先着地\n③ 饭后 20 分钟散步，对血糖和消化都好\n\n别小看走路，坚持一个月，精力和睡眠都会变好。' }
+        ];
+        const SPORT_CONT = ['然后', '还有', '继续', '接着', '下一个', '再', '多久', '几次', '几组', '多少'];
+        function sportReply(msg) {
+            const m = msg.toLowerCase();
+            // ① 目标识别
+            const goalHit = SPORT_GOALS.find(g => g.keys.some(k => m.includes(k)));
+            if (goalHit) {
+                const changed = sportCtx.goal !== goalHit.goal;
+                sportCtx.goal = goalHit.goal;
+                const bmi = latestHealthRecord() && latestHealthRecord().bmi ? '你最近记录的 BMI 是 ' + latestHealthRecord().bmi + '。' : '';
+                const plans = {
+                    '减脂': '减脂 = 有氧打底 + 力量保肌 🏃\n\n周计划（新手版）：\n• 周一/三/五：快走或慢跑 30-40 分钟（心率 60-75% 最大心率）\n• 周二/四：力量 20 分钟（深蹲、俯卧撑、平板支撑，各 3 组）\n• 周末：选喜欢的活动（球类/骑行/爬山）\n\n关键是"每周 3-5 次、每次 30 分钟以上"，强度是能说话但微喘。饮食配合（找营养分析师聊聊）效果翻倍。',
+                    '增肌': '增肌 = 渐进负荷 + 吃够蛋白质 💪\n\n新手全身计划（每周 3 次，隔天练）：\n• 深蹲 3 组 × 10-12 次\n• 俯卧撑 3 组 × 8-15 次\n• 弓步蹲 3 组 × 每腿 10 次\n• 平板支撑 3 组 × 30 秒\n\n要点：动作标准优先于重量；每组留 2 次余力；训练后 1 小时内补充蛋白质 + 碳水。睡够 7-8 小时，肌肉在睡眠中生长。',
+                    '体能': '提升体能（耐力）方案 🏃\n\n• 每周 3-4 次有氧，从"跑 2 分钟走 1 分钟 × 8 组"开始\n• 每周总量增加不超过 10%，让身体慢慢适应\n• 加一次间歇：快跑 30 秒 + 慢走 90 秒 × 6 组\n• 记录每次的距离和时间，看到进步会很有成就感\n\n坚持 6 周，你会发现跑 5 公里不再是难事。',
+                    '塑形': '体态塑形方案 🧘\n\n• 每天 15 分钟：靠墙站 5 分钟（收下巴、挺胸、收腹）+ 猫牛式 + 臀桥 3 组 × 15 次\n• 每周 3 次力量：重点练背（划船类动作）和臀部（深蹲、臀桥），改善圆肩驼背\n• 每周 2 次瑜伽/普拉提\n\n体态改善需要 8-12 周，坚持比强度重要。',
+                    '健康': '健康运动方案 🌿\n\n• 每周 150 分钟中等强度运动（每天 30 分钟 × 5 天即可）\n• 快走、骑车、游泳、球类都算，选你喜欢的才坚持得下去\n• 每坐 45 分钟起身活动 5 分钟\n• 每周 2 次力量训练，保护肌肉和骨骼\n\n运动是给身体的长期投资，从今天 20 分钟开始。'
+                };
+                return (changed ? '收到，目标「' + goalHit.goal + '」已记下！💪\n\n' : '针对「' + goalHit.goal + '」再帮你理一遍：\n\n') + (bmi ? bmi + '\n\n' : '') + plans[goalHit.goal] + (sportCtx.level ? '' : '\n\n对了，你之前有运动习惯吗（完全新手 / 偶尔运动 / 有规律训练）？告诉我，我把计划调整得更合适。');
+            }
+            // ② 水平识别（影响后续所有建议强度）
+            if (/新手|第一次|没基础|刚开始|零基础|小白/.test(msg)) { sportCtx.level = '新手'; return '好的，按新手标准来，我会给最稳妥的起步方案，循序渐进不受伤 😊\n\n你想练什么？跑步、跳绳、力量，还是想先要一个整体计划？'; }
+            if (/有经验|练过|经常运动|有基础|规律/.test(msg)) { sportCtx.level = '有经验'; return '明白，那我可以给你进阶一点的方案 💪\n\n你目前主要做什么运动？一周几次？我帮你在现有基础上加量或加花样。'; }
+            // ③ 运动专题
+            const hit = SPORT_TOPICS.find(t => t.keys.some(k => m.includes(k)));
+            if (hit) {
+                sportCtx.topic = hit.name;
+                const levelTip = sportCtx.level === '新手' ? '\n\n（按你的新手水平：先保证动作标准，强度宁低勿高，2-3 周后再加量。）' : '';
+                return '聊聊「' + hit.name + '」\n\n' + hit.body + levelTip;
+            }
+            // ④ 计划请求
+            if (m.includes('计划') || m.includes('安排') || m.includes('方案') || m.includes('怎么练') || m.includes('怎么开始')) {
+                if (!sportCtx.goal) return '定制计划前先了解两个信息：\n\n① 你的目标：减脂 / 增肌 / 提升体能 / 塑形 / 保持健康？\n② 你的基础：完全新手 / 偶尔运动 / 有规律训练？\n\n告诉我这两点，我马上给你一份一周计划 📋';
+                return '你的目标：「' + sportCtx.goal + '」' + (sportCtx.level ? '，水平：' + sportCtx.level : '') + '\n\n' + (sportCtx.goal === '减脂' ? '一周计划：周一/三/五 有氧 30-40 分钟；周二/四 力量 20 分钟（深蹲、俯卧撑、平板支撑各 3 组）；周末选喜欢的运动。' : sportCtx.goal === '增肌' ? '一周计划：隔天全身力量（深蹲、俯卧撑、弓步、平板），每次 30-40 分钟；训练后 1 小时内补蛋白质 + 碳水；睡够 7-8 小时。' : sportCtx.goal === '体能' ? '一周计划：3-4 次有氧（跑走结合起步），每两周总量 +10%；加 1 次间歇训练；记录每次距离时间。' : sportCtx.goal === '塑形' ? '一周计划：每天 15 分钟体态纠正（靠墙站 + 拉伸）；每周 3 次力量（背部 + 臀部重点）；2 次瑜伽。' : '一周计划：每周 150 分钟中等强度运动，选你喜欢的项目，加 2 次力量训练。') + '\n\n⚠️ 运动中出现胸闷、头晕、关节刺痛请立刻停止。有想深入的动作或项目吗？';
+            }
+            // ⑤ 接着上次项目深入
+            if (sportCtx.topic && SPORT_CONT.some(k => m.includes(k))) {
+                const t = SPORT_TOPICS.find(x => x.name === sportCtx.topic);
+                return '关于「' + sportCtx.topic + '」进阶提醒：\n\n① 频率：每周 3-4 次，中间至少隔一天让身体恢复\n② 渐进：每次比上次多 5-10%，别突然上强度\n③ 记录：简单记下每次的时长/次数，进步看得见\n④ 搭配：' + (sportCtx.goal === '增肌' ? '配合力量训练和蛋白质补充效果最好' : '配合 10 分钟拉伸，恢复更快') + '\n\n还想了解其他动作，还是想定个周计划？';
+            }
+            // ⑥ 兜底
+            if (!sportCtx.goal && !sportCtx.level) return '想帮你定制合适的运动方案，先了解两件事：\n\n① 你的目标：减脂 / 增肌 / 提升体能 / 塑形 / 保持健康？\n② 你的基础：完全新手 / 偶尔运动 / 有规律训练？\n\n告诉我任意一点，我们就能开始 🏃';
+            if (!sportCtx.level) return '好的！再补充一个问题：你之前有运动习惯吗？\n\n• 完全新手（基本没运动）\n• 偶尔运动（每周 1-2 次）\n• 有规律训练（每周 3 次以上）\n\n告诉我你的水平，我给的建议会更合适。';
+            return '收到～你可以：\n\n① 直接说一个项目（跑步/跳绳/深蹲/平板支撑…），我讲动作和计划\n② 说"给我一个周计划"，我按你的目标定制\n③ 或者告诉我你的身体情况（如膝盖不适），我帮你避开风险\n\n你想聊哪个？';
+        }
+
+        // ─── 智能体定义（人格、欢迎语、快捷提问、回复引擎） ────────
+        const AGENTS = {
+            doctor: {
+                icon: '🤖', name: '智能问诊 · 在线', sub: '描述症状，系统为您分析并给出建议',
+                placeholder: '请描述您的症状，例如：头痛、发烧、咳嗽...',
+                hints: ['头痛头晕', '发烧咳嗽', '胃痛恶心', '心悸胸闷', '失眠焦虑', '腰背疼痛'],
+                welcome: u => {
+                    const hello = u ? '你好，<strong>' + escapeHtml(u) + '</strong>！' : '你好！';
+                    return hello + '欢迎使用 <strong>MediAI</strong> 智能问诊。请描述您的不适（症状、持续时间、程度等），系统将为您梳理可能的原因、提供居家处理建议，并提示需要就医的情况。<br><br>也可以点击下方快捷症状快速开始。<br><br>⚠️ 本系统仅供参考，不构成医疗诊断，如症状严重请及时就医。';
+                },
+                reply: msg => getLocalReply(msg)
+            },
+            nutri: {
+                icon: '🥗', name: 'AI 营养分析师 · 在线', sub: '一日三餐 · 热量营养 · 减脂增肌饮食方案',
+                placeholder: '说说你今天吃了什么，或者你的饮食目标…',
+                hints: ['我想健康减脂', '帮我搭配一日三餐', '今天吃了泡面夜宵', '控糖该怎么吃', '怎么补充蛋白质', '总想吃零食怎么办'],
+                welcome: u => {
+                    const hello = u ? '你好，<strong>' + escapeHtml(u) + '</strong>！' : '你好！';
+                    return hello + '我是 <strong>AI 营养分析师</strong> 🥗。把你的目标（减脂 / 增肌 / 控糖…）或今天吃的东西告诉我，我会帮你算热量、搭三餐、改习惯。<br><br>可以点下方快捷问题，也可以直接说"我今天吃了……"，我们像朋友一样聊着聊着就把饮食理顺了。<br><br>⚠️ 营养建议仅供参考，慢病人群请遵医嘱。';
+                },
+                reply: msg => nutriReply(msg)
+            },
+            mind: {
+                icon: '🧠', name: '心理健康对话 · 陪伴中', sub: '情绪倾诉 · 压力疏导 · 睡眠改善 · 心理陪伴',
+                placeholder: '最近怎么样？有什么想聊的都可以说…',
+                hints: ['最近压力好大', '晚上总是睡不着', '总是情绪低落想哭', '和家里吵架了很难受', '总是觉得自己不够好', '想找人说说话'],
+                welcome: u => {
+                    const hello = u ? '嗨，<strong>' + escapeHtml(u) + '</strong>，' : '嗨，';
+                    return hello + '我是你的<strong>心理健康陪伴伙伴</strong> 🧠。这里没有评判，只有倾听。压力、焦虑、失眠、难过……或者只是想找人说说话，我都愿意陪着你。<br><br>你随时可以开始，也随时可以停下来。<br><br>💛 如果你此刻有伤害自己的想法，请立刻拨打 <strong>12356</strong> 心理援助热线或 120，并找身边信任的人陪伴——你很重要。';
+                },
+                reply: msg => mindReply(msg)
+            },
+            sport: {
+                icon: '🏃', name: '智能运动指导师 · 在线', sub: '运动计划 · 动作指导 · 损伤预防 · 体能提升',
+                placeholder: '告诉我你的目标和运动基础，比如"我想减脂，新手"…',
+                hints: ['我想减脂求计划', '新手怎么开始跑步', '深蹲怎么做才标准', '膝盖不好适合什么运动', '久坐族怎么动', '帮我定个周计划'],
+                welcome: u => {
+                    const hello = u ? '你好，<strong>' + escapeHtml(u) + '</strong>！' : '你好！';
+                    return hello + '我是 <strong>智能运动指导师</strong> 🏃。告诉我你的目标（减脂 / 增肌 / 体能 / 塑形）和运动基础（新手 / 有经验），我会为你定制训练计划、讲解动作要点、提醒预防损伤。<br><br>可以先点下方快捷问题，或直接说"我想减脂，是新手"。<br><br>⚠️ 运动建议仅供参考，如有基础疾病或运动中不适请及时就医。';
+                },
+                reply: msg => sportReply(msg)
+            }
+        };
+
+        // 切换智能体：换人格、欢迎语、快捷提问，并恢复各自的对话记录
+        function switchAgent(id) {
+            if (id === activeAgent) return;
+            activeAgent = id;
+            isBusy = false;
+            const t = document.getElementById('typing-ind'); if (t) t.remove();
+            renderAgentChat();
+        }
+        function updateAgentUI() {
+            const agent = AGENTS[activeAgent];
+            const w = document.getElementById('chatWelcome');
+            if (w) w.innerHTML = agent.welcome(currentUser());
+            const mt = document.getElementById('chatModeText');
+            if (mt) mt.textContent = agent.name;
+            const ms = document.getElementById('chatModeSub');
+            if (ms) ms.textContent = agent.sub;
+            const inp = document.getElementById('chatInput');
+            if (inp) inp.placeholder = agent.placeholder;
+            const hintsBox = document.getElementById('chatHints');
+            if (hintsBox) {
+                hintsBox.innerHTML = '';
+                agent.hints.forEach(t => {
+                    const b = document.createElement('button');
+                    b.className = 'hint-chip';
+                    b.type = 'button';
+                    b.textContent = t;
+                    b.onclick = () => sendHint(b);
+                    hintsBox.appendChild(b);
+                });
+                const c = document.createElement('button');
+                c.className = 'hint-chip clear-chip';
+                c.type = 'button';
+                c.textContent = '🗑️ 清空对话';
+                c.onclick = () => clearChat();
+                hintsBox.appendChild(c);
+                hintsBox.style.display = 'flex';
+            }
+        }
+        // 重建聊天区：欢迎语 + 当前智能体的历史记录
+        function renderAgentChat() {
+            const body = document.getElementById('chatBody');
+            if (!body) return;
+            body.innerHTML = '';
+            const agent = AGENTS[activeAgent];
+            const wrap = document.createElement('div');
+            wrap.className = 'msg ai';
+            wrap.innerHTML = '<div class="msg-av ai">' + agent.icon + '</div><div><div class="msg-bubble" id="chatWelcome"></div><div class="msg-time">刚刚</div></div>';
+            body.appendChild(wrap);
+            updateAgentUI();
+            curHist().forEach(h => { if (h && h.content) addMsg(h.content, h.role); });
+            document.getElementById('chatHints').style.display = curHist().length ? 'none' : 'flex';
+            body.scrollTop = body.scrollHeight;
         }
 
         function sendMsg() {
@@ -2213,22 +2496,22 @@
             inp.value = ''; inp.style.height = 'auto';
             addMsg(msg, 'user');
             document.getElementById('chatHints').style.display = 'none';
-            chatHistory.push({ role: 'user', content: msg });
-            persistChatHistory();
+            curHist().push({ role: 'user', content: msg });
+            persistCurHist();
 
             isBusy = true; showTyping();
 
             const finishWith = (text) => {
                 hideTyping();
-                // 用打字机逐字"说"出来，有真人医生在和你对话的感觉
+                // 用打字机逐字"说"出来，有真人对话的感觉
                 const { bubble } = addMsg('', 'ai');
                 bubble.classList.add('typing-active');
                 let typed = 0;
                 const tick = () => {
                     if (typed >= text.length) {
                         bubble.classList.remove('typing-active');
-                        chatHistory.push({ role: 'assistant', content: text });
-                        persistChatHistory();
+                        curHist().push({ role: 'assistant', content: text });
+                        persistCurHist();
                         isBusy = false;
                         return;
                     }
@@ -2244,7 +2527,7 @@
             };
 
             // 先"想一想"再回答，更像真人
-            const reply = getLocalReply(msg);
+            const reply = AGENTS[activeAgent].reply(msg);
             setTimeout(() => finishWith(reply), 500 + Math.random() * 600);
         }
 
@@ -2254,15 +2537,16 @@
             const t = e.target; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 120) + 'px';
         }
 
-        // 清空对话
+        // 清空当前智能体的对话
         function clearChat() {
             if (!confirm('确定清空当前对话记录吗？')) return;
-            chatHistory = [];
-            lastTopic = null;
-            persistChatHistory();
-            document.getElementById('chatBody').innerHTML = '';
-            document.getElementById('chatHints').style.display = 'flex';
-            addMsg('对话已清空～我还在呢，哪里不舒服随时告诉我。', 'ai');
+            agentHist[activeAgent] = [];
+            agentTopic[activeAgent] = null;
+            if (activeAgent === 'nutri') { nutriCtx.goal = null; nutriCtx.lastFood = null; }
+            if (activeAgent === 'mind') { mindCtx.topic = null; mindCtx.turns = 0; }
+            if (activeAgent === 'sport') { sportCtx.goal = null; sportCtx.level = null; sportCtx.topic = null; }
+            persistCurHist();
+            renderAgentChat();
         }
 
         // ─── Health ───────────────────────────────────────────────
@@ -4479,14 +4763,7 @@ ${bpImg ? '<h2>📈 血压趋势图</h2><img src="' + bpImg + '">' : ''}
             setTimeout(() => { try { win.print(); } catch (e) { } }, 600);
         }
 
-        // ─── 扫码同步（手机 ↔ 电脑，二维码传输健康档案） ──────────
-        let qrChunks = [];          // 生成的同步码分片
-        let qrChunkIdx = 0;
-        let qrStream = null;        // 摄像头媒体流
-        let qrScanning = false;
-        let qrRcvChunks = {};       // 收到的分片
-        let qrRcvTotal = 0;
-
+        // ─── 设备同步（手机 ↔ 电脑，同步码文件 / 文本传输健康档案） ──────────
         function openQrSync() {
             requireAuth(() => {
                 document.getElementById('qrMask').classList.add('show');
@@ -4496,7 +4773,6 @@ ${bpImg ? '<h2>📈 血压趋势图</h2><img src="' + bpImg + '">' : ''}
         function closeQrSync() {
             const m = document.getElementById('qrMask');
             if (m) m.classList.remove('show');
-            qrStopScan();
         }
         function qrSwitchMode(mode) {
             document.getElementById('qrGenBox').style.display = mode === 'gen' ? 'block' : 'none';
@@ -4504,122 +4780,60 @@ ${bpImg ? '<h2>📈 血压趋势图</h2><img src="' + bpImg + '">' : ''}
             const g = document.getElementById('qrGenTab'), s = document.getElementById('qrScanTab');
             g.classList.toggle('btn-p', mode === 'gen'); g.classList.toggle('btn-g', mode !== 'gen');
             s.classList.toggle('btn-p', mode === 'scan'); s.classList.toggle('btn-g', mode !== 'scan');
-            if (mode === 'gen') qrStopScan();
         }
         function qrBuildPayload() {
             const sorted = [...healthRecords].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
             return JSON.stringify({ v: 1, records: sorted, bp: bpHistory, exportedAt: new Date().toISOString() });
         }
-        function qrGenerate() {
-            if (!healthRecords.length && !bpHistory.length) { alert('当前账号还没有健康数据，请先到「健康档案」录入'); return; }
+        // 把健康档案打包成同步码文本（多段时逐行 MXS| 开头，与导入端约定一致）
+        function qrBuildCodeText() {
             const payload = qrBuildPayload();
             const chunkMax = 1500;
             const n = Math.ceil(payload.length / chunkMax);
-            qrChunks = [];
-            for (let i = 0; i < n; i++) qrChunks.push('MXS|' + (i + 1) + '|' + n + '|' + payload.slice(i * chunkMax, (i + 1) * chunkMax));
-            qrChunkIdx = 0;
-            document.getElementById('qrCanvasWrap').style.display = 'block';
-            const box = document.getElementById('qrCanvasBox');
-            box.innerHTML = '<div style="padding:20px;font-size:12.5px;color:var(--text2)">⏳ 正在准备二维码组件…</div>';
-            // 等待二维码组件就绪（未加载时自动加载，加载失败给出重试提示）
-            qrEnsureLib('qrcode').then(ok => {
-                if (!ok) {
-                    box.innerHTML = '<div style="padding:14px;border:1px dashed var(--border);border-radius:10px;font-size:12px;color:var(--text2);line-height:1.8">二维码组件加载失败（可能网络不通）。<br>可先使用「复制同步码文本」方式同步，或检查网络后 <button type="button" class="text-link" onclick="qrGenerate()">重试</button>。</div>';
-                    return;
-                }
-                qrShowChunk(0);
-            });
+            const parts = [];
+            for (let i = 0; i < n; i++) parts.push('MXS|' + (i + 1) + '|' + n + '|' + payload.slice(i * chunkMax, (i + 1) * chunkMax));
+            return parts.join('\n');
         }
-        function qrShowChunk(dir) {
-            qrChunkIdx = Math.min(qrChunks.length - 1, Math.max(0, qrChunkIdx + dir));
-            const box = document.getElementById('qrCanvasBox');
-            box.innerHTML = '';
-            const chunk = qrChunks[qrChunkIdx];
-            if (window.QRCode) {
-                try { new QRCode(box, { text: chunk, width: 240, height: 240, correctLevel: QRCode.CorrectLevel.M }); }
-                catch (e) { box.textContent = '二维码生成失败，请使用「复制同步码文本」方式'; }
-            } else {
-                box.innerHTML = `<div style="padding:14px;border:1px dashed var(--border);border-radius:10px;font-size:12px;word-break:break-all;color:var(--text2)">二维码组件未加载，请「复制同步码文本」后在对方设备「手动输入同步码」中粘贴导入。</div>`;
-            }
-            document.getElementById('qrChunkInfo').textContent = qrChunks.length > 1
-                ? '第 ' + (qrChunkIdx + 1) + ' / ' + qrChunks.length + ' 张（数据较大，请逐张扫描）'
-                : '共 1 张 · 含 ' + healthRecords.length + ' 条健康记录';
-            document.getElementById('qrChunkPrev').style.display = qrChunks.length > 1 ? 'inline-flex' : 'none';
-            document.getElementById('qrChunkNext').style.display = qrChunks.length > 1 ? 'inline-flex' : 'none';
-        }
+        function qrHasData() { return !!(healthRecords.length || bpHistory.length); }
         function qrCopyCode() {
-            const t = qrChunks.join('\n');
-            const done = () => alert('已复制全部同步码文本（共 ' + qrChunks.length + ' 段）');
+            if (!qrHasData()) { alert('当前账号还没有健康数据，请先到「健康档案」录入'); return; }
+            const t = qrBuildCodeText();
+            const segs = t.split('\n').length;
+            const done = () => alert('✅ 已复制全部同步码文本（共 ' + segs + ' 段）。到对方设备「📥 导入同步码」中粘贴导入即可。');
             if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, () => prompt('请手动复制：', t) && done());
             else { prompt('请手动复制：', t); done(); }
         }
-        function qrStartScan() {
-            if (qrScanning) { qrStopScan(); return; }
-            // 等待扫码组件就绪（未加载时自动加载）
-            qrEnsureLib('jsqr').then(ok => {
-                if (!ok) { alert('扫码组件加载失败（可能网络不通）。请使用「手动输入同步码」方式导入。'); return; }
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    alert('当前环境无法调用摄像头（需要 HTTPS 或 localhost）。请使用「手动输入同步码」方式。');
-                    return;
-                }
-                const video = document.getElementById('qrVideo');
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }).then(stream => {
-                    qrStream = stream;
-                    video.srcObject = stream;
-                    document.getElementById('qrVideoWrap').style.display = 'block';
-                    document.getElementById('qrScanBtn').textContent = '⏹ 停止扫码';
-                    qrScanning = true;
-                    qrRcvChunks = {}; qrRcvTotal = 0;
-                    qrSetScanTip('正在识别…');
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-                    const tick = () => {
-                        if (!qrScanning) return;
-                        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-                            ctx.drawImage(video, 0, 0);
-                            try {
-                                const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                                const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
-                                if (code && code.data) qrHandleChunk(code.data);
-                            } catch (e) { }
-                        }
-                        requestAnimationFrame(tick);
-                    };
-                    requestAnimationFrame(tick);
-                }).catch(err => {
-                    alert('无法打开摄像头：' + (err && err.message ? err.message : '请检查权限或改用「手动输入同步码」'));
-                });
-            });
-        }
-        function qrStopScan() {
-            qrScanning = false;
-            if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
-            const btn = document.getElementById('qrScanBtn');
-            if (btn) btn.textContent = '📷 启动摄像头扫码';
-            const wrap = document.getElementById('qrVideoWrap');
-            if (wrap) wrap.style.display = 'none';
-        }
-        function qrSetScanTip(msg) {
-            const el = document.getElementById('qrScanTip');
-            if (el) el.textContent = msg;
-        }
-        function qrHandleChunk(text) {
-            if (text.indexOf('MXS|') !== 0) { qrSetScanTip('识别到非同步码内容，请对准本应用的同步二维码'); return; }
-            const parts = text.split('|');
-            if (parts.length < 4) return;
-            const idx = +parts[1], total = +parts[2];
-            qrRcvChunks[idx] = parts.slice(3).join('|');
-            qrRcvTotal = total;
-            const got = Object.keys(qrRcvChunks).length;
-            if (got >= total) {
-                const payload = Array.from({ length: total }, (_, i) => qrRcvChunks[i + 1] || '').join('');
-                qrRcvChunks = {}; qrRcvTotal = 0;
-                qrImportPayload(payload);
-                qrStopScan();
-            } else {
-                qrSetScanTip('已识别第 ' + idx + ' / ' + total + ' 张，继续扫描下一张…');
+        function qrDownloadCode() {
+            if (!qrHasData()) { alert('当前账号还没有健康数据，请先到「健康档案」录入'); return; }
+            const t = qrBuildCodeText();
+            const segs = t.split('\n').length;
+            try {
+                const blob = new Blob([t], { type: 'text/plain;charset=utf-8' });
+                const a = document.createElement('a');
+                const d = new Date();
+                const pad = n => ('0' + n).slice(-2);
+                a.href = URL.createObjectURL(blob);
+                a.download = 'medi-health-sync-' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + '.txt';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => { try { URL.revokeObjectURL(a.href); } catch (e) { } }, 3000);
+                alert('✅ 已生成同步码文件（共 ' + segs + ' 段，含 ' + healthRecords.length + ' 条健康记录）。\n把文件发送到另一台设备后，用「📥 导入同步码 → 选择文件」即可恢复。');
+            } catch (e) {
+                alert('文件生成失败，请改用「复制同步码文本」方式。');
             }
+        }
+        function qrImportFile(input) {
+            const f = input.files && input.files[0];
+            if (!f) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                document.getElementById('qrManualInput').value = String(reader.result || '');
+                qrManualImport();
+            };
+            reader.onerror = () => alert('文件读取失败，请重试，或改用「复制同步码文本」方式。');
+            reader.readAsText(f, 'utf-8');
+            input.value = '';
         }
         function qrManualImport() {
             const v = document.getElementById('qrManualInput').value.trim();
@@ -4655,90 +4869,6 @@ ${bpImg ? '<h2>📈 血压趋势图</h2><img src="' + bpImg + '">' : ''}
             renderHistory();
             alert('✅ 同步完成：已导入 ' + data.records.length + ' 条健康记录（去重合并，新数据优先）。');
         }
-        // ─── 二维码组件按需加载：本地文件优先 → 多 CDN 依次兜底 ────────
-        // 说明：二维码生成（QRCode）与扫码（jsQR）两个组件按需加载。
-        // 顺序：① 仓库自带的本地文件（lib/，不依赖网络）→ ② 上次成功时缓存在本机的源码
-        // → ③ CDN 依次兜底（unpkg → BootCDN → staticfile → cdnjs → jsDelivr）。
-        // 任一源成功后自动缓存到本机，下次更快、更稳。
-        const qrLibDefs = {
-            qrcode: {
-                check: () => !!(window.QRCode && window.QRCode.CorrectLevel),
-                srcs: [
-                    'lib/qrcode.min.js',
-                    'https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js',
-                    'https://cdn.bootcdn.net/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
-                    'https://cdn.staticfile.net/qrcodejs/1.0.0/qrcode.min.js',
-                    'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
-                    'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js'
-                ]
-            },
-            jsqr: {
-                check: () => !!window.jsQR,
-                srcs: [
-                    'lib/jsQR.min.js',
-                    'https://unpkg.com/jsqr@1.4.0/dist/jsQR.js',
-                    'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js'
-                ]
-            }
-        };
-        const qrLoadState = {};
-        function qrTryCached(name, def) {
-            let cached = null;
-            try { cached = localStorage.getItem('mediai-lib-' + name); } catch (e) { }
-            if (!cached) return false;
-            try {
-                (0, eval)(cached);
-                if (def.check()) return true;
-            } catch (e) { }
-            try { localStorage.removeItem('mediai-lib-' + name); } catch (e) { }
-            return false;
-        }
-        function qrLoadFromCdns(name, def, i) {
-            if (i >= def.srcs.length) return Promise.resolve(false);
-            const src = def.srcs[i];
-            return new Promise(resolve => {
-                let settled = false;
-                let timer = null;
-                const done = loaded => {
-                    if (settled) return;
-                    settled = true;
-                    if (timer) clearTimeout(timer);
-                    s.onload = s.onerror = null;
-                    try { s.remove(); } catch (e) { }
-                    if (loaded && def.check()) {
-                        // 成功后把源码抓下来存到本机，下次离线或 CDN 不通也能直接使用
-                        try {
-                            fetch(src).then(r => r.text()).then(txt => { try { localStorage.setItem('mediai-lib-' + name, txt); } catch (e) { } }).catch(() => { });
-                        } catch (e) { }
-                        resolve(true);
-                    } else {
-                        resolve(qrLoadFromCdns(name, def, i + 1));
-                    }
-                };
-                const s = document.createElement('script');
-                s.src = src;
-                s.async = true;
-                s.onload = () => done(true);
-                s.onerror = () => done(false);
-                timer = setTimeout(() => done(false), 9000); // 超时 9 秒换下一个源
-                document.head.appendChild(s);
-            });
-        }
-        function qrEnsureLib(name) {
-            const def = qrLibDefs[name];
-            if (def.check()) return Promise.resolve(true);
-            if (qrLoadState[name]) return qrLoadState[name];
-            qrLoadState[name] = qrTryCached(name, def)
-                ? Promise.resolve(true)
-                : qrLoadFromCdns(name, def, 0);
-            return qrLoadState[name];
-        }
-        function loadQrLibs() {
-            // 页面启动时预热加载（不阻塞页面），进入扫码同步时即点即用
-            qrEnsureLib('qrcode');
-            qrEnsureLib('jsqr');
-        }
-
         // ─── 键盘与初始化 ─────────────────────────────────────────
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') { closeAuth(); closeNotif(); closeSync(); closeLocPicker(); closeDocAdvice(); closeQrSync(); const um = document.getElementById('userMenu'); if (um) um.classList.remove('show'); }
@@ -4754,9 +4884,8 @@ ${bpImg ? '<h2>📈 血压趋势图</h2><img src="' + bpImg + '">' : ''}
         });
         initSplash();
         initGuideLoc();
-        loadQrLibs();
         renderKb(kbData);
-        loadChatHistory();
+        loadAgentHistories();
         const activeUser = currentUser();
         if (activeUser) loadRecordsFor(activeUser);
         restoreHealthSummary();
